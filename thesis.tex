@@ -1,0 +1,459 @@
+%% ut-thesis.tex -- document template for graduate theses at UofT
+%%
+%% Copyright (c) 1998-2013 Francois Pitt <fpitt@cs.utoronto.ca>
+%% last updated at 16:20 (EDT) on Wed 25 Sep 2013
+%%
+%% This work may be distributed and/or modified under the conditions of
+%% the LaTeX Project Public License, either version 1.3c of this license
+%% or (at your option) any later version.
+%% The latest version of this license is in
+%%     http://www.latex-project.org/lppl.txt
+%% and version 1.3c or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status "maintained".
+%%
+%% The Current Maintainer of this work is
+%% Francois Pitt <fpitt@cs.utoronto.ca>.
+%%
+%% This work consists of the files listed in the accompanying README.
+
+%% SUMMARY OF FEATURES:
+%%
+%% All environments, commands, and options provided by the `ut-thesis'
+%% class will be described below, at the point where they should appear
+%% in the document.  See the file `ut-thesis.cls' for more details.
+%%
+%% To explicitly set the pagestyle of any blank page inserted with
+%% \cleardoublepage, use one of \clearemptydoublepage,
+%% \clearplaindoublepage, \clearthesisdoublepage, or
+%% \clearstandarddoublepage (to use the style currently in effect).
+%%
+%% For single-spaced quotes or quotations, use the `longquote' and
+%% `longquotation' environments.
+
+
+%%%%%%%%%%%%         PREAMBLE         %%%%%%%%%%%%
+
+%%  - Default settings format a final copy (single-sided, normal
+%%    margins, one-and-a-half-spaced with single-spaced notes).
+%%  - For a rough copy (double-sided, normal margins, double-spaced,
+%%    with the word "DRAFT" printed at each corner of every page), use
+%%    the `draft' option.
+%%  - The default global line spacing can be changed with one of the
+%%    options `singlespaced', `onehalfspaced', or `doublespaced'.
+%%  - Footnotes and marginal notes are all single-spaced by default, but
+%%    can be made to have the same spacing as the rest of the document
+%%    by using the option `standardspacednotes'.
+%%  - The size of the margins can be changed with one of the options:
+%%     . `narrowmargins' (1 1/4" left, 3/4" others),
+%%     . `normalmargins' (1 1/4" left, 1" others),
+%%     . `widemargins' (1 1/4" all),
+%%     . `extrawidemargins' (1 1/2" all).
+%%  - The pagestyle of "cleared" pages (empty pages inserted in
+%%    two-sided documents to put the next page on the right-hand side)
+%%    can be set with one of the options `cleardoublepagestyleempty',
+%%    `cleardoublepagestyleplain', or `cleardoublepagestylestandard'.
+%%  - Any other standard option for the `report' document class can be
+%%    used to override the default or draft settings (such as `10pt',
+%%    `11pt', `12pt'), and standard LaTeX packages can be used to
+%%    further customize the layout and/or formatting of the document.
+
+%% *** Add any desired options. ***
+\documentclass{ut-thesis}
+
+\usepackage{tensor}
+ \usepackage{newtxtext,newtxmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+% \usepackage{algorithmic}
+\usepackage{pifont}
+\usepackage[colorlinks, pdfborder={0 0 0}, plainpages=false]{hyperref}
+\usepackage{braket}
+\usepackage{graphicx,adjustbox}
+\usepackage{stmaryrd}
+\usepackage{xspace}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage[normalem]{ulem} %for \sout
+\newcommand{\roughly}{\mathchar"5218\relax} % Different from \sim in spacing
+\usepackage{mathtools}
+
+
+%% *** Add \usepackage declarations here. ***
+%% The standard packages `geometry' and `setspace' are already loaded by
+%% `ut-thesis' -- see their documentation for details of the features
+%% they provide.  In particular, you may use the \geometry command here
+%% to adjust the margins if none of the ut-thesis options are suitable
+%% (see the `geometry' package for details).  You may also use the
+%% \setstretch command to set the line spacing to a value other than
+%% single, one-and-a-half, or double spaced (see the `setspace' package
+%% for details).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                    %%
+%%                   ***   I M P O R T A N T   ***                    %%
+%%                                                                    %%
+%%  Fill in the following fields with the required information:       %%
+%%   - \degree{...}       name of the degree obtained                 %%
+%%   - \department{...}   name of the graduate department             %%
+%%   - \gradyear{...}     year of graduation                          %%
+%%   - \author{...}       name of the author                          %%
+%%   - \title{...}        title of the thesis                         %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% *** Change this example to appropriate values. ***
+\degree{Doctor of Philosophy}
+\department{Physics}
+\gradyear{2018}
+\author{Trevor Vincent}
+\title{Topics in Numerical Relativity}
+
+%% *** NOTE ***
+%% Put here all other formatting commands that belong in the preamble.
+%% In particular, you should put all of your \newcommand's,
+%% \newenvironment's, \newtheorem's, etc. (in other words, all the
+%% global definitions that you will need throughout your thesis) in a
+%% separate file and use "\input{filename}" to input it here.
+
+
+%% *** Adjust the following settings as desired. ***
+
+%% List only down to subsections in the table of contents;
+%% 0=chapter, 1=section, 2=subsection, 3=subsubsection, etc.
+\setcounter{tocdepth}{2}
+
+%% Make each page fill up the entire page.
+\flushbottom
+
+
+%%%%%%%%%%%%      MAIN  DOCUMENT      %%%%%%%%%%%%
+
+\begin{document}
+
+%% This sets the page style and numbering for preliminary sections.
+\begin{preliminary}
+
+%% This generates the title page from the information given above.
+\maketitle
+
+%% There should be NOTHING between the title page and abstract.
+%% However, if your document is two-sided and you want the abstract
+%% _not_ to appear on the back of the title page, then uncomment the
+%% following line.
+%\cleardoublepage
+
+%% This generates the abstract page, with the line spacing adjusted
+%% according to SGS guidelines.
+\begin{abstract}
+
+  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under a year later LIGO
+  detected gravitational waves from merging neutron stars in coincidence with detection of a gamma ray burst and kilonova.
+  Many more detections are expected in the future. There are two glaring problems that are facing the gravitational wave
+  community now that binary neutron stars have been detected. 1) To date, there is no code that can simulate binary neutron stars with all of the microphysics we are aware of.
+  2) There is no established numerical relativity template bank for binary neutron stars using the best codes available. This thesis
+  aims at paving the way for both 1) and 2).
+
+  In the first chapter of this thesis, we describe a new code we developed to tackle difficult initial data problems in
+  numerical relativity. The aim of this code will be to solve for binary neutron star initial data with all of the microphysics
+  we can throw at it.
+
+  In the second chapter of this thesis, we describe a set of 12 simulations of binary neutron star mergers in full General Relativity,
+  that were evolved with a state of the art neutrino transport scheme. We study the ejecta and neutrinos of these mergers across
+  different realistic equations of state and different mass ratios. 
+  
+\end{abstract}
+
+%% Anything placed between the abstract and table of contents will
+%% appear on a separate page since the abstract ends with \newpage and
+%% the table of contents starts with \clearpage.  Use \cleardoublepage
+%% for anything that you want to appear on a right-hand page.
+
+%% This generates a "dedication" section, if needed -- just a paragraph
+%% formatted flush right (uncomment to have it appear in the document).
+%\begin{dedication}
+%% *** Put your Dedication here. ***
+%\end{dedication}
+
+%% The `dedication' and `acknowledgements' sections do not create new
+%% pages so if you want the two sections to appear on separate pages,
+%% uncomment the following line.
+%\newpage  % separate pages for dedication and acknowledgements
+
+%% Alternatively, if you leave both on the same page, it is probably a
+%% good idea to add a bit of extra vertical space in between the two --
+%% for example, as follows (adjust as desired).
+%\vspace{.5in}  % vertical space between dedication and acknowledgements
+
+%% This generates an "acknowledgements" section, if needed
+%% (uncomment to have it appear in the document).
+%\begin{acknowledgements}
+%% *** Put your Acknowledgements here. ***
+%\end{acknowledgements}
+
+%% This generates the Table of Contents (on a separate page).
+\tableofcontents
+
+%% This generates the List of Tables (on a separate page), if needed
+%% (uncomment to have it appear in the document).
+%\listoftables
+
+%% This generates the List of Figures (on a separate page), if needed
+%% (uncomment to have it appear in the document).
+%\listoffigures
+
+%% You can add commands here to generate any other material that belongs
+%% in the head matter (for example, List of Plates, Index of Symbols, or
+%% List of Appendices).
+
+%% End of the preliminary sections: reset page style and numbering.
+\end{preliminary}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Put your Chapters here; the easiest way to do this is to keep     %%
+%%  each chapter in a separate file and `\include' all the files.     %%
+%%  Each chapter file should start with "\chapter{ChapterName}".      %%
+%%  Note that using `\include' instead of `\input' will make each     %%
+%%  chapter start on a new page, and allow you to format only parts   %%
+%%  of your thesis at a time by using `\includeonly'.                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% *** Include chapter files here. ***
+
+
+%% This adds a line for the Bibliography in the Table of Contents.
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\section{Acknowledgements}
+
+First off, a big thank you to my supervisor Professor Harald Pfeiffer. Harald gave me the opportunity to research within one of the hottest fields currently in astrophysics -- gravitational waves and numerical relativity, provided me with multiple opportunities to present my research abroad and helped me get through some tough problems that arose in my research. I never would have dreamed that there would be a chair with my name on it at the press conference for the first detection of gravitational waves, or that I would later become a member of the Nobel prize-winning LIGO collaboration. 
+
+Secondly, thank you to Professor Francois Foucart who taught me how to run and analyze binary neutron stars simulations with neutrino transport in SpEC and who was very patient at guiding me. A lot of this thesis would not be possible without his support and constant help with debugging the (seemingly) hundreds of problems that cropped up while running these simulations.
+
+Thirdly, thank you to my committee members Charles Dyer and Amar Vutha who provided me excellent advice both during the committee meeting and outside of the committee environment.
+
+Lastly, thank you to my family and the many friends I made at CITA and in the physics department, without their support I think I would have checked into CAMH.
+
+(To ADD: Cornell visits and people) 
+(To ADD: AEI visits and people)
+
+\section{Introduction}
+
+\section{Numerical Relativity: Solving the Einstein Field Equations on a Computer}
+
+
+%Im using tony chus thesis \cite{chu2011numerical}
+
+In their usual form, space and time are treated on an equal footing in the Einstein equations. From the perspective of performing a numerical evolution however, we need to reformulate the problem as initial value problem where we have a set of initial gravitational and matter data at some time t, and a set of evolution equations which we can use to get the updated data at some other time. To do this, we make the ansatz that space-time can be treated as a time sequence of spatial hypersurfaces. With this ansatz, the space-time metric $g_{\mu\nu}$ can be decomposed into
+
+\begin{equation}
+\label{eq:4}
+ds^{2} = g_{\mu\nu}dx^{\mu}dx^{\nu} = -\alpha^2dt^2 + \gamma_{ij}(dx^i+\beta^idt)(dx^j+\beta^jdt),
+\end{equation}
+
+where the spatial metric $\gamma_{ij}$ is a function of the spatial coordinates $x^{i}$ and $t$ and $\alpha$ is the lapse function that measures proper time between neighboring hypersurfaces along their timelike unit normals $n^{\mu}$ and $\beta^i$ is the shift vector that determines how coordinate labels move between each hypersurface. This is known as the 3+1 decomposition of the metric \cite{arnowitt2008republication}.
+
+Now we need to decompose the Einstein field equations into a set of evolution and constraint equations involving the quantities $\beta^i$, $\alpha$ and $\gamma_{ij}$. To do this, we introduce the projection operator $\perp^{\alpha}_{\beta} = \delta^{\alpha}_{\beta} + n^{\alpha} n_{\beta}$, which can be easily proven to project the space-time components orthogonal to $n^{\mu}$ out of any space-time vector.
+
+The three possible projections of the EFEs: $n^{\mu} n^{\nu} G_{\mu\nu} = 8\pi n^{\mu} n^{\nu} T_{\mu\nu}$, $n^{\mu}\perp^{\nu}_{\delta}G_{\mu\nu} = 8\pi n^{\mu} \perp^{\nu}_{\delta} T_{\mu\nu}$, $\perp^{\mu}_{\rho} \perp^{\nu}_{\delta} G_{\mu\nu} = 8\pi \perp^{\mu}_{\rho} \perp^{\nu}_{\delta} T_{\mu\nu}$ lead to the three York/ADM 3+1 equations respectively:
+
+\begin{equation}
+\label{eq:5}
+\begin{split}
+0 &= R + K^{2} - K^{mn}K_{mn} -16\pi\rho, \\
+0 &= D_iK - D_mK^m_i + 8\pi j_i, \\
+\partial_t K_{ij} &= \beta^m\partial_mK_{ij} + K_{mj}\partial_i\beta^m + K_{im}\partial_j\beta^m - D_iD_j\alpha, \\ 
+&+ \alpha(R_{ij}+KK_{ij}-2K_{im}K^m_{j})+4\pi\alpha[(S-\rho)\gamma_{ij}-2S_{ij}],
+\end{split} 
+\end{equation}
+
+where $K_{ij} = (\beta^m\partial_m\gamma_{ij} + \gamma_{mj}\partial_{i}\beta^{m} + \gamma_{im}\partial_j\beta^{m}-\partial_{t}\gamma_{ij})$, is called the extrinsic curvature and it measures
+the rate at which the hypersurface deforms as it is carried forward along a normal \cite{baumgarte2010numerical}. We also relabelled the projections of stress tensor by $\rho = T_{\mu\nu} n^{\mu} n^{\nu}$, $j_{\alpha}= -\perp^{\nu}_{\alpha} T_{\mu\nu} n^{\nu}$, $S_{\alpha\beta} = \perp^{\mu}_{\alpha} \perp^{\nu}_{\beta} T_{\mu\nu}$ and $S=\gamma^{\mu\nu} S_{\mu\nu}$, while $R_{ij}$ and $R$ denote the Ricci tensor and scalar associated with $\gamma_{ij}$.
+
+The 3+1 equations are a set of 10 equations, or 3 tensor equations. The 1st equation is known as the Hamiltonian constraint equation. The second tensor equation is called the momentum constraint equation and is composed of three equations. These four elliptic constraint equations play a similar role as the equations $\nabla \cdot \vec E = 4\pi\rho$ and $\nabla \cdot \vec B = 0$ which constrain the initial E and B fields in Maxwell's equations. The constraint equations must be solved prior to evolving the initial data and are usually called the initial data equations. The last set of six equations are the evolution equations. As they stand, the 3+1 equations still need to be manipulated a bit in order to solve them on a computer. For the set of six evolution equations, the most used schemes are BSSN, Z4 and Generalized Harmonic Decomposition which each manipulate the evolution equations into a slightly different well-posed hyperbolic system. For the initial data equations, the most used schemes are conformal tranverse traceless (CTT), conformal-thin sandwich (CTS) and the extended-conformal thin-sandwich (XCTS) frameworks \cite{alcubierre2012introduction},\cite{sopuerta2015gravitational}.
+
+Alongside the field-equations, the matter equations must be solved. These come from the local conservation equations $\nabla_{\mu}T^{\mu\nu} = 0$. For Neutron-star matter, a perfect-fluid tensor and an irrotational velocity distribution are usually assumed and are coupled with some choice of equation of state (EOS). For black-holes, we set $\rho = j_{\alpha} = S_{\alpha\beta} = 0$ because there is only vacuum space.
+
+To extract the gravitational waveform, the Weyl scalar $\psi_{4}$, which represents the outgoing transverse radiation, is extracted at a large radius away from the simulated binary system (the ``wave-zone''). The energy, linear momentum, and angular momentum of the gravitational wave are computed by integrating the $\psi_{4}$ scalar in time \cite{kyutoku2015dynamical}.
+
+For a more in-depth review, see \cite{sperhake2014numerical}, \cite{faber2012binary} and \cite{shibata2011coalescence} for BBH, NSNS and NSBH systems respectively.
+
+\subsection{Binary Neutron Star Simulations}
+
+Neutron stars (NSs) are among the most compact objects in
+the universe with central densities multiple times higher than
+nuclear density. Similar conditions are unreachable on earth
+which makes NSs an exceptional laboratory to test nuclear
+physics predictions. In particular the merger of two NSs
+allows the study of the high density region of the equation
+of state (EOS) governing NS matter. In addition, NS mergers
+also allow us to reveal the central engine for luminous short
+Gamma ray bursts (sGRBs), to understand the origin of
+heavy elements in the universe, which after their creation
+produce the optical and near-infrared EM counterparts, called
+kilonovae, and to test astrophysical predictions about binary
+populations.
+The first detection of gravitational waves (GW) combined
+with an observation of a sGRB and a kilonova marks a break-
+through in the field of multi-messenger astronomy [1], [2]. It is
+expected that with the increasing sensitivity of advanced GW
+interferometers multiple GW detections of merging BNSs will
+c
+978-1-5386-4975-6 2018
+IEEE
+be made in the next years [3]. In order to extract information
+from the data, the measured signal is cross-correlated with a
+GW template family to obtain a “best match”. This requires
+accurate GW templates to relate the source properties to the
+observed GW signal and consequently a detailed analysis of
+the compact binary coalescence close to the moment of merger.
+While an analytical approach to the two-body dynamics
+in general relativity is possible for the stage in which the
+bodies are well-separated, a numerical solution of the field
+equations, dealing with all their nonlinearities, is needed for
+a faithful description of the last few orbits. However, general
+relativistic simulations are computationally challenging and
+expensive. The main reasons are: (i) the nonlinearity of
+the equations, (ii) the intrinsic multi-scale character of the
+problem (covering the neutron star interior and the radiation
+zone), (iii) no symmetries can be exploited for generic binary
+simulations (3D in space plus time), (iv) the appearance
+of shocks and discontinuities in the matter fields. Over the
+last years, significant progress has been made simulating
+BNSs, with detailed descriptions of physical processes as
+finite temperature EOSs, magnetic fields, neutrino transport,
+e.g. [4], [5], [6], [7], [8], with new numerical techniques
+such as discontinuous Galerkin methods [9], [10], [11] and
+high-order convergent schemes [12], [13], and with the
+possibility to study a larger region of the BNS parameter
+space with spinning [14], eccentric [15], and high-mass
+ratio [16] configurations.
+
+
+ On August 17, 2017, the LIGO-Virgo detector network observed a gravitational-wave signal from the inspiral of two low-mass compact objects consistent with a binary neutron star (BNS) merger. A 100s long gravitational-wave signal (GW170817) was followed by a short gamma ray burst (GRB 170817A) and
+an optical transient (SSS17a/AT 2017gfo) found in the host galaxy NGC 4993 \cite{abbott2017gw170817,ligo2017multimessenger}. The source was detected across the electromagnetic spectrum in the X-ray, ultraviolet, optical, infrared, and radio bands over hours, days, and weeks. These observations support the hypothesis that GW170817 was produced by the merger of two neutron stars in NGC4993, followed by an sGRB and a kilonova powered by the radioactive
+decay of r-process nuclei synthesized in the ejecta. With just this single detection, the equation of state could be constrained, with some equations of state being completely ruled out \cite{abbott2017gw170817,radice2017gw170817}. It is expected that the LIGO-Virgo detector network will detect more of these systems in the future and therefore it is critical to build up a database of waveform templates for such systems. To build such a database will require general relativistic simulations with realistic micro-physics, such as neutrino transport schemes and magneto-hydrodynamics.
+
+The simulation of BNS mergers with general relativistic hydrodynamics codes has now been possible for more than 18 years \cite{shibata2000simulation}. However, despite continuous developments, current codes have not yet reached the accuracy required to model the gravitational wave signal at the level required to extract as much information as possible from future detections (See \cite{barkett2015gravitational}). Furthermore, most codes do not take into account all of the microphysics relevant to the evolution of the post-merger remnant, including a hot nuclear-theory based equation of state, a neutrino transport scheme accounting for both neutrino-matter and neutrino-neutrino interactions, and the evolution of the magnetic fields with enough resolution to resolve the growth of magneto-hydrodynamics instabilities \cite{foucart2015low}. That being said, slowly but surely, different levels of micro-physics are being added to the codes. The first papers that studied fully general relativistic BNS simulations including the effects of neutrinos
+were \cite{neilsen2014magnetized, palenzuela2015effects} with a simple leakage scheme and \cite{sekiguchi2015dynamical} with a more complex M1 neutrino transport scheme. Both the leakage scheme and M1 transport scheme are approximate methods to deal with neutrinos which come about because solving the 7-dimensional Boltzmann transport equation for the neutrino distribution during a BNS simulation is currently numerically intractable. For a review of leakage and the M1 transport scheme used in SpEC, see \cite{foucart2015post}. These BNS simulations with neutrino cooling have focused solely on equal mass systems with $M_{ns} = 1.35M_{\odot}$. Collectively these papers find that the ejected mass is only substantial  enough to explain the total mass of r-process heavy elements in our galaxy for r-process nucleo-synthesis in the case of a softer equation of state (if $P ~ \rho^{\gamma}$, then a soft EOS $\implies \gamma$ is small). The first paper on BNS mergers with neutrino interactions using the SpEC code looked at $1.2M_{\odot}$ equal mass systems and compared a simple leakage cooling neutrino scheme with the more complicated gray M1 neutrino transport scheme, finding that the more realistic transport scheme had a significant affect on the disk composition and the outflows, producing more neutron rich material that could possibly seed r-process element creation. \cite{radice2016dynamical} examined the effects of eccentricity and neutrino transport on the matter outflows and remnant disk of a LS220 equal mass binary, finding that both had significant effects, with the absence of a neutrino scheme leading to matter outflows a factor of 2 off. Finally, only very recently have there been studies examining the effects on matter outflows due to mass asymmetry in the initial binaries, with both \cite{lehner2016unequal} and \cite{sekiguchi2016dynamical} finding that mass asymmetry produces larger neutron-rich outflows for both soft and stiff equations of state.
+
+\newpage
+
+We evolve Einstein's equations using the generalized harmonic formulation. In this formulation we express the Einstein equations in a form that looks like the scalar wave equation, the archetypal symmetric hyperbolic evolution system.
+
+First, a coordinate is called harmonic if
+
+\begin{equation}
+0 = \psi_{ab}\nabla_c\nabla^cx_b = -\Gamma_a,
+\end{equation}
+
+In such coordinates the vacuum EFEs become:
+
+\begin{equation}
+  \psi_{cd}\partial_c\partial_d\psi_{ab} = 2 \psi_{cd}\psi_{ef}\partial_e\psi_{ca}\partial_f\psi_{db} - \Gamma_{ace}\Gamma_{bdf}
+\end{equation}
+
+With this in mind, we can generalize to any coordinate system, but keep the EFEs in this wave equation form by defining
+
+\begin{equation}
+  H_a(x, \psi) = \psi_{ab}\nabla_c\nabla^cx^b = -\Gamma_a,
+\end{equation}
+
+where Ha(x, ψ) is an arbitrary but fixed algebraic function of the coordinates a and the metric ψab (but not its derivatives). The vacuum EFEs then keep the wave equation form:
+
+\begin{equation}
+\psi^{cd}\partial_c\partial_d\psi_{ab} = - 2\nabla_{(a}H_{b)} + 2\psi_{cd}\psi_{ef}\partial_e\psi_{ca}\partial_f\psi_{db} - \Gamma_{ace}\Gamma_{bdf}
+\end{equation}
+
+We use a first order representation of the generalized harmonic system in which the fundamental variables are the spacetime metric $\psi_{ab}$, it's spatial first derivatives $\phi_{iab}$ and its first derivatives in the direction normal to the slice $\Pi_{ab}$, this is analogy with what is done with the scalar wave equation. The generalized harmonic first order system is then up to principal parts:
+
+\begin{align}
+  &\partial_t\psi_{ab} - (1 + \gamma_1)N^k\partial_k\psi_{ab} = ...\\
+  &\partial_t\psi_{ab} - \partial_t\Pi_{ab} - N^k\partial_k\Pi_{ab} + Ng^{ki}\partial_k\phi_{iab} - \gamma_1\gamma_2N^k\partial_k\psi_{ab} = ...\\
+  &\partial_t\phi_{iab} - N^k\partial_k\phi_{iab} + N\partial_i\Pi_{ab} - \gamma_2N\partial_i\psi_{ab} = ... \\
+\end{align}
+
+where
+
+\begin{align}
+  &\partial_t\psi_{ab} := - N\Pi_{ab} + N^i\phi_{iab} \\
+  &\partial_i\psi_{ab} := \phi_{iab}.
+\end{align}
+
+This amounts to a symmetric hyperbolic system of 50 equations.
+
+\section{Discontinuous Galerkin Methods for the Einstein Constraint Equations}
+
+Good reference to start off the introduction to DG is \cite{stiller2016robust} weirdly enough.
+\cite{bi2015posteriori} also has a good review of estimators.
+
+
+
+% Good review on finite element formulation
+
+% \cite{aksoylu2008generating}
+
+% \subsection{Problems with Current Spectral Initial-Data Solvers}
+
+% \subsection{Puncture Initial Data}
+
+% Good reference is the NR ICTS videos (advanced pde numerics) with Mark Hannam, specifically the last lectures
+% Also good reference for test problem and other stuff \cite{kidder2000spectral}
+
+% \section{Unequal-mass Binary Neutron Star Mergers with M1-Neutrino Transport}
+
+% $\tensor{M}{^a_b^c_d}$
+
+% \subsection{Neutron Stars}
+
+% \subsection{Generalized Harmonic}
+
+% Good discussion in Rezolla's book
+
+% \subsection{Hydrodynamics}
+
+% \subsection{Radiation Transport}
+
+% Explanation of Sekiguchis scheme \cite{fujibayashi2017properties}
+% Good discussion in \cite{just2016neutron}
+% (Good discussion in Rezolla's book). \cite{rezzolla2013relativistic}
+
+% \subsection{Leakage Scheme}
+
+% Instead of evolving the distribution of neutrinos, a Leakage scheme attempts to modify the hydrodynamics equations (including microphysics) with the alterations cause by emissions and absorptions of neutrinos at each point in the fluid.
+% (Deaton has a good discussion here \cite{deaton2015neutrinos}).
+
+% \subsection{BNS Mergers in SpEC}
+
+% Roland's paper here \cite{haas2016simulations}
+
+% \subsection{Tracer Particles}
+
+% Good reference \cite{genel2013following}, \cite{bovard2017on}
+% Only reference that really explains ut < -1 condition \cite{kastaun2015properties}
+
+% basically in stationary spacetimes ut is constant along geodesics. Assume the particles
+% crossing some far out radial surface (so you know radial velocity is directed towards infinity)
+% are on geodesics, at infinity ut = minus the Gamma factor -W and therefore if ut < -1 then W < 1 and
+% the particle cannot reach infinity. Thus we use the fact
+
+
+
+
+%% *** Set the bibliography style. ***
+%% (change according to your preference/requirements)
+\bibliographystyle{plain}
+%% *** Set the bibliography file. ***
+%% ("thesis.bib" by default; change as needed)
+\bibliography{thesis}
+
+%% *** NOTE ***
+%% If you don't use bibliography files, comment out the previous line
+%% and use \begin{thebibliography}...\end{thebibliography}.  (In that
+%% case, you should probably put the bibliography in a separate file and
+%% `\include' or `\input' it here).
+
+\end{document}
