@@ -416,7 +416,7 @@ The fluid equations are then
 % \end{align}
   
 % ∂ t u + ∂ i F i = σ
-
+To discretize these equations on a finite difference grid, we need to compute the value of the fluxes F at the interface between numerical cells, and the source terms σ at the center of each cell. A conservative scheme is mainly defined by the method used to compute the fluxes. In SpEC, we use high order shock capturing methods (WENO5 [84, 85]) to reconstruct the physical variables $ρ_0,T$ (as defined by Eqns (1-2)) and $u_i$ at cell faces from their values at cell centers. The WENO5 algorithm gives
 
 \section{Discontinuous Galerkin Methods for the Einstein Constraint Equations}
 
