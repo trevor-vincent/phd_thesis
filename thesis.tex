@@ -418,6 +418,13 @@ The fluid equations are then
 % ∂ t u + ∂ i F i = σ
 To discretize these equations on a finite difference grid, we need to compute the value of the fluxes F at the interface between numerical cells, and the source terms σ at the center of each cell. A conservative scheme is mainly defined by the method used to compute the fluxes. In SpEC, we use high order shock capturing methods (WENO5 [84, 85]) to reconstruct the physical variables $ρ_0,T$ (as defined by Eqns (1-2)) and $u_i$ at cell faces from their values at cell centers. The WENO5 algorithm gives
 
+To handle neutrino transport, we use the M1 formalism
+
+\begin{align}
+  \partial_t \widetilde{E} + \partial_j(\alpha \widetilde{F}^j - \beta^j \widetilde{E}) =& \alpha(\widetilde{P}^{ij}K_{ij} - \widetilde{F}^j\partial_j\ln\alpha - \widetilde{S}^\alpha n_{\alpha} \\
+  \partial_t \widetilde{F}_i + \partial_j(\alpha \widetilde{P}^j_i - \beta^j\widetilde{F}_i) =& -\widetilde{E}\partial_i\alpha + \widetilde{F}_k\partial_i\beta^k + \frac{\alpha}{2}\widetilde{P}^{jk}\partial_i\gamma_{jk} + \alpha\widetilde{S}^\alpha\gamma_{i\alpha} \\
+\end{align}
+
 \section{Discontinuous Galerkin Methods for the Einstein Constraint Equations}
 
 Good reference to start off the introduction to DG is \cite{stiller2016robust} weirdly enough.
