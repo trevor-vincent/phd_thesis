@@ -1,3 +1,9 @@
+%% REFERENCES
+%% Good for hydro and gen harm \cite{foucart2013black}
+%% Good for hydro is foucarts thesis
+%% need ref with rho*ye
+
+
 %% ut-thesis.tex -- document template for graduate theses at UofT
 %%
 %% Copyright (c) 1998-2013 Francois Pitt <fpitt@cs.utoronto.ca>
@@ -423,6 +429,14 @@ To handle neutrino transport, we use the M1 formalism
 \begin{align}
   \partial_t \widetilde{E} + \partial_j(\alpha \widetilde{F}^j - \beta^j \widetilde{E}) =& \alpha(\widetilde{P}^{ij}K_{ij} - \widetilde{F}^j\partial_j\ln\alpha - \widetilde{S}^\alpha n_{\alpha} \\
   \partial_t \widetilde{F}_i + \partial_j(\alpha \widetilde{P}^j_i - \beta^j\widetilde{F}_i) =& -\widetilde{E}\partial_i\alpha + \widetilde{F}_k\partial_i\beta^k + \frac{\alpha}{2}\widetilde{P}^{jk}\partial_i\gamma_{jk} + \alpha\widetilde{S}^\alpha\gamma_{i\alpha} \\
+\end{align}
+
+The hydro equations are then augmented as follows (NEED TO ADD rhoYe equation now)
+
+\begin{align}
+  \rho_* &= -\sqrt{g}n_\mu u^mu /rho_0 \\
+ \tau = \sqrt{g}n_\mu n_\nu T^{\mu\nu} - \rho_* + \alpha\widetilde{S}^\alpha n_\alpha
+  S_k = -\sqrt{g}n_\mu T^\mu_k -
 \end{align}
 
 \section{Discontinuous Galerkin Methods for the Einstein Constraint Equations}
