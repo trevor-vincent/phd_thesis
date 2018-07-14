@@ -1,34 +1,26 @@
-SHELL := /bin/bash
+#
+# Makefile for Thesis
+#
+# Using AASTex and BibTeX
+#
 
-# Makefile for papers
-PAPER := thesis
+all : thesis.pdf
 
-MANUAL_FIGURES := #./figures/test_example_1_mesh.png ./figures/cube-to-inner.pdf ./figures/cube-to-outer.pdf
-AUTO_FIGURES   := #./figures/test_example_1_u_convergence.pdf ./figures/test_example_1_est_convergence.pdf ./figures/test_example_1_mg_vs_cg.pdf
+thesis.pdf : thesis.tex thesis.bib */*.tex 
+	pdflatex thesis -file-line-error --synctex=1 $<
+	bibtex thesis
+	pdflatex thesis -file-line-error --synctex=1 $<
+	pdflatex thesis -file-line-error --synctex=1 $<
 
-# .DEFAULT_GOAL := $(PAPER).pdf
-.PHONY: touchit all
+thesis.dvi : thesis.tex thesis.bib */*.tex 
+	latex thesis
+	bibtex thesis
+	latex thesis
+	latex thesis
 
-all: touchit $(PAPER).pdf
-
-touchit:
-	bash -c "touch $(PAPER).tex"
-	rm $(PAPER).bib
-	ln -s /home/tvincent/Dropbox/Research/refs.bib $(PAPER).bib
-
-$(PAPER).pdf: $(PAPER).tex
-	pdflatex -file-line-error --synctex=1 $<
-	bibtex $(PAPER)
-	pdflatex -file-line-error --synctex=1 $<
-	pdflatex -file-line-error --synctex=1 $<
-
+thesis.ps : thesis.dvi
+	dvips thesis
 
 clean:
-	@rm -f *.aux
-	@rm -f *.out
-	@rm -f *.log
-	@rm -f *.bbl
-	@rm -f *.blg
-	@rm -f *.bib
-	@rm -f $(PAPER).pdf
-
+	rm -fr thesis.dvi thesis.ps thesis.pdf thesis.aux thesis.log \
+	thesis.lof thesis.lot thesis.toc thesis.blg thesis.bbl */*.aux *~ 

@@ -74,39 +74,10 @@
 %% to override the default or draft settings.
 
 %% ***   Add any desired options.   ***
-\documentclass[letterpaper]{ut-thesis} % For Single Sided
-%\documentclass[letterpaper,twoside,10pt]{ut-thesis} % For Double Sided
+\documentclass{ut-thesis}
+
 %% ***   Add \usepackage declarations here.   ***
-% Setting up graphics
-\usepackage{ifpdf}
 
-\ifpdf
-\usepackage[pdftex]{graphicx}
-\usepackage[protrusion=true,expansion=true]{microtype}
-\else
-\usepackage{graphicx}
-\fi
-
-% Symbol Stuff
-\usepackage{latexsym}%
-\usepackage{amssymb}%
-
-% Bibliography Stuff 
-\usepackage{natbib}
-\setcitestyle{aysep={},yysep={;}}
-
-% AAS Tex Stuff
-\usepackage{aastex_hack}
-\usepackage{deluxetable}
-\usepackage[labelsep=colon,small]{caption}
-
-% Fonts
-% Using Better Fonts
-\usepackage[sc]{mathpazo}
-\usepackage[T1]{fontenc}
-
-% Paragraph Spacing Issue:
-\setlength{\parskip}{0cm plus1mm minus1mm}
 
 %% The line spacing of the document should be specified using one of
 %% the document options given above, but if you need a line spacing
@@ -137,8 +108,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% ***   Change this example to appropriate values.   ***
-\degree{Doctor of Philosophy} \department{Physics}
-\gradyear{2018} \author{Trevor Vincent} \title{Topics in Numerical Relativity}
+\degree{Doctor of Philosophy}
+\department{Computer Science}
+\gradyear{1999}
+\author{Fran\c{c}ois Pitt}
+\title{UT-Thesis Class File Example}
 
 %% ***   NOTE   ***
 %% Put here all other formatting commands that belong in the preamble.
@@ -155,14 +129,12 @@
 
 \begin{document}
 
-
 %% ***   NOTE   ***
 %% You should put all of your `\newcommand', `\newenvironment', and
 %% `\newtheorem's (in other words, all the global definitions that
 %% you will need throughout your thesis) in a separate file and use
 %% "\input{filename}" to input it here.
 
-\input{thesiscommands}
 
 %% This sets the page style and numbering for preliminary sections.
 \begin{preliminary}
@@ -175,83 +147,40 @@
 %% This generates the abstract page, with the line spacing adjusted
 %% according to SGS guidelines.
 \begin{abstract}
-  
-
-  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under a year later LIGO
-  detected gravitational waves from merging neutron stars in coincidence with detection of a gamma ray burst and kilonova.
-  Many more detections are expected in the future. There are two glaring problems that are facing the gravitational wave
-  community now that binary neutron stars have been detected. 1) To date, there is no code that can simulate binary neutron stars with all of the microphysics we are aware of.
-  2) There is no established numerical relativity template bank for binary neutron stars using the best codes available. This thesis
-  aims at paving the way for both 1) and 2).
-
-  In the first chapter of this thesis, we describe a new code we developed to tackle difficult initial data problems in
-  numerical relativity. The aim of this code will be to solve for binary neutron star initial data with all of the microphysics
-  we can throw at it.
-
-  In the second chapter of this thesis, we describe a set of 12 simulations of binary neutron star mergers in full General Relativity,
-  that were evolved with a state of the art neutrino transport scheme. We study the ejecta and neutrinos of these mergers across
-  different realistic equations of state and different mass ratios. 
-  
+%% ***   Put your Abstract here.   ***
+%% (At most 150 words for M.Sc. or 350 words for Ph.D.)
 \end{abstract}
-\cleardoublepage
+
 %% Anything placed between the abstract and table of contents will
 %% appear on a separate page since the abstract ends with \newpage
 %% and the table of contents starts with \clearpage.
 
 %% This generates a "dedication" section, if needed.
 %% (uncomment to have it appear in the document)
-%%\begin{dedication}
-%%My Dedication
-%%\end{dedication}
+%\begin{dedication}
+%% ***   Put your Dedication here.   ***
+%\end{dedication}
 
-% A better opening Quote Environment
-
-\vspace*{\fill}
-\begin{center}
-\begin{minipage}[c]{4.75in}
-  ``Whatever you'd like to say here. It generally looks best so long
-  as the text is long enough'' \vspace{2em}
-
-\hfill \emph{Trevor Vincent}
-
-\end{minipage}
-\end{center}
-\vspace*{\fill}
-
-\cleardoublepage
-%\newpage
 %% The `dedication' and `acknowledgements' sections do not create new
 %% pages so if you want the two sections to appear on separate pages,
 %% you should put an explicit \newpage between them.
 
 %% This generates an "acknowledgements" section, if needed.
 %% (uncomment to have it appear in the document)
-\begin{acknowledgements}
-
-
-First off, a big thank you to my supervisor Professor Harald Pfeiffer. Harald gave me the opportunity to research within one of the hottest fields currently in astrophysics -- gravitational waves and numerical relativity, provided me with multiple opportunities to present my research abroad and helped me get through some tough problems that arose in my research. I never would have dreamed that there would be a chair with my name on it at the press conference for the first detection of gravitational waves, or that I would later become a member of the Nobel prize-winning LIGO collaboration. 
-
-Secondly, thank you to Professor Francois Foucart who taught me how to run and analyze binary neutron stars simulations with the neutrino transport scheme in SpEC, his patience was tested and is surely infinite. Chapter 2 of this thesis would not be possible without his support and constant help with debugging the (seemingly) hundreds of problems that cropped up while running these simulations.
-
-Thirdly, thank you to my committee members Charles Dyer and Amar Vutha who provided me excellent advice both during the committee meeting and outside of our formal meetings.
-
-Lastly, thank you to my family and the many friends (Gunjan Lakhlani, Nazim Boudjada, etc) I made at CITA and in the physics department, without their friendship I think I would have checked into CAMH.
-
-(To ADD: Cornell visits and people) 
-(To ADD: AEI visits and people)
-
-\end{acknowledgements}
+%\begin{acknowledgements}
+%% ***   Put your Acknowledgements here.   ***
+%\end{acknowledgements}
 
 %% This generates the Table of Contents (on a separate page).
 \tableofcontents
 
 %% This generates the List of Tables (on a separate page), if needed.
 %% (uncomment to have it appear in the document)
-\listoftables
+%\listoftables
 
 %% This generates the List of Figures (on a separate page), if needed.
 %% (uncomment to have it appear in the document)
-\listoffigures
+%\listoffigures
 
 %% End of the preliminary sections: reset page style and numbering.
 \end{preliminary}
@@ -266,19 +195,12 @@ Lastly, thank you to my family and the many friends (Gunjan Lakhlani, Nazim Boud
 
 %% ***   Include chapter files here.   ***
 
-\include{intro/intro}
-\include{chap2/chap2}
-\include{chap3/chap3}
-\include{chap4/chap4}
-\include{chap5/chap5}
-\include{conc/conc}
 
 %% This adds a line for the Bibliography in the Table of Contents.
 \addcontentsline{toc}{chapter}{Bibliography}
-
 %% ***   Set the bibliography style.   ***
 %% (change according to your preference)
-\bibliographystyle{apj}
+\bibliographystyle{plain}
 %% ***   Set the bibliography file.   ***
 %% ("thesis.bib" by default; change if needed)
 \bibliography{thesis}
