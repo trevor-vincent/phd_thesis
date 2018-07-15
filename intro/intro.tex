@@ -31,3 +31,98 @@ in a ground-breaking 25 SNR event. Since this day, there have been four differen
 coincided with the detection of a gamma ray burst, GRB 170817A [6, 7], verifying that the source binary contained matter, which was further corroborated by a series of observations that followed across the electromagnetic spectrum, e.g. [8–12]. The measured masses of the bodies and the variety of electromagnetic observations are consistent with neutron stars (NSs). With these detections, the gravitational era of astronomy has been born. Much more is expected in the future, with KAGRA and LIGO-India, there will be a worldwide ground detector network and soon there will third generation detectors like. We will be able to see the full frequency spectrum of gravitational waves.
 
 Even though numerical relativity has matured greatly since the major developments of the early 2000's, there is still a lot more that needs to be done. The biggest problems today in numerical relativity are the simulation of binary neutron star mergers and the simulation of supernovae, both requiring a great amount of microphysics, multi-scale grids, large sets of complex non-linear PDES, large supercomputers and modern numerical techniques. With the coming of the exascale age of supercomputing there is an increasingly realistic chance of simulating these systems with all the known microphysics. This thesis aims to tackle two distinct problems related to the first of these systems: binary neutron star mergers. 1) Further probe the parameter space of binary neutron star simulations with one the most state of the art numerical relativity codes to help understand the properties of these LIGO sources 2) Improve the computational techniques used to simulate binary neutron star mergers so that more realistic microphysics may be introduced into the simulations as computing power reaches exascale and beyond. Chapter 1 of this thesis will address the latter problem, Chapter 2 will address the former. Finally, the remaining portion of this introductory chapter will briefly describe the physics and computational techniques needed to understand the remaining two chapters.
+
+\subsection{Binary Neutron Star Simulations}
+
+Neutron stars (NSs) are among the most compact objects in
+the universe with central densities multiple times higher than
+nuclear density. Similar conditions are unreachable on earth
+which makes NSs an exceptional laboratory to test nuclear
+physics predictions. In particular the merger of two NSs
+allows the study of the high density region of the equation
+of state (EOS) governing NS matter. In addition, NS mergers
+also allow us to reveal the central engine for luminous short
+Gamma ray bursts (sGRBs), to understand the origin of
+heavy elements in the universe, which after their creation
+produce the optical and near-infrared EM counterparts, called
+kilonovae, and to test astrophysical predictions about binary
+populations.
+
+
+The first detection of gravitational waves (GW) combined
+with an observation of a sGRB and a kilonova marks a break-
+through in the field of multi-messenger astronomy [1], [2]. It is
+expected that with the increasing sensitivity of advanced GW
+interferometers multiple GW detections of merging BNSs will
+be made in the next years [3]. In order to extract information
+from the data, the measured signal is cross-correlated with a
+GW template family to obtain a “best match”. This requires
+accurate GW templates to relate the source properties to the
+observed GW signal and consequently a detailed analysis of
+the compact binary coalescence close to the moment of merger.
+While an analytical approach to the two-body dynamics
+in general relativity is possible for the stage in which the
+bodies are well-separated, a numerical solution of the field
+equations, dealing with all their nonlinearities, is needed for
+a faithful description of the last few orbits.
+
+% However, general
+% relativistic simulations are computationally challenging and
+% expensive. The main reasons are: (i) the nonlinearity of
+% the equations, (ii) the intrinsic multi-scale character of the
+% problem (covering the neutron star interior and the radiation
+% zone), (iii) no symmetries can be exploited for generic binary
+% simulations (3D in space plus time), (iv) the appearance
+% of shocks and discontinuities in the matter fields. Over the
+% last years, significant progress has been made simulating
+% BNSs, with detailed descriptions of physical processes as
+% finite temperature EOSs, magnetic fields, neutrino transport,
+% e.g. [4], [5], [6], [7], [8], with new numerical techniques
+% such as discontinuous Galerkin methods [9], [10], [11] and
+% high-order convergent schemes [12], [13], and with the
+% possibility to study a larger region of the BNS parameter
+% space with spinning [14], eccentric [15], and high-mass
+% ratio [16] configurations.
+
+
+The simulation of BNS mergers with general relativistic hydrodynamics codes has now been possible for more than 18 years \cite{shibata2000simulation}. However, despite continuous developments, current codes have not yet reached the accuracy required to model the gravitational wave signal at the level required to extract as much information as possible from future detections (See \cite{barkett2015gravitational}). Furthermore, most codes do not take into account all of the microphysics relevant to the evolution of the post-merger remnant, including a hot nuclear-theory based equation of state, a neutrino transport scheme accounting for both neutrino-matter and neutrino-neutrino interactions, and the evolution of the magnetic fields with enough resolution to resolve the growth of magneto-hydrodynamics instabilities \cite{foucart2015low}. That being said, slowly but surely, different levels of micro-physics are being added to the codes. The first papers that studied fully general relativistic BNS simulations including the effects of neutrinos
+were \cite{neilsen2014magnetized, palenzuela2015effects} with a simple leakage scheme and \cite{sekiguchi2015dynamical} with a more complex M1 neutrino transport scheme. Both the leakage scheme and M1 transport scheme are approximate methods to deal with neutrinos which come about because solving the 7-dimensional Boltzmann transport equation for the neutrino distribution during a BNS simulation is currently numerically intractable. For a review of leakage and the M1 transport scheme used in SpEC, see \cite{foucart2015post}. These BNS simulations with neutrino cooling have focused solely on equal mass systems with $M_{ns} = 1.35M_{\odot}$. Collectively these papers find that the ejected mass is only substantial  enough to explain the total mass of r-process heavy elements in our galaxy for r-process nucleo-synthesis in the case of a softer equation of state (if $P ~ \rho^{\gamma}$, then a soft EOS implies $\gamma$ is small). The first paper on BNS mergers with neutrino interactions using the SpEC code looked at $1.2M_{\odot}$ equal mass systems and compared a simple leakage cooling neutrino scheme with the more complicated gray M1 neutrino transport scheme, finding that the more realistic transport scheme had a significant affect on the disk composition and the outflows, producing more neutron rich material that could possibly seed r-process element creation. \cite{radice2016dynamical} examined the effects of eccentricity and neutrino transport on the matter outflows and remnant disk of a LS220 equal mass binary, finding that both had significant effects, with the absence of a neutrino scheme leading to matter outflows a factor of 2 off. Finally, only very recently have there been studies examining the effects on matter outflows due to mass asymmetry in the initial binaries, with both \cite{lehner2016unequal} and \cite{sekiguchi2016dynamical} finding that mass asymmetry produces larger neutron-rich outflows for both soft and stiff equations of state.
+
+\subsection{Solving the Einstein Field Equations on a Supercomputer}
+
+In their usual form, space and time are treated on an equal footing in the Einstein equations. From the perspective of performing a numerical evolution however, we need to reformulate the problem as initial value problem where we have a set of initial gravitational and matter data at some time t, and a set of evolution equations which we can use to get the updated data at some other time. To do this, we make the ansatz that space-time can be treated as a time sequence of spatial hypersurfaces. With this ansatz, the space-time metric $g_{\mu\nu}$ can be decomposed into
+
+\begin{equation}
+\label{eq:4}
+ds^{2} = g_{\mu\nu}dx^{\mu}dx^{\nu} = -\alpha^2dt^2 + \gamma_{ij}(dx^i+\beta^idt)(dx^j+\beta^jdt),
+\end{equation}
+
+where the spatial metric $\gamma_{ij}$ is a function of the spatial coordinates $x^{i}$ and $t$ and $\alpha$ is the lapse function that measures proper time between neighboring hypersurfaces along their timelike unit normals $n^{\mu}$ and $\beta^i$ is the shift vector that determines how coordinate labels move between each hypersurface. This is known as the 3+1 decomposition of the metric \cite{arnowitt2008republication}.
+
+Now we need to decompose the Einstein field equations into a set of evolution and constraint equations involving the quantities $\beta^i$, $\alpha$ and $\gamma_{ij}$. To do this, we introduce the projection operator $\perp^{\alpha}_{\beta} = \delta^{\alpha}_{\beta} + n^{\alpha} n_{\beta}$, which can be easily proven to project the space-time components orthogonal to $n^{\mu}$ out of any space-time vector.
+
+The three possible projections of the EFEs: $n^{\mu} n^{\nu} G_{\mu\nu} = 8\pi n^{\mu} n^{\nu} T_{\mu\nu}$, $n^{\mu}\perp^{\nu}_{\delta}G_{\mu\nu} = 8\pi n^{\mu} \perp^{\nu}_{\delta} T_{\mu\nu}$, $\perp^{\mu}_{\rho} \perp^{\nu}_{\delta} G_{\mu\nu} = 8\pi \perp^{\mu}_{\rho} \perp^{\nu}_{\delta} T_{\mu\nu}$ lead to the three York/ADM 3+1 equations respectively:
+
+\begin{align}
+0 &= R + K^{2} - K^{mn}K_{mn} -16\pi\rho, \\
+0 &= D_iK - D_mK^m_i + 8\pi j_i, \\
+\partial_t K_{ij} &= \beta^m\partial_mK_{ij} + K_{mj}\partial_i\beta^m + K_{im}\partial_j\beta^m - D_iD_j\alpha, \\ 
+&+ \alpha(R_{ij}+KK_{ij}-2K_{im}K^m_{j})+4\pi\alpha[(S-\rho)\gamma_{ij}-2S_{ij}],
+\end{align} 
+
+where $K_{ij} = (\beta^m\partial_m\gamma_{ij} + \gamma_{mj}\partial_{i}\beta^{m} + \gamma_{im}\partial_j\beta^{m}-\partial_{t}\gamma_{ij})$, is called the extrinsic curvature and it measures
+the rate at which the hypersurface deforms as it is carried forward along a normal \cite{baumgarte2010numerical}. We also relabelled the projections of stress tensor by $\rho = T_{\mu\nu} n^{\mu} n^{\nu}$, $j_{\alpha}= -\perp^{\nu}_{\alpha} T_{\mu\nu} n^{\nu}$, $S_{\alpha\beta} = \perp^{\mu}_{\alpha} \perp^{\nu}_{\beta} T_{\mu\nu}$ and $S=\gamma^{\mu\nu} S_{\mu\nu}$, while $R_{ij}$ and $R$ denote the Ricci tensor and scalar associated with $\gamma_{ij}$.
+
+The 3+1 equations are a set of 10 equations, or 3 tensor equations. The 1st equation is known as the Hamiltonian constraint equation. The second tensor equation is called the momentum constraint equation and is composed of three equations. These four elliptic constraint equations play a similar role as the equations $\nabla \cdot \vec E = 4\pi\rho$ and $\nabla \cdot \vec B = 0$ which constrain the initial E and B fields in Maxwell's equations. The constraint equations must be solved prior to evolving the initial data and are usually called the initial data equations. The last set of six equations are the evolution equations. As they stand, the 3+1 equations still need to be manipulated a bit in order to solve them on a computer. For the set of six evolution equations, the most used schemes are BSSN, Z4 and Generalized Harmonic Decomposition which each manipulate the evolution equations into a slightly different well-posed hyperbolic system. For the initial data equations, the most used schemes are conformal tranverse traceless (CTT), conformal-thin sandwich (CTS) and the extended-conformal thin-sandwich (XCTS) frameworks \cite{alcubierre2012introduction},\cite{sopuerta2015gravitational}.
+
+Alongside the field-equations, the matter equations must be solved. These come from the local conservation equations $\nabla_{\mu}T^{\mu\nu} = 0$. For Neutron-star matter, a perfect-fluid tensor and an irrotational velocity distribution are usually assumed and are coupled with some choice of equation of state (EOS). For black-holes, we set $\rho = j_{\alpha} = S_{\alpha\beta} = 0$ because there is only vacuum space.
+
+Alongside the matter-equations, the equations of neutrino transport must be solved. 
+
+To extract the gravitational waveform, the Weyl scalar $\psi_{4}$, which represents the outgoing transverse radiation, is extracted at a large radius away from the simulated binary system (the ``wave-zone''). The energy, linear momentum, and angular momentum of the gravitational wave are computed by integrating the $\psi_{4}$ scalar in time \cite{kyutoku2015dynamical}.
+
+For a more in-depth review, see \cite{sperhake2014numerical}, \cite{faber2012binary} and \cite{shibata2011coalescence} for BBH, NSNS and NSBH systems respectively.
+
+\section{New numerical methods for solving the Einstein Constraint Equations}
+
+The most common methods used in Numerical Relativity to solve the field equations in any of frameworks (BSSN, z4, GenHarm) are finite difference and spectral methods. 
