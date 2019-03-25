@@ -2,6 +2,7 @@
  "intro"
  (lambda ()
    (LaTeX-add-labels
-    "chap:intro"))
+    "chap:intro"
+    "eq:4"))
  :latex)
 

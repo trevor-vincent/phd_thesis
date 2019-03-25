@@ -107,6 +107,7 @@
 
 % Paragraph Spacing Issue:
 \setlength{\parskip}{0cm plus1mm minus1mm}
+\usepackage{url}
 
 %% The line spacing of the document should be specified using one of
 %% the document options given above, but if you need a line spacing
@@ -138,7 +139,8 @@
 
 %% ***   Change this example to appropriate values.   ***
 \degree{Doctor of Philosophy} \department{Physics}
-\gradyear{2018} \author{Trevor Vincent} \title{Topics in Numerical Relativity}
+\gradyear{2018} \author{Trevor Vincent}
+\title{Selected Problems in Numerical Relativity}
 
 %% ***   NOTE   ***
 %% Put here all other formatting commands that belong in the preamble.
@@ -176,21 +178,11 @@
 %% according to SGS guidelines.
 \begin{abstract}
   
-
-  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under a year later LIGO
-  detected gravitational waves from merging neutron stars in coincidence with detection of a gamma ray burst and kilonova.
-  Many more detections are expected in the future. There are two glaring problems that are facing the gravitational wave
-  community now that binary neutron stars have been detected. 1) To date, there is no code that can simulate binary neutron stars with all of the microphysics we are aware of.
-  2) There is no established numerical relativity template bank for binary neutron stars using the best codes available. This thesis
-  aims at paving the way for both 1) and 2).
-
-  In the first chapter of this thesis, we describe a new code we developed to tackle difficult initial data problems in
-  numerical relativity. The aim of this code will be to solve for binary neutron star initial data with all of the microphysics
-  we can throw at it.
-
-  In the second chapter of this thesis, we describe a set of 12 simulations of binary neutron star mergers in full General Relativity,
-  that were evolved with a state of the art neutrino transport scheme. We study the ejecta and neutrinos of these mergers across
-  different realistic equations of state and different mass ratios. 
+  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under two years later LIGO
+  detected gravitational waves from merging neutron stars in coincidence with a detection of a gamma ray burst and kilonova.
+  Many more detections like these are expected in the future. There are two problems that are facing the numerical relativity
+  community now that binary neutron stars have been detected. To date, there is no code that can simulate binary neutron stars with all of the microphysics we are aware of, the complexity and computing power required is just too high.
+  Secondly, there are very few large sets of simulations for merging binary neutron stars with even some of the microphysics included in full generality. Having such sets would allow us to closely examine the relationship between optical, neutrino and gravitational emissions and the parameters of the binaries. This thesis aims at making progress towards both 1) and 2). In the first chapter of this thesis, we introduce the main concepts to understand the rest of the text. In Chapter 2, we describe a new code we developed to tackle difficult initial data problems in numerical relativity. The future aim of this code will be to solve for binary neutron star initial data with all of the microphysics we can throw at it. In the second chapter of this thesis, we describe a large set of binary neutron star simulations in full general relativity, evolved with a state of the art neutrino transport scheme using the SpEC code. We study the ejecta and neutrinos of these mergers across different realistic equations of state and different mass ratios. Finally, in the last chapter we conclude our work and describe ongoing efforts to extend the work in this thesis.
   
 \end{abstract}
 \cleardoublepage
@@ -228,17 +220,19 @@
 %% (uncomment to have it appear in the document)
 \begin{acknowledgements}
 
+First off, a big thank you to my supervisor Professor Harald Pfeiffer. Harald gave me the opportunity to research within one of the hottest fields currently in astrophysics, provided me with multiple opportunities to present my research abroad and helped me get through some tough problems that arose in my research. I never would have dreamed that I would be attending the press conference for the first detection of gravitional waves at the Albert Einstein Institute in Hanford, Germany, or that I would later become a member of the Nobel prize-winning LIGO collaboration. 
 
-First off, a big thank you to my supervisor Professor Harald Pfeiffer. Harald gave me the opportunity to research within one of the hottest fields currently in astrophysics -- gravitational waves and numerical relativity, provided me with multiple opportunities to present my research abroad and helped me get through some tough problems that arose in my research. I never would have dreamed that there would be a chair with my name on it at the press conference for the first detection of gravitational waves, or that I would later become a member of the Nobel prize-winning LIGO collaboration. 
+Secondly, thank you to Professor Francois Foucart who taught me how to run and analyze binary neutron stars simulations with the neutrino transport scheme in the Spectral Einstein Code. Chapter 2 of this thesis would not be possible without his support and constant help with debugging the (seemingly) hundreds of problems that cropped up while running these simulations.
 
-Secondly, thank you to Professor Francois Foucart who taught me how to run and analyze binary neutron stars simulations with the neutrino transport scheme in SpEC, his patience was tested and is surely infinite. Chapter 2 of this thesis would not be possible without his support and constant help with debugging the (seemingly) hundreds of problems that cropped up while running these simulations.
+Thirdly, thank you to my committee members Professor Charles Dyer and Professor Amar Vutha who provided me excellent advice both during the committee meeting and outside of our formal meetings.
 
-Thirdly, thank you to my committee members Charles Dyer and Amar Vutha who provided me excellent advice both during the committee meeting and outside of our formal meetings.
+Fourthly, thank you to Krystyna for helping me with all the formal bureaucratic duties required throughout the phd, her understanding and thoughtfulness was greatly appreciated. Likewise, a thank you to Candace for helping with administer CITA.
 
-Lastly, thank you to my family and the many friends (Gunjan Lakhlani, Nazim Boudjada, etc) I made at CITA and in the physics department, without their friendship I think I would have checked into CAMH.
+Lastly, a big thank you to my family, the constant support of my dad, mother, sister and grandad, and the great friends I made in and outside the physics department at the U of T during my PhD (in no particular orer): Gunjan Lakhlani, Nazim Boudjada, Amir Abdul-Reda, Daniel Dick, Heather Fong, Adam Lewis, Alex Kostenko, Helen Baxter, Daniel Baker, Feng Xi, Phil Berger, George Stein, Dana, Claire Yu, Julien Dyer and Peter Pangarov and out of town friends Jonah Miller, Nils Deppe, Paul Sarte, Nils Fischer, Sergei Ossokine, Roland Haas, Tim Dietrich.
 
-(To ADD: Cornell visits and people) 
-(To ADD: AEI visits and people)
+%% (To ADD: Cornell visits and people) 
+%% (To ADD: AEI visits and people)
+%% (To ADD: Krystyna, Candace, Claire)
 
 \end{acknowledgements}
 
