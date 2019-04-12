@@ -178,11 +178,7 @@
 %% according to SGS guidelines.
 \begin{abstract}
   
-  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under two years later LIGO
-  detected gravitational waves from merging neutron stars in coincidence with a detection of a gamma ray burst and kilonova.
-  Many more detections like these are expected in the future. There are two problems that are facing the numerical relativity
-  community now that binary neutron stars have been detected. To date, there is no code that can simulate binary neutron stars with all of the microphysics we are aware of, the complexity and computing power required is just too high.
-  Secondly, there are very few large sets of simulations for merging binary neutron stars with even some of the microphysics included in full generality. Having such sets would allow us to closely examine the relationship between optical, neutrino and gravitational emissions and the parameters of the binaries. This thesis aims at making progress towards both 1) and 2). In the first chapter of this thesis, we introduce the main concepts to understand the rest of the text. In Chapter 2, we describe a new code we developed to tackle difficult initial data problems in numerical relativity. The future aim of this code will be to solve for binary neutron star initial data with all of the microphysics we can throw at it. In the second chapter of this thesis, we describe a large set of binary neutron star simulations in full general relativity, evolved with a state of the art neutrino transport scheme using the SpEC code. We study the ejecta and neutrinos of these mergers across different realistic equations of state and different mass ratios. Finally, in the last chapter we conclude our work and describe ongoing efforts to extend the work in this thesis.
+  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under two years later, LIGO detected gravitational waves from merging neutron stars in coincidence with detections of a gamma ray burst and kilonova. Many more detections are expected in the future. There are several problems that are facing the numerical relativity community now that binary neutron stars have been detected by LIGO. To date, there is no code that can simulate binary neutron stars with all of the microphysics known, the complexity and computing power required is just too high. Secondly, there are very few large sets of simulations of merging binary neutron stars with even some of the microphysics included. Having such sets would allow us to analyze the relationship between optical, neutrino and gravitational emissions and the parameters of the binaries. This thesis aims at making progress towards solutions of both these problems. In Chapter 1 of this thesis, we introduce the main concepts to understand the rest of the text. In Chapter 2, we describe a new code we developed to tackle difficult initial data problems in numerical relativity and we show tests of this solver on a problem mimicking Neutron stars with phase transitions and also on multi-black-hole initial data. The future aim of this code will be to solve for binary neutron star initial data with all of the microphysics we can throw at it. In the second chapter of this thesis, we describe a large set of binary neutron star simulations we ran using the SpEC code and a state of the art neutrino transport scheme. We study the matter and neutrino emission of these merger simulations across different realistic equations of state and different mass ratios. Finally, in the last chapter we conclude our work and describe ongoing efforts to extend the work done in this thesis.
   
 \end{abstract}
 \cleardoublepage
@@ -198,20 +194,20 @@
 
 % A better opening Quote Environment
 
-\vspace*{\fill}
-\begin{center}
-\begin{minipage}[c]{4.75in}
-  ``Whatever you'd like to say here. It generally looks best so long
-  as the text is long enough'' \vspace{2em}
+%% \vspace*{\fill}
+%% \begin{center}
+%% \begin{minipage}[c]{4.75in}
+  %% ``Whatever you'd like to say here. It generally looks best so long
+  %% as the text is long enough'' \vspace{2em}
 
-\hfill \emph{Trevor Vincent}
+%% \hfill \emph{Trevor Vincent}
 
-\end{minipage}
-\end{center}
-\vspace*{\fill}
+%% \end{minipage}
+%% \end{center}
+%% \vspace*{\fill}
 
 \cleardoublepage
-%\newpage
+%\newpaeg
 %% The `dedication' and `acknowledgements' sections do not create new
 %% pages so if you want the two sections to appear on separate pages,
 %% you should put an explicit \newpage between them.
@@ -220,15 +216,16 @@
 %% (uncomment to have it appear in the document)
 \begin{acknowledgements}
 
-First off, a big thank you to my supervisor Professor Harald Pfeiffer. Harald gave me the opportunity to research within one of the hottest fields currently in astrophysics, provided me with multiple opportunities to present my research abroad and helped me get through some tough problems that arose in my research. I never would have dreamed that I would be attending the press conference for the first detection of gravitional waves at the Albert Einstein Institute in Hanford, Germany, or that I would later become a member of the Nobel prize-winning LIGO collaboration. 
+%% Coming soon
+When I first began my PhD journey, I never would have dreamed that I would be attending the press conference for the first detection of gravitional waves at the Albert Einstein Institute in Hanford, Germany, or that I would later become a member of the Nobel prize-winning LIGO collaboration. For this and many other things, I have to give a big thank you to my supervisor Professor Harald Pfeiffer. Harald not only gave me the opportunity to research within one of the most exciting fields currently in astrophysics, but provided me with multiple opportunities to present my research abroad. He also gave me the opportunity to attend several summer schools and work overseas at the Albert Einstein Institute in Golm, Potsdam. On top of all of this, Harald has helped me get through multiple tough problems that arose in my research and provided the initial ideas for the projects in this thesis.
+ 
+Secondly, thank you to Professor Francois Foucart who taught me how to run and analyze binary neutron stars simulations with the neutrino transport scheme in the Spectral Einstein Code. Chapter 2 of this thesis would not be possible without his knowledge, support and constant help with debugging the (seemingly) hundreds of problems that cropped up while running these simulations.
 
-Secondly, thank you to Professor Francois Foucart who taught me how to run and analyze binary neutron stars simulations with the neutrino transport scheme in the Spectral Einstein Code. Chapter 2 of this thesis would not be possible without his support and constant help with debugging the (seemingly) hundreds of problems that cropped up while running these simulations.
+Thirdly, thank you to my committee members Professor Charles Dyer and Professor Amar Vutha who provided me excellent advice both during the committee meeting and outside of our formal meetings. I still miss the celebrations at Prof. Dyer's General Relativity parties.
 
-Thirdly, thank you to my committee members Professor Charles Dyer and Professor Amar Vutha who provided me excellent advice both during the committee meeting and outside of our formal meetings.
+Fourthly, thank you to Krystyna Biel for helping me with all the formal bureaucratic duties required throughout the PhD, her understanding and thoughtfulness was greatly appreciated. 
 
-Fourthly, thank you to Krystyna for helping me with all the formal bureaucratic duties required throughout the phd, her understanding and thoughtfulness was greatly appreciated. Likewise, a thank you to Candace for helping with administer CITA.
-
-Lastly, a big thank you to my family, the constant support of my dad, mother, sister and grandad, and the great friends I made in and outside the physics department at the U of T during my PhD (in no particular orer): Gunjan Lakhlani, Nazim Boudjada, Amir Abdul-Reda, Daniel Dick, Heather Fong, Adam Lewis, Alex Kostenko, Helen Baxter, Daniel Baker, Feng Xi, Phil Berger, George Stein, Dana, Claire Yu, Julien Dyer and Peter Pangarov and out of town friends Jonah Miller, Nils Deppe, Paul Sarte, Nils Fischer, Sergei Ossokine, Roland Haas, Tim Dietrich.
+Lastly, a big thank you to my family, the constant support of my dad, mother, sister and grandad, and the great friends I made in and outside the physics department at the U of T during my PhD: Gunjan Lakhlani, Nazim Boudjada, Amir Abdul-Reda, Daniel Dick, Heather Fong, Adam Lewis, Alex Kostenko, Helen Baxter, Daniel Baker, Fang Xi Lin, Phil Berger, George Stein, Dana Simard, Claire Yu, Mubdi Rahman, Julien Dyer, Alex Bercik, Hannah Fronenberg, Luca Talamo and Peter Pangarov and out of town friends Jonah Miller, Nils Deppe, Paul Sarte, Nils Fischer, Sergei Ossokine, Roland Haas, Tim Dietrich.
 
 %% (To ADD: Cornell visits and people) 
 %% (To ADD: AEI visits and people)
@@ -263,8 +260,6 @@ Lastly, a big thank you to my family, the constant support of my dad, mother, si
 \include{intro/intro}
 \include{chap2/chap2}
 \include{chap3/chap3}
-\include{chap4/chap4}
-\include{chap5/chap5}
 \include{conc/conc}
 
 %% This adds a line for the Bibliography in the Table of Contents.
