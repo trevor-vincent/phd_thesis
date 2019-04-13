@@ -22,7 +22,7 @@ With these detections, and the awarding of the Nobel prize to three LIGO members
 
 Even though numerical relativity has matured greatly since the major developments of the early 2000's, there is still a lot more that needs to be done. The biggest problems today in numerical relativity are the simulation of compact object binaries with matter and the simulation of supernovae, both requiring a great amount of microphysics, multi-scale grids, large sets of complex non-linear PDES, fast supercomputers and modern numerical techniques. With the coming of the exascale age of supercomputing there is an increasingly realistic chance of simulating these systems with all the known microphysics. This thesis aims to make progress in two distinct areas of numerical relativity. First, we seek to improve the computational techniques used solve the Einstein field equations so that more realistic microphysics may be introduced into the simulations as computing power reaches exascale and beyond. Secondly, we seek to further probe the parameter space of binary neutron star simulations with one the most state of the art numerical relativity codes to help understand the emission properties of these LIGO sources for the next generation of detections. Chapter 2 of this thesis will address the former problem, Chapter 3 will address the latter. Finally, the remaining portion of this introductory chapter will briefly describe the physics and computational techniques needed to understand the main text. 
 
-\subsection{Solving the Einstein Field Equations on a Supercomputer}
+\section{Solving the Einstein Field Equations on a Supercomputer}
 
 In their usual form, space and time are treated on an equal footing in the Einstein equations. From the perspective of performing a numerical evolution however, we need to reformulate the problem as initial value problem where we have a set of initial gravitational and matter data at some time $t$, and a set of evolution equations which we can use to get the updated data at some other time. To do this, we make the ansatz that space-time can be treated as a time sequence of spatial hypersurfaces. With this ansatz, the space-time metric $g_{\mu\nu}$ can be decomposed into
 
@@ -99,7 +99,7 @@ Recently a new method has been gathering ground. Discontinuous Galerkin (DG) met
 
 In Chapter 2, we will be investigating the use of the Discontinuous Galerkin method on relevant problems in numerical relativity.
 
-\subsection{Binary Neutron Star Simulations}
+\section{Binary Neutron Star Simulations}
 
 Neutron stars are amongst the most compact and extreme objects known in
 the universe and are believed to be born from the result of

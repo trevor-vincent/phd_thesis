@@ -99,7 +99,7 @@
 \usepackage{aastex_hack}
 \usepackage{deluxetable}
 \usepackage[labelsep=colon,small]{caption}
-
+%
 % Fonts
 % Using Better Fonts
 \usepackage[sc]{mathpazo}
@@ -108,6 +108,7 @@
 % Paragraph Spacing Issue:
 \setlength{\parskip}{0cm plus1mm minus1mm}
 \usepackage{url}
+\include{chap2/chap2_includes}
 
 %% The line spacing of the document should be specified using one of
 %% the document options given above, but if you need a line spacing
@@ -154,9 +155,7 @@
 
 
 %%%%%%%%%%%%      MAIN  DOCUMENT      %%%%%%%%%%%%
-
 \begin{document}
-
 
 %% ***   NOTE   ***
 %% You should put all of your `\newcommand', `\newenvironment', and
@@ -173,12 +172,12 @@
 \maketitle
 
 %% There should be NOTHING between the title page and abstract.
-
+%
 %% This generates the abstract page, with the line spacing adjusted
 %% according to SGS guidelines.
 \begin{abstract}
   
-  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under two years later, LIGO detected gravitational waves from merging neutron stars in coincidence with detections of a gamma ray burst and kilonova. Many more detections of this kind are expected in the future. There are several problems that are facing the numerical relativity community now that binary neutron stars have been detected by LIGO. To date, there is no code that can simulate binary neutron stars with all of the microphysics known, the complexity and computing power required is just too high. Secondly, there are very few large sets of simulations of merging binary neutron stars with even some of the microphysics included. Having such sets would allow us to analyze the relationship between optical, neutrino and gravitational emissions and the parameters of the binaries. This thesis aims at making progress towards solutions of both these problems. In Chapter 1 of this thesis, we introduce the main concepts to understand the rest of the text. In Chapter 2, we describe a new code we developed to tackle difficult initial data problems in numerical relativity and we show tests of this solver on a problem mimicking Neutron stars with phase transitions and also on multi-black-hole initial data. The future aim of this code will be to solve for binary neutron star initial data with all of the microphysics we can throw at it. In Chapter 3, we describe a large set of binary neutron star simulations we ran using the SpEC code and a state of the art neutrino transport scheme. We study the matter and neutrino emission of these merger simulations across different realistic equations of state and different mass ratios. Finally, in the last chapter we conclude our work and describe ongoing efforts to extend the work done in this thesis.
+  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under two years later, LIGO detected gravitational waves from merging neutron stars in coincidence with detections of a gamma ray burst and kilonova. Many more detections of this kind are expected in the future. There are several problems that are facing the numerical relativity community now that binary neutron stars have been detected by LIGO and we will highlight two important ones. To date, there is no code that can simulate binary neutron stars with all of the microphysics known, the complexity and computing power required is just too high. Secondly, there are very few large sets of simulations of merging binary neutron stars with even some of the microphysics included. Having such sets would allow us to analyze the relationship between optical, neutrino and gravitational emissions and the parameters of the binaries. This thesis aims at making progress towards solutions of both these problems. In Chapter 1 of this thesis, we introduce the main concepts to understand the rest of the text. In Chapter 2, we describe a new code we developed to tackle difficult initial data problems in numerical relativity and we show tests of this solver on a problem mimicking Neutron stars with phase transitions and also on multi-black-hole initial data. The future aim of this code will be to solve for binary neutron star initial data with all of the microphysics we can throw at it. In Chapter 3, we describe a large set of binary neutron star simulations we ran using the SpEC code and a state of the art neutrino transport scheme. We study the matter and neutrino emission of these merger simulations across different realistic equations of state and different mass ratios. Finally, in the last chapter we conclude our work and describe ongoing efforts to extend the work done in this thesis.
   
 \end{abstract}
 \cleardoublepage
@@ -270,6 +269,7 @@ Lastly, a big thank you to my family, the constant support of my dad, mother, si
 \bibliographystyle{apj}
 %% ***   Set the bibliography file.   ***
 %% ("thesis.bib" by default; change if needed)
+%% \nocite{*}
 \bibliography{thesis}
 
 %% ***   NOTE   ***
