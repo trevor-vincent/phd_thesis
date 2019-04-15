@@ -1,0 +1,26 @@
+%% \usepackage{ulem}
+\usepackage{array}
+\usepackage{booktabs}
+%% \usepackage{savesym}
+%% \savesymbol{tablenum}
+%% \savesymbol{s}
+%% \usepackage{gensymb}
+\usepackage{adjustbox}
+%% \usepackage[colorlinks, pdfborder={0 0 0}, plainpages=false]{hyperref}
+
+\newcolumntype{C}{>{$}c<{$}}
+\AtBeginDocument{
+\heavyrulewidth=.08em
+\lightrulewidth=.05em
+\cmidrulewidth=.03em
+\belowrulesep=.65ex
+\belowbottomsep=0pt
+\aboverulesep=.4ex
+\abovetopsep=0pt
+\cmidrulesep=\doublerulesep
+\cmidrulekern=.5em
+\defaultaddspace=.5em
+}
+
+\newcommand{\Francois}[1]{\textcolor{blue}{[FF #1]}}
+%

@@ -1,0 +1,42 @@
+\usepackage{soul}
+\usepackage{newtxtext,newtxmath}
+\usepackage{float}  % load float package first!
+%\usepackage{hyperref} % let hyperref patch the float package stuff
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+\usepackage{pifont}
+\usepackage[]{hyperref}
+%% \usepackage{braket}
+\usepackage{graphicx,adjustbox}
+\usepackage{stmaryrd}
+\usepackage{xspace}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage[normalem]{ulem} %for \sout
+
+\usepackage{mathtools}
+%\usepackage{nicematrix}
+% \usepackage[]{algorithm2e}
+% \usepackage{etoolbox}
+% \makeatletter
+% \let\ORI@arabic\@arabic
+% \expandafter\pretocmd\csname\string\algorithmic\endcsname
+%   {\let\@arabic\ORI@arabic}{}{}
+% \renewcommand{\theALG@storecount}{\ORI@arabic\c@ALG@storecount}
+% \makeatother
+% Macros for text changes
+\newcommand{\roughly}{\mathchar"5218\relax} % Different from \sim in spacing
+\newcommand{\red}{\textcolor{red}}
+\newcommand{\dan}[1]{\textcolor{WildStrawberry}{#1}}
+\newcommand{\Mark}[1]{\textcolor{Cerulean}{#1}}
+\newcommand{\larry}[1]{\textcolor{OliveGreen}{#1}}
+\newcommand{\saul}[1]{\textcolor{Orange}{#1}}
+\newcommand{\aaron}[1]{\textcolor{RoyalPurple}{#1}}
+\newcommand{\harald}[1]{\textcolor{RawSienna}{#1}}
+\newcommand{\trevor}[1]{\textcolor{Blue}{#1}}
+\newcommand{\nilsf}[1]{\textcolor{Magenta}{#1}}
+% Macros for text notes and comments
+\newcommand{\Note}[1]{\textcolor{red}{\textbf{[#1]}}}
+\input{chap2/custom_includes}

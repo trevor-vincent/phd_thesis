@@ -21,6 +21,10 @@ thesis.dvi : thesis.tex thesis.bib */*.tex
 thesis.ps : thesis.dvi
 	dvips thesis
 
+revert_papers :
+	cp chap2/chap2_header.tex chap2/chap2.tex
+	cp chap3/chap3_header.tex chap3/chap3.tex
+
 clean:
 	rm -fr thesis.dvi thesis.ps thesis.pdf thesis.aux thesis.log \
 	thesis.lof thesis.lot thesis.toc thesis.blg thesis.bbl */*.aux *~ 

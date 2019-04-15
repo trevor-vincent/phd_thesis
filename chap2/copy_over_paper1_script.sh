@@ -5,6 +5,12 @@ lines=$(echo "$end - $begin + 1" | bc -l)
 echo $begin $end $lines
 
 cat chap2_header.tex > test.tex
+printf "\n" >> test.tex
+firstmatch="begin{abstract}"
+secondmatch="end{abstract}"
+sed "/$firstmatch/,/$secondmatch/!d;//d" $paper >> test.tex
+
+
 cat $paper | head -n $end | tail -n $lines >> test.tex
 tr -d "\015" < test.tex > test2.tex
 head -n -1 test2.tex > chap2.tex
