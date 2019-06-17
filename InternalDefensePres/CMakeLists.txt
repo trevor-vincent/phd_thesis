@@ -1,0 +1,16 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+PROJECT(main NONE)
+
+INCLUDE(UseLATEX.cmake)
+
+file(GLOB_RECURSE section_files RELATIVE ${CMAKE_SOURCE_DIR} sections/ *.tex)
+
+set(LATEX_USE_SYNCTEX 1)
+
+ADD_LATEX_DOCUMENT(main.tex
+INPUTS ${section_files}
+BIBFILES refs.bib
+IMAGE_DIRS pictures
+DEFAULT_PDF
+)

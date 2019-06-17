@@ -1,0 +1,389 @@
+\documentclass[red]{beamer}
+
+\mode<presentation>
+\usetheme{Berkeley}
+
+% define your own colours:
+\definecolor{Red}{rgb}{1,0,0}
+\definecolor{Blue}{rgb}{0,0,1}
+\definecolor{Green}{rgb}{0,1,0}
+\definecolor{magenta}{rgb}{1,0,.6}
+\definecolor{lightblue}{rgb}{0,.5,1}
+\definecolor{lightpurple}{rgb}{.6,.4,1}
+\definecolor{gold}{rgb}{.6,.5,0}
+\definecolor{orange}{rgb}{1,0.4,0}
+\definecolor{hotpink}{rgb}{1,0,0.5}
+\definecolor{newcolor2}{rgb}{.5,.3,.5}
+\definecolor{newcolor}{rgb}{0,.3,1}
+\definecolor{newcolor3}{rgb}{1,0,.35}
+\definecolor{darkgreen1}{rgb}{0, .35, 0}
+\definecolor{darkgreen}{rgb}{0, .6, 0}
+\definecolor{darkred}{rgb}{.75,0,0}
+\xdefinecolor{olive}{cmyk}{0.64,0,0.95,0.4}
+\xdefinecolor{purpleish}{cmyk}{0.75,0.75,0,0}
+\useoutertheme[subsection=false]{smoothbars}
+\setbeamercolor{block title}{bg=black,fg=white}
+
+%% \renewcommand{\qedsymbol}{$\blacksquare$}
+
+\newenvironment<>{varblock}[2][.9\textwidth]{%
+  \setlength{\textwidth}{#1}
+  \begin{actionenv}#3%
+    \def\insertblocktitle{#2}%
+    \par%
+    \usebeamertemplate{block begin}}
+  {\par%
+    \usebeamertemplate{block end}%
+  \end{actionenv}}
+
+% \usefonttheme[onlymath]{serif}
+% \usepackage{fontspec} 
+% \defaultfontfeatures{Mapping=tex-text} 
+% \setsansfont[Ligatures={Common}]{Futura}
+% \setmonofont[Scale=0.8]{Monaco} 
+\usepackage{enumitem}
+% \newlist{wideenum}{enumerate}{4}
+% \setlist[wideenum]{label*=\arabic*.,wide}
+
+\usepackage{mathptmx}
+\usepackage[scaled=0.9]{helvet}
+\usepackage{courier}
+
+\usepackage{soul}
+\usepackage{subfigure}
+\usepackage{multicol}
+\usepackage{amssymb,amsmath}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage[all,knot]{xy}
+\xyoption{arc}
+\usepackage{url}
+\usepackage{multimedia}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{breqn}
+\usepackage{anyfontsize}
+\usepackage{textpos}
+\usepackage{bibentry}
+\usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\usepackage{bm}
+\usepackage[geometry]{ifsym}
+%% \usepackage[showframe=true]{geometry}
+% \usepackage{enumitem}
+% \usepackage{lipsum}
+% \setlist[itemize]{leftmargin=*}
+
+% \newcommand\crule[3][black]{\textcolor{#1}{\rule{#2}{#3}}}
+
+%% \newcommand{\newsymbol}{
+%% \begin{tikzpicture}
+%% \filldraw[fill=black,draw=red] circle (3pt);
+%% \end{tikzpicture}
+%% }
+
+% \usepackage{xcolor}
+% \newif\ifgooditem
+% \gooditemtrue
+% \newcommand\gooditem{\gooditemtrue\item}
+% \newcommand\baditem{\gooditemfalse\item}
+
+\newtcolorbox{mybox}[3][]
+{
+  colframe = black,
+  colback  = #2!10,
+  coltitle = #2!20!white,  
+  title    = #3,
+  #1,
+}
+\setitemize{label=\usebeamerfont*{itemize item}%
+  \usebeamercolor[fg]{itemize item}
+  \usebeamertemplate{itemize item}}
+
+% \setbeamertemplate{itemize items}[square]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Custom Includes
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \input{sections/custom_includes}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Title Page
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand*\leftright[2]{%
+  \leavevmode
+  \rlap{#1}%
+  \hspace{0.25\linewidth}%
+  #2}
+
+\title[\phantom{Binary Neutron} BNS Simulations]{\textbf{Binary Neutron Star Simulations: \\ New Tools and Insights} }
+\author{Trevor Vincent}
+% \institute{{\\ \small Committee}\\ \vspace{.05cm} \leftright{Dr.Harald Pfeiffer}{Dr. Charles Dyer} \\
+% \leftright{\hspace{.275cm} Dr. Ue-Li Pen}{Dr. Robin Marjoribanks} }
+\institute{{\\ \scriptsize Committee}\\ \vspace{.05cm}\begin{minipage}[t]{0.4\textwidth}\begin{center}\begin{itemize}[noitemsep]
+% \begin{multicols}{2}
+    \item[] \phantom{te}Prof. John Sipe
+    \item[] \phantom{te}Prof. Harald Pfeiffer
+    \item[] \phantom{te}Prof. Charles Dyer
+% \item[] 
+    \item[] \phantom{te}Prof. Amar Vutha
+    %% \item[] Dr. Robin Marjoribanks
+% \end{multicols}
+\end{itemize} \end{center}\end{minipage}}
+\date{ \\\scriptsize PhD Internal Defense \vspace{.10cm}\\ Physics Department \vspace{.10cm}\\ University of Toronto\\ \vspace{.10cm}\today}
+
+\begin{document}
+
+
+
+
+
+
+\frame{\titlepage}
+\section{Background}
+\subsection{GW170817}
+\frame{
+\frametitle{GW170817: Welcome to the Multi-messenger Era}
+\begin{columns}
+  \begin{column}{.48\textwidth}
+    \begin{mybox}{white}{\centering \scriptsize Event}
+      \scriptsize
+      %% \begin{itemize}[label=\FilledSmallSquare]
+          {\bf Object}: BNS \\
+     {\bf Total mass}: $2.74M_\odot$ \\
+     {\bf Distance}: 40 Mpc \\
+     {\bf GW Radiation}: $0.025M_\odot$ \\
+     {\bf GW Duration}: 100 s \\
+     {\bf Galaxy}: NGC-4993
+    %% \end{itemize}
+\end{mybox}
+\begin{mybox}{white}{\centering \scriptsize Science}
+  \scriptsize
+    \begin{itemize}[label=\FilledSmallSquare]
+    \item short gamma ray burst
+    \item kilonova (optical $\rightarrow$ radio)
+    \item neutrinos (none-found)
+    \item r-process nuclei 
+    \item speed of gravity
+    \item EOS constraints
+    \item $H_0$ constraints
+    \end{itemize}
+\end{mybox}    
+%% \vspace{1cm}
+%% Candidate Systems
+%% \begin{itemize}
+%% \scriptsize 
+%% \item[\blacksquare]\scriptsize Binary Neutron Star (NS-NS)
+%% \item[\blacksquare]\scriptsize Binary Black Holes (BH-BH)
+%% \item[\blacksquare]\scriptsize Neutron Star - Black Hole (NS-BH)
+%% \end{itemize}
+  \end{column}
+  \begin{column}{.48\textwidth}
+    %% \end{mybox}
+\begin{mybox}{white}{\centering \scriptsize arXiv:1710.05833}
+    \includegraphics[width=1.05\textwidth]{pictures/attempt1.png} \\
+   %% \text{\tiny \phantom{asdfasdfasdfasdf} [arXiv:1710.05833]}
+   %% \includegraphics[width=\textwidth]{pictures/abadie.pdf} \\
+    %% \centering{\text{ \tiny [Abadie et al; 1003.2480]}}
+\end{mybox}    
+\end{column}
+\end{columns}
+%% \begin{mybox}{white}{\centering \scriptsize Expected NSNS Detection Rate}
+  %% More than 10+ NSNS mergers detected per \bf{week}
+%% \end{mybox}
+}
+
+%% \frame{\titlepage}
+%% \section{Background}
+\subsection{Next Generation GW Astronomy}
+\frame{
+\frametitle{Next-Generation Gravitational Wave Astronomy}
+\begin{columns}
+  \begin{column}{.48\textwidth}
+    Detector network by $\approx 2026$
+    \begin{itemize}[label=\FilledSmallSquare]
+      %% \scriptsize
+      %% \item dingdong
+    \item LIGO A+ (Washington State)
+    \item LIGO A+ (Louisiana)
+    \item aVIRGO (Italy)
+    \item GEO-HF (Germany)
+    \item KAGRA (Japan)
+    \item LIGO-India
+    \end{itemize}
+%% \vspace{1cm}
+%% Candidate Systems
+%% \begin{itemize}
+%% \scriptsize 
+%% \item[\blacksquare]\scriptsize Binary Neutron Star (NS-NS)
+%% \item[\blacksquare]\scriptsize Binary Black Holes (BH-BH)
+%% \item[\blacksquare]\scriptsize Neutron Star - Black Hole (NS-BH)
+%% \end{itemize}
+  \end{column}
+  \begin{column}{.48\textwidth}
+\centering{\text{\tiny [Sathyaprakash 2014]}}
+   \includegraphics[width=.9\textwidth]{pictures/worldwide.pdf} \\
+   %% \includegraphics[width=\textwidth]{pictures/abadie.pdf} \\
+    %% \centering{\text{ \tiny [Abadie et al; 1003.2480]}}
+  \end{column}
+\end{columns}
+
+\begin{mybox}{white}{\centering \scriptsize Expected NSNS Detection Rate}
+  More than 10+ NSNS mergers detected per \bf{week}
+\end{mybox}
+}
+
+
+\subsection{Numerical Relativity}
+\frame{
+\frametitle{Numerical Relativity}
+\begin{columns}
+  \begin{column}{.48\textwidth}
+    Detector network by $\approx 2026$
+    \begin{itemize}[label=\FilledSmallSquare]
+      %% \scriptsize
+      %% \item dingdong
+    \item LIGO A+ (Washington State)
+    \item LIGO A+ (Louisiana)
+    \item aVIRGO (Italy)
+    \item GEO-HF (Germany)
+    \item KAGRA (Japan)
+    \item LIGO-India
+    \end{itemize}
+%% \vspace{1cm}
+%% Candidate Systems
+%% \begin{itemize}
+%% \scriptsize 
+%% \item[\blacksquare]\scriptsize Binary Neutron Star (NS-NS)
+%% \item[\blacksquare]\scriptsize Binary Black Holes (BH-BH)
+%% \item[\blacksquare]\scriptsize Neutron Star - Black Hole (NS-BH)
+%% \end{itemize}
+  \end{column}
+  \begin{column}{.48\textwidth}
+\centering{\text{\tiny [Sathyaprakash 2014]}}
+   \includegraphics[width=.9\textwidth]{pictures/worldwide.pdf} \\
+   %% \includegraphics[width=\textwidth]{pictures/abadie.pdf} \\
+    %% \centering{\text{ \tiny [Abadie et al; 1003.2480]}}
+  \end{column}
+\end{columns}
+
+\begin{mybox}{white}{\centering \scriptsize Expected NSNS Detection Rate}
+  More than 10+ NSNS mergers detected per \bf{week}
+\end{mybox}
+}
+
+%% \frame{\titlepage}
+\section{Chapter 1}
+\subsection{Solving Non-linear Elliptic Equations}
+\frame{
+  \frametitle{Solving Non-linear Elliptic Equations}
+}
+\subsection{Code Overview}
+\frame{
+  \frametitle{Code Overview}
+}
+\subsection{Multigrid-Schwarz Solver}
+\frame{
+  \frametitle{Discontinuous Galerkin: Model Problem}
+}
+\subsection{Test Problem 1: Single Non-smooth point}
+\frame{
+  \frametitle{Discontinuous Galerkin: Model Problem}  
+}
+\subsection{Test Problem 2: Constant Density Star}
+\frame{
+  \frametitle{Discontinuous Galerkin: Model Problem}  
+}
+\subsection{Test Problem 3: Cubed-sphere with Compactified grids}
+\frame{
+  \frametitle{Discontinuous Galerkin: Model Problem}  
+}
+\subsection{Two Punctures: Old Code vs New Code}
+\frame{
+  \frametitle{Discontinuous Galerkin: Model Problem}
+}
+\subsection{Random Punctures}
+\frame{
+  \frametitle{Random Punctures}
+}
+\subsection{Future work}
+\frame{
+  \frametitle{Future work}
+}
+
+\section{Chapter 2}
+\subsection{Unequal Mass Binary Neutron Star Simulations}
+\frame{
+  \frametitle{Unequal Mass Binary Neutron Star Simulations}
+}
+\subsection{GRRHD}
+\frame{
+  \frametitle{General Relativistic Radiation-Hydrodynamics}
+}
+\subsection{Tidal Tail Ejecta vs. Core-bounce Ejecta}
+\frame{
+  \frametitle{Two Important Mechanisms}
+}
+\subsection{Dynamical Ejecta}
+\frame{
+  \frametitle{Dynamical Ejecta}
+}
+\subsection{Secular Ejecta}
+\frame{
+  \frametitle{Secular Ejecta}  
+}
+\subsection{Velocity and Electron Fraction}
+\frame{
+  \frametitle{Discontinuous Galerkin: Model Problem}
+}
+\subsection{Neutrino Irradiation}
+\frame{
+  \frametitle{Random Punctures}
+}
+\subsection{Neutrino Emission}
+\frame{
+  \frametitle{Random Punctures}
+}
+\subsection{Future work}
+\frame{
+  \frametitle{Future work}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Outline / Table of Contents
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section[Outline]{}
+% \frame{\tableofcontents}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Sections
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% \input{sections/introduction}
+%% \input{sections/implementation}
+%% \input{sections/plan}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% References
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \frame{\frametitle{References}
+% \scriptsize
+% \bibliographystyle{ieeetr}
+% \bibliography{refs}
+% \nocite{*}
+% }
+
+\end{document} 

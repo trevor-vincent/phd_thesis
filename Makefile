@@ -28,3 +28,13 @@ revert_papers :
 clean:
 	rm -fr thesis.dvi thesis.ps thesis.pdf thesis.aux thesis.log \
 	thesis.lof thesis.lot thesis.toc thesis.blg thesis.bbl */*.aux *~ 
+
+update_refs:
+	cp /home/tvincent/Dropbox/Research/refs.bib refs_1.bib;
+	cp /home/tvincent/Dropbox/Research/Notes/BNS-Project/BNSPaper/papers-2018-BNS-M1-ParameterSpace/References_final.bib refs_2.bib
+	cp /home/tvincent/Dropbox/Research/Notes/EllipticSolver/PaperALL/FourthVersion/References_final.bib refs_3.bib
+	rm thesis.bib
+	cat refs_3.bib refs_1.bib > thesis.bib
+	bibtool -s -d thesis.bib -o thesis.bib
+	bibtool -s -i thesis.bib -o thesis.bib
+
