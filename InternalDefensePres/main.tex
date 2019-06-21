@@ -141,10 +141,6 @@
 \begin{document}
 
 
-
-
-
-
 \frame{\titlepage}
 \section{Background}
 \subsection{GW170817}
@@ -280,38 +276,406 @@
 
 %% \frame{\titlepage}
 \section{Chapter 1}
-\subsection{Solving Non-linear Elliptic Equations}
+\subsection{New Code for NR}
 \frame{
   \frametitle{Solving Non-linear Elliptic Equations}
 }
-\subsection{Code Overview}
+%% \subsection{Code Overview}
 \frame{
-  \frametitle{Code Overview}
+ \frametitle{Code Overview}
+%% \begin{figure}
+%%   \centering
+%%   \begin{adjustbox}{width=.45\textwidth,trim=15 0 0 0, clip=true}
+%% \begin{tikzpicture}[node distance=.25cm, auto]  
+%% \tikzset{
+%%     myCnode/.style={rectangle,rounded corners,draw=black, top color=white, bottom color=yellow!50,very thick, inner sep=1em, minimum size=3em, text centered},
+%%     mySnode/.style={rectangle,rounded corners,draw=black, top color=white, bottom color=cyan!50,very thick, inner sep=1em, minimum size=3em, text centered},
+%%     myarrow/.style={->, line width=1.3mm},
+%%     myDarrow/.style={-, line width=1.3mm, dashed},
+%%     myDarrow2/.style={->, line width=1.3mm, dashed},
+%%     myBarrow/.style={-, line width=1.3mm},
+%%     mylabel/.style={text width=8em, text centered} 
+%%   }
+%% \node[myCnode] (l1) {\Large   \,Level L\,};
+%% \node[below=1cm of l1] (dummy) {}; 
+%% \node[mySnode, right=of dummy] (l2) {\Large  Surrogate};
+%% \node[below=1cm of l2] (dummy1) {}; 
+%% \node[myCnode, right=of dummy1] (l3) {\Large  Level L-1};
+%% \node[mylabel, left=.9cm of l2] (label1) {\Large   Coarsen};
+%% \node[mylabel, left=.9cm of l3] (label1) {\Large   Enforce \break \\\vspace{-.4cm} 2:1 balance};
+%% \node[below=3cm of l3] (dummy2) {}; 
+%% \node[myCnode, right=.625cm of dummy2] (l4) {\Large  Level 0};
+%% \node[myCnode, right=.86cm of l3] (l5) {\Large  Level L-1};
+%% \node[above=2cm of l4] (dummydummy1) {};
+%% \node[above=.5cm of l4] (dummydummy2) {};
+%% \node[above=1cm of l5] (dummy4) {}; 
+%% \node[mySnode, right=4.15cm of l2] (l6) {\Large  Surrogate};
+%% \node[above=1cm of l6] (dummy5) {}; 
+%% \node[myCnode, right=of dummy5] (l7) {\Large  \,Level L\,};
+%% \node[right=of l7] (dummy51) {};
+%% \node[mylabel, right=.7cm of l5] (label1) {\Large  Undo \break \\\vspace{-.4cm} 2:1 balance};
+%% \node[mylabel, right=.7cm of l6] (label1) {\Large  Refine};
+%% % for going down arrow
+%% \node[left=of l1] (dummy61) {}; 
+%% \node[below=1cm of l3] (dummyf) {}; 
+%% \node[left=of l3] (dummyf1) {};
+%% \node[above=.1cm of l4] (dummy312) {};
+%% \node[left=.7cm of dummy312] (dummy314) {};
+%% \node[above=.1cm of l4] (dummy312R) {};
+%% \node[right=.7cm of dummy312] (dummy314R) {};
+%% \draw[myBarrow] (dummy61.south west) -- (dummyf1.south west);	
+%% \draw[myDarrow2] (dummyf1.south west) -- (dummy314);
+%% % for going up arrow
+%% \node[right=of l7] (dummy612) {}; 
+%% \node[below=1cm of l5] (dummyf2) {}; 
+%% \node[right=of l5] (dummyf12) {};
+%% \draw[myDarrow] (dummy314R) -- (dummyf12.south east);
+%% \draw[myarrow] (dummyf12.south east) -- (dummy612.south east);
+%% \draw[myDarrow] (dummydummy1.center) -- (dummydummy2.south); 
+%% % \draw[myarrow] (dummy61.south west) -- (l4.north west);
+%% % \draw[myarrow] (l4.north east) -- (dummy51.south east);
+%% \end{tikzpicture} 
+%% \end{adjustbox}
+%% \medskip
+%% \caption{
+%%   \label{fig:vcycle}
+%%   A structural representation of a multigrid v-cycle. The nodes in yellow are actual grid-levels, while the nodes in blue represent surrogate grids which are not necessarily 2:1 balanced. In order for a multigrid v-cycle to represent a symmetric operation, the grid levels along the down arrow are exactly the same as the grid-levels along the up arrow. Level 0 represents the coarsest possible mesh.} 
+%% \end{figure}
+%% \begin{figure}
+%% \centering
+%% \begin{tikzpicture}[thick,scale=0.75, every node/.style={scale=0.8}]
+%% \draw [fill=gray!30, draw=black] (7.500000,7.500000) rectangle (1.500000,1.500000);
+%% \draw [fill=gray!90, draw=black] (6.000000,6.000000) rectangle (3.000000,3.000000);
+%% %% \draw [<->, line width=0.600000mm] (1.500000,2.000000) -- (3.000000,2.000000);
+%% %% \node at (2.250000,2.500000) {\LARGE $\delta_0$};
+%% \draw [fill=none, draw=black] (3.000000,3.000000) rectangle (0.000000,0.000000);
+%% \draw [fill=black,draw=black] (0.075000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (0.075000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (0.075000,2.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,2.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,2.925000) circle [radius=0.050000];
+%% \draw [fill=none, draw=black] (3.000000,6.000000) rectangle (0.000000,3.000000);
+%% \draw [fill=black,draw=black] (0.075000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (0.075000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (0.075000,5.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,5.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,5.925000) circle [radius=0.050000];
+%% \draw [fill=none, draw=black] (3.000000,9.000000) rectangle (0.000000,6.000000);
+%% \draw [fill=black,draw=black] (0.075000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (0.075000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (0.075000,8.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (1.500000,8.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (2.925000,8.925000) circle [radius=0.050000];
+%% \draw [fill=none, draw=black] (6.000000,3.000000) rectangle (3.000000,0.000000);
+%% \draw [fill=black,draw=black] (3.075000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (3.075000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (3.075000,2.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,2.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,2.925000) circle [radius=0.050000];
+%% \draw [fill=none, draw=black] (6.000000,6.000000) rectangle (3.000000,3.000000);
+%% \draw [fill=black,draw=black] (3.075000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (3.075000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (3.075000,5.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,5.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,5.925000) circle [radius=0.050000];
+%% \draw [fill=none, draw=black] (6.000000,9.000000) rectangle (3.000000,6.000000);
+%% \draw [fill=black,draw=black] (3.075000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (3.075000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (3.075000,8.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (4.500000,8.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (5.925000,8.925000) circle [radius=0.050000];
+%% \draw [fill=none, draw=black] (9.000000,3.000000) rectangle (6.000000,0.000000);
+%% \draw [fill=black,draw=black] (6.075000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,0.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (6.075000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,1.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (6.075000,2.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,2.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,2.925000) circle [radius=0.050000];
+%% \draw [fill=none, draw=black] (9.000000,6.000000) rectangle (6.000000,3.000000);
+%% \draw [fill=black,draw=black] (6.075000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,3.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (6.075000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,4.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (6.075000,5.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,5.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,5.925000) circle [radius=0.050000];
+%% \draw [fill=none, draw=black] (9.000000,9.000000) rectangle (6.000000,6.000000);
+%% \draw [fill=black,draw=black] (6.075000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,6.075000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (6.075000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,7.500000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (6.075000,8.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (7.500000,8.925000) circle [radius=0.050000];
+%% \draw [fill=black,draw=black] (8.925000,8.925000) circle [radius=0.050000];
+%% \end{tikzpicture}
+%% \caption{A simple 2-D Schwarz subdomain, with no h-nonconforming or
+%%   p-nonconforming boundaries. In grey is the element $e$ which is the
+%%   center of the subdomain. The light grey area is the overlap (of size
+%%   $\delta_\xi$) into the other elements. The subdomain is composed of
+%%   everything in light and dark grey.  %% \red{[remove $\delta_0$.  ]}
+%% }
+%% \label{fig:schwarz_subdomain}
+%% \end{figure}
 }
-\subsection{Multigrid-Schwarz Solver}
+%% \subsection{Multigrid-Schwarz Solver}
 \frame{
   \frametitle{Discontinuous Galerkin: Model Problem}
 }
-\subsection{Test Problem 1: Single Non-smooth point}
+\subsection{Test Problems}
 \frame{
-  \frametitle{Discontinuous Galerkin: Model Problem}  
+  \frametitle{Test Problem 1: Single Non-smooth point}
+         \begin{mybox}{white}{\centering \scriptsize Test Problem Details}
+        \centering
+    %% \tiny
+  $\nabla^2 u = f$ \\
+        $\Omega = [0,1]^2$ \\
+        $u = 0 \quad x \in \partial\Omega$ \\
+        $u = x\left(1-x\right)y\left(1-y\right)\left[\left(x-\frac{1}{2}\right)^2 + \left(y-\frac{1}{2}\right)^2\right]^{3/2}.$ 
+         \end{mybox}
+         \vspace{.5cm}
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+%% \end{mybox}
+      \includegraphics[width=\textwidth,trim=10 0 40 30, clip=false]{./pictures/chap2/figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+\includegraphics[width=\textwidth,trim=10 0 0 10,clip=false]{./pictures/chap2/figures/problem_a/prob_a_pc_comparison.eps}
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+  %% \subsection{Test Problem 2: Constant Density Star}
 }
-\subsection{Test Problem 2: Constant Density Star}
+
 \frame{
-  \frametitle{Discontinuous Galerkin: Model Problem}  
+  \frametitle{Test Problem 1: Single Non-smooth point}
+  \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
 }
-\subsection{Test Problem 3: Cubed-sphere with Compactified grids}
+
 \frame{
-  \frametitle{Discontinuous Galerkin: Model Problem}  
+  \frametitle{Test Problem 2: Constant Density Star}
+\begin{mybox}{white}{\centering \scriptsize Test Problem Details}
+        \centering
+    %% \tiny
+        $ \nabla^{2}\psi + 2\pi \rho \psi^{5} = 0$ \\
+        %% $\Omega = [0,1]^3$ \\
+        $\rho = \begin{cases} 
+      \rho_{0} & r\leq r_0 \\
+      0 & r > r_0,
+   \end{cases}$ \\
+\end{mybox}
+\vspace{.5cm}
+ %% \includegraphics[width=.47\textwidth%,trim=10 11 12 14
+    %% ]{./figures/problem_b/prob_b_pc_comparison.eps}
+%% \includegraphics[width=.45\textwidth,trim=10 0 30 34, clip=true]{./figures/problem_b/prob_b_convergence.pdf}
+
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+%% \end{mybox}
+      \includegraphics[width=\textwidth,trim=10 0 40 30, clip=false]{./pictures/chap2/figures/problem_b/prob_b_convergence.pdf}
+  \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+\includegraphics[width=\textwidth,trim=10 0 0 10,clip=false]{./pictures/chap2/figures/problem_b/prob_b_pc_comparison.eps}
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+
+
+}
+
+\frame{
+  \frametitle{Test Problem 2: Constant Density Star}
+  \includegraphics[width=.95\textwidth,trim=1500 400 800 520,clip=true]{./pictures/chap2/figures/problem_b/prob_b_mesh_4.png}
+}
+ %% \includegraphics[width=.47\textwidth%,trim=10 11 12 14
+    %% ]{./figures/problem_b/prob_b_pc_comparison.eps}
+  %% \includegraphics[width=.45\textwidth,trim=10 0 30 34, clip=true]{./figures/problem_b/prob_b_convergence.pdf}
+%% \subsection{Test Problem 3: Cubed-sphere with Compactified grids}
+\frame{
+  \frametitle{Test Problem 3: Cubed-spheres and Compactified grids}
+
+\begin{mybox}{white}{\centering \scriptsize Lorentzian}
+        \centering
+    %% \tiny
+        $ -\nabla^2 u = f$ \\
+        $u = $ \\
+        Mesh: Cubed Sphere with $R = 1000$
+\end{mybox}
+  
+  %% \includegraphics[width=\textwidth,trim=2220 800 2580 2630,clip=true]{./pictures/chap2/figures/problem_c/prob_c_mesh.png}
+
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+      %% \end{mybox}
+          %% \centering \tiny [dG]\\
+   \includegraphics[width=\textwidth,trim=0 2 40 37,clip=true]{./pictures/chap2/figures/problem_c/prob_c_noncompact_vs_compact.pdf}
+    \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+   \includegraphics[width=\textwidth,trim=700 450 470 420, clip=true]{./pictures/chap2/figures/general/cubed_sphere.png}
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+
+  %% \includegraphics[width=.47\textwidth,trim=10 14 10 10,clip=true]{./figures/problem_c/prob_c_pc_comparison.pdf}
+        %% \includegraphics[width=.47\textwidth,trim=0 2 40 37,clip=true]{./figures/problem_c/prob_c_noncompact_vs_compact.pdf}
+  %% \includegraphics[width=.47\textwidth,trim=12 14 8 14,clip=true]{./figures/problem_c/prob_c_convergence.pdf}
+}
+
+\frame{
+  \frametitle{Test Problem 3: Cubed-spheres and Compactified grids}
+
+\begin{mybox}{white}{\centering \scriptsize Lorentzian}
+        \centering
+    %% \tiny
+        $ -\nabla^2 u = f$ \\
+        $u = $ \\
+        Mesh: Cubed Sphere with $R = 1000$
+\end{mybox}
+  
+  %% \includegraphics[width=\textwidth,trim=2220 800 2580 2630,clip=true]{./pictures/chap2/figures/problem_c/prob_c_mesh.png}
+
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+      %% \end{mybox}
+          %% \centering \tiny [dG]\\
+   \includegraphics[width=\textwidth,trim=0 2 40 37,clip=true]{./pictures/chap2/figures/problem_c/prob_c_noncompact_vs_compact.pdf}
+    \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+   \includegraphics[width=\textwidth,trim=700 450 470 420, clip=true]{./pictures/chap2/figures/general/cubed_sphere.png}
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+
+  %% \includegraphics[width=.47\textwidth,trim=10 14 10 10,clip=true]{./figures/problem_c/prob_c_pc_comparison.pdf}
+        %% \includegraphics[width=.47\textwidth,trim=0 2 40 37,clip=true]{./figures/problem_c/prob_c_noncompact_vs_compact.pdf}
+  %% \includegraphics[width=.47\textwidth,trim=12 14 8 14,clip=true]{./figures/problem_c/prob_c_convergence.pdf}
+}
+
+
+\subsection{Two Punctures: Old Code vs New Code}
+\frame{
+  \frametitle{Two Punctures: Old Code vs New Code}
+
+\begin{mybox}{white}{\centering \scriptsize Equal Mass Binary Black Hole Initial Data}
+        \centering
+    %% \tiny
+        $ -\nabla^2 u = \frac{1}{8}\bar A^{ij} \bar A_{ij}\psi^{-7}$ \\
+        $u = 0 \quad r = \infty$ \\
+        $\vec{x}_\pm = (\pm 3,0,0) \quad$
+        $\vec{P}_\pm = (0,\pm .2,0)$ \\
+        %% $\vec{S}_\pm = (0,0,0)$ \\
+        Mesh: Cubed Sphere with $R = 10^{11}$
+\end{mybox}
+
+%% \vspace{.5cm}
+
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+      %% \end{mybox}
+          \centering \tiny [dG]\\
+  \includegraphics[width=\textwidth,trim=0 12 0 14,clip=false]{./pictures/chap2/figures/two_punctures/tp_point_convergence.pdf}
+
+    \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+    \centering \tiny [SpEC] \\    \includegraphics[width=\textwidth]{./pictures/chap2/figures/two_punctures/tp_point_convergence_spec.pdf} 
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+
+
+  %% \includegraphics[width=.48\textwidth,trim=830 350 270 390,clip=false]{./pictures/chap2/DomainImages/Harald_TwoPunctures_4000x3000.png}
+  %% \includegraphics[width=.45\textwidth,trim=0 12 0 14,clip=false]{./pictures/chap2/figures/two_punctures/tp_point_convergence.pdf}
+%% \includegraphics[width=0.45\textwidth]{./pictures/chap2/figures/two_punctures/tp_point_convergence_spec.pdf}
 }
 \subsection{Two Punctures: Old Code vs New Code}
 \frame{
-  \frametitle{Discontinuous Galerkin: Model Problem}
-}
-\subsection{Random Punctures}
+  \frametitle{Two Punctures: Old Code vs New Code}
+\includegraphics[width=.9\textwidth,trim=830 350 270 390,clip=false]{./pictures/chap2/DomainImages/Harald_TwoPunctures_4000x3000.png}
+  }
+
+\subsection{Random Three Punctures}
 \frame{
-  \frametitle{Random Punctures}
+  \frametitle{Random Three Punctures: New Code only}
+
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      \centering
+      %% \vspace{.5cm}
+      \phantom{asdfsdafdsf}
+      \phantom{asdfsdafdsf}
+\includegraphics[width=.8\textwidth,trim=0 12 0 14,clip=false]{./pictures/chap2/figures/general/randomtable.png} \\
+\vspace{.4cm}
+\phantom{asdfsdafdsf}
+      \includegraphics[width=\textwidth,trim=0 12 0 14,clip=false]{./pictures/chap2/figures/three_punctures/3p_point_convergence.pdf}
+    \end{column}
+  \begin{column}{.48\textwidth}  
+    \includegraphics[width=\textwidth,trim=770 100 27 40,clip=true]{./pictures/chap2/DomainImages/Harald_ThreePunctures_4000x3000.png}\\
+\includegraphics[width=\textwidth,trim=1350 1200 1200 1200,clip=true]{./pictures/chap2/DomainImages/Harald_ThreePuncturesZoom_4000x3000.png}
+  \end{column}
+  \end{columns}
+  
+
+  %% \includegraphics[width=.48\textwidth,trim=0 12 0 14,clip=true]{./figures/three_punctures/3p_point_convergence.pdf}
+%% \begin{table}
+%% \centering
+%% \label{tab:Multi_Punctures}
+%% \begin{tabular}{cccc}
+%% \hline
+%%  \,\,\,\, & Puncture 1  \,\,\,\, & Puncture 2  \,\,\,\, & Puncture 3 \\ \hline
+%%   $m$ \,\,\,\, &0.2691  \,\,\,\, & 0.4063  \,\,\,\, & 0.3245  \\
+%%   $x$ \,\,\,\, &0.0152  \,\,\,\, & -2.316  \,\,\,\, & -1.0279  \\
+%%   $y$ \,\,\,\, &-0.6933  \,\,\,\, & 1.8274  \,\,\,\, &  -2.2711  \\ 
+%%   $P_x$ \,\,\,\, &0.0585  \,\,\,\, & -0.0284  \,\,\,\, &  0.1640 \\
+%%   $P_y$ \,\,\,\, &0.0082  \,\,\,\, &  -0.1497 \,\,\,\, &  0.0515 \\
+%%   $S_z$ \,\,\,\, &-0.0134  \,\,\,\, &  -0.0332  \,\,\,\, & -0.0708 \\ \hline
+%% \end{tabular}
+%% \caption{
+%%   The randomly generated parameters for the three black holes.  We list the mass m, the position $(x,y,0)$, the momentum $(P_x, P_y, 0)$ and the spin $(0,0,S_z)$ of the black holes.
+%%   %% \red{[To explain:  The 'total mass $M$' is the sum of the 3 BH Christoudoulou masses, which would require running AH finders.  The 'ADM-mass' would require to analyse the $1/r$ falloff of $u$.  We do neither, so we cannot normalize in a meningful way.  Let's just not say anything]}
+%% }
+%% \end{table}
 }
+
 \subsection{Future work}
 \frame{
   \frametitle{Future work}
@@ -321,14 +685,21 @@
 \subsection{Unequal Mass Binary Neutron Star Simulations}
 \frame{
   \frametitle{Unequal Mass Binary Neutron Star Simulations}
+  %% \includegraphics[width=.45\textwidth]{Figures/eos.png}
+%% \fbox{\includegraphics[width=.495\textwidth,frame]{Figures/{-18ms_3d}.png}}\hfill
+%%             \includegraphics[width=.495\textwidth,frame]{Figures/{-.3ms_3d}.png}\\
+%%             \includegraphics[width=.495\textwidth,frame]{Figures/3ms_3d.png}\hfill
+%%             \includegraphics[width=.495\textwidth,frame]{Figures/{7.5ms_3d}.png}
+  
 }
 \subsection{GRRHD}
 \frame{
   \frametitle{General Relativistic Radiation-Hydrodynamics}
 }
-\subsection{Tidal Tail Ejecta vs. Core-bounce Ejecta}
+\subsection{Ejecta Types}
 \frame{
-  \frametitle{Two Important Mechanisms}
+  \frametitle{Ejecta Types}
+  \includegraphics[width=\textwidth]{./pictures/typesofejecta.png}
 }
 \subsection{Dynamical Ejecta}
 \frame{
@@ -336,19 +707,38 @@
 }
 \subsection{Secular Ejecta}
 \frame{
-  \frametitle{Secular Ejecta}  
+  \frametitle{Secular Ejecta}
+  %% \includegraphics[width=\textwidth]{Figures/{misc_tabular_3ms_2}.png}
+  %% \includegraphics[width=.48\textwidth]{Figures/disk_masses.png}
 }
 \subsection{Velocity and Electron Fraction}
 \frame{
-  \frametitle{Discontinuous Galerkin: Model Problem}
+  \frametitle{Velocity and Electron Fraction}
+
+  %%   \includegraphics[width=.5\textwidth]{Figures/eos_12132_vinf_equa.eps}\\
+  %% \includegraphics[width=.5\textwidth]{Figures/eos_12132_vinf_polar.eps}
+
+  %% \includegraphics[width=.47\textwidth]{Figures/eos_12132_ye_equa.png}\\
+  %% \includegraphics[width=.47\textwidth]{Figures/eos_12132_ye_polar.png}
+  
+  %% \includegraphics[width=.47\textwidth]{Figures/eos_sfho_vinf_equa.png}\\
+  %% \includegraphics[width=.47\textwidth]{Figures/eos_sfho_vinf_polar.png}
+  
+  %% \includegraphics[width=.495\textwidth]{Figures/eos_sfho_ye_equa.png}\\
+ %% \includegraphics[width=.495\textwidth]{Figures/eos_sfho_ye_polar.png}
 }
 \subsection{Neutrino Irradiation}
 \frame{
-  \frametitle{Random Punctures}
+  \frametitle{Neutrino Irradiation}
+   %% \includegraphics[width=.45\textwidth]{Figures/s12132_7_5_and_10.png}
 }
 \subsection{Neutrino Emission}
 \frame{
-  \frametitle{Random Punctures}
+  \frametitle{Neutrino Emission}
+  %% \centering \includegraphics[width=\textwidth,trim=300 0 300 0,clip=true]{Figures/eos_theta_hist_flux.pdf}
+  %% \includegraphics[width=.45\textwidth]{Figures/eos-nulum-antionly.png}
+  %% \includegraphics[width=.48\textwidth,trim=0 0 0 0,clip=true]{Figures/enua_slices.png}
+  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/dd2-nulum.png}
 }
 \subsection{Future work}
 \frame{
