@@ -10,6 +10,7 @@ thesis.pdf : thesis.tex thesis.bib */*.tex
 	pdflatex thesis -file-line-error --synctex=1 $<
 	bibtex thesis
 	pdflatex thesis -file-line-error --synctex=1 $<
+	# makeglossaries thesis
 	pdflatex thesis -file-line-error --synctex=1 $<
 
 thesis.dvi : thesis.tex thesis.bib */*.tex 

@@ -3,202 +3,112 @@
 \chaptermark{hp-Adaptive DG Solver for Elliptic Equations}
 \section{Chapter Overview}
 
-\textit{The material in this chapter is based on ”A hp-adaptive discontinuous Galerkin solver for elliptic equations in numerical relativity" by Trevor Vincent, Harald Pfeiffer, Nils Fischer being prepared for Phys. Rev. D.}
+\textit{The material in this chapter is based on ”A hp-adaptive discontinuous Galerkin solver for elliptic equations in numerical relativity" by Trevor Vincent, Harald Pfeiffer, Nils Fischer submitted to Phys. Rev. D. and available on the arXiv at \url{https://arxiv.org/abs/1907.01572}. The first author also contributed to the SpECTRE code, which is a new framework for next-generation relativistic astrophysics simulations introduced in the paper ”SpECTRE: A Task-based Discontinuous Galerkin Code for Relativistic Astrophysics" by Larry Kidder, Scott Fields, ..., Trevor Vincent, published in the Journal of Computational Physics and available on the arXiv at \url{https://arxiv.org/abs/1609.00098}.}
 
 A considerable amount of attention has been given to discontinuous
 Galerkin methods for hyperbolic problems in Numerical Relativity,
 showing potential advantages of the methods in dealing with
 hydrodynamical shocks and other discontinuities.
-This paper investigates discontinuous Galerkin
+This chapter investigates discontinuous Galerkin
 methods in numerical relativity to solve problems of elliptic
 nature.  We present a novel hp-adaptive numerical
 scheme for curvilinear and non-conforming meshes.  It uses a multigrid
 preconditioner with a Chebyshev or Schwarz smoother to create a very scalable discontinuous Galerkin code
-on generic domains.  The code employs compactification
-  to move the outer boundary near spatial infinity.
+on generic domains for the first time.  The code employs compactification
+  to move the outer boundary near spatial infinity, which to the author's knowledge is the first time this has been done in a discontinuous Galerkin code. 
 We explore the properties of the code on some test
 problems, including one mimicking Neutron stars with phase transitions.
-  We also apply it to construct initial data for two or three black holes.
+  We also apply it to construct initial data for two or three black holes. The goal of this code will be to solve for initial binary neutron star data to very high accuracy on future exascale supercomputers. Current codes like SpEC can't scale well to even thousands of cores, so new solvers will be crucial for the next generation of numerical relativity simulations. The code this work is based on is available on the author's github page: \url{https://github.com/trevor-vincent/d4est} and is currently being ported into the SpECTRE code available at \url{https://github.com/sxs-collaboration/spectre}. This work has been submitted to Phyiscal Review D with the title "A hp-adaptive discontinuous Galerkin solver for elliptic equations in numerical relativity" by Trevor Vincent, Harald Pfeiffer, Nils Fischer and is available on the arXiv at \url{https://arxiv.org/abs/1907.01572}. The contributions of the authors are as follows. The numerical scheme and code was completely developed by the first author. The idea for the project was initially proposed by the second author, Prof. Harald Pfeiffer, who provided help and insights to solve multiple problems in the project as well as the initial ideas for test problems. The third author, Nils Fischer, provided useful suggestions and made small contributions to the code. Nils Fischer is also one of the graduate students responsible for porting the code described in this chapter over to SpECTRE. 
+
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% In the last decade, discontinuous Galerkin (DG) methods have emerged as the leading
-% contender to achieve all the goals of a general purpose simulation code, particularly
-% for equations in conservation form: high order accuracy in smooth regions, robustness
-% for shocks and other discontinuities, scalability to very large machines, accurate handling
-% of irregular boundaries, adaptivity, and so on. Many applications of DG in terrestrial
-% fluid dynamics have appeared. However, applications in relativity and astrophysics
-% have so far been mainly exploratory[1–10] and confined to simple problems.
-
-
-% [1] S. E. Field, J. S. Hesthaven, S. R. Lau, Discontinuous Galerkin method for computing
-% gravitational waveforms from extreme mass ratio binaries, Class. Quantum
-% Grav. 26 (2009) 165010.
-% [2] G. Zumbusch, Finite element, discontinuous Galerkin, and finite difference evolution
-% schemes in spacetime, Class.Quantum Grav. 26 (2009) 175011.
-% 32
-% [3] S. E. Field, J. S. Hesthaven, S. R. Lau, A. H. Mroue, Discontinuous Galerkin
-% method for the spherically reduced Baumgarte-Shapiro-Shibata-Nakamura system
-% with second-order operators, Phys. Rev. D 82 (2010) 104051.
-% [4] D. Radice, L. Rezzolla, Discontinuous Galerkin methods for general-relativistic
-% hydrodynamics: Formulation and application to spherically symmetric spacetimes,
-% Phys. Rev. D 84 (2011) 024010.
-% [5] J. D. Brown, P. Diener, S. E. Field, J. S. Hesthaven, F. Herrmann, A. H. Mroue,´
-% O. Sarbach, E. Schnetter, M. Tiglio, M. Wagman, Numerical simulations with a
-% first-order BSSN formulation of Einstein’s field equations, Phys. Rev. D 85 (2012)
-% 084004.
-% [6] P. Mocz, M. Vogelsberger, D. Sijacki, R. Pakmor, L. Hernquist, A discontinuous
-% Galerkin method for solving the fluid and magnetohydrodynamic equations in
-% astrophysical simulations, Mon. Not. Roy. Astr. Soc. 437 (2014) 397–414.
-% [7] O. Zanotti, M. Dumbser, A. Hidalgo, D. Balsara, An ADER-WENO finite volume
-% AMR code for astrophysics, in: N. V. Pogorelov, E. Audit, G. P. Zank (Eds.), 8th
-% International Conference of Numerical Modeling of Space Plasma Flows (ASTRONUM
-% 2013), Vol. 488 of Astronomical Society of the Pacific Conference
-% Series, 2014, pp. 285–290.
-% [8] E. Endeve, C. D. Hauck, Y. Xing, A. Mezzacappa, Bound-preserving discontinuous
-% Galerkin methods for conservative phase space advection in curvilinear
-% coordinates, J. Comput. Phys. 287 (2015) 151–183.
-% [9] O. Zanotti, F. Fambri, M. Dumbser, Solving the relativistic magnetohydrodynamics
-% equations with ADER discontinuous Galerkin methods, a posteriori subcell
-% limiting and adaptive mesh refinementarXiv:1504.07458.
-% [10] K. Schaal, A. Bauer, P. Chandrashekar, R. Pakmor, C. Klingenberg, V. Springel,
-% Astrophysical hydrodynamics with a high-order discontinuous Galerkin scheme
-% and adaptive mesh refinementarXiv:1506.06140.
-
-
-% Discontinuous Galerkin methods were first used in 1970 by Reed and Hill
-% In [100] and [101], Tichy evolved a static black hole
-% on a single spectral domain using the BSSN system
-% and a pseudospectral scheme. Using a variational principle,
-% Zumbusch developed a DGFE discretization in
-% both space and time for the second-order GH formulation
-% of the Einstein equations [118]. Field et al. developed
-% a DGFE method for the second-order BSSN equations
-% in spherical symmetry [37]. In [82], Radice and Rezzola
-% developed a DGFE formulation for fluids in a general
-% relativistic setting. In the process, they use a DGFE
-% method to solve the Einstein equations in spherical symmetry
-% with maximal slicing and areal coordinates.1 Motivated
-% by the first-order-in-space nature of DGFE methods,
-% Brown et al. developed a fully first-order version of
-% the BSSN system and evolved binary black hole in-spiral
-% using finite differences. They also evolved a reduction of
-% the system to spherical symmetry using a DGFE scheme
-% [16].
-
-
-
-% (GOOD INTROS IN SPECTRE PAPER AND DAVID RADICE THESIS)
-Discontinuous Galerkin (DG) methods~(\cite{Reed.W;Hill.T1973,hesthaven2008nodal, Cock01,cockburn1998runge,Cockburn.B;Karniadakis.G;Shu.C2000})
+%
+Discontinuous Galerkin (DG) methods~(\citet*{Reed.W;Hill.T1973,hesthaven2008nodal, Cock01,cockburn1998runge,Cockburn.B;Karniadakis.G;Shu.C2000})
 have matured into standard numerical methods  to simulate a wide
 variety of partial differential equations. In the context of numerical
-relativity~(\cite{baumgarte2010numerical}), discontinuous Galerkin
+relativity~(\citet*{baumgarte2010numerical}), discontinuous Galerkin
 methods have shown advantages for relativistic hyperbolic problems
 over traditional discretization methods such as finite difference, finite volume and
 spectral finite elements
-(\cite{Field:2010mn,brown2012numerical,field2009discontinuous,zumbusch2009,Radice:2011qr,mocz:14,zanotti:14,endeve:15,teukolsky2015,Bugner:2015gqa,schaal2015astrophysicalfixed,zanotti2015,Miller:2016vik}) by combining the best aspects of all three methods. As computers reach exa-scale power, new methods like DG are needed to tackle the biggest problems in NR such as realistic supernovae and binary neutron-star merger simulations on these very large machines~(\cite{kidder:16}).
-
+(\citet*{Field:2010mn,brown2012numerical,field2009discontinuous,zumbusch2009,Radice:2011qr,mocz:14,zanotti:14,endeve:15,teukolsky2015,Bugner:2015gqa,schaal2015astrophysicalfixed,zanotti2015,Miller:2016vik,kidder:16,fambri2018}) by combining the best aspects of all three methods. As computers reach exa-scale power, new methods like DG are needed to tackle the biggest problems in numerical relativity such as realistic supernovae and binary neutron-star merger simulations on these very large machines~(\citet*{kidder:16}).
+%
 DG efforts in numerical relativity have so far
-targeted evolutionary problems only.
-%While DG has been applied to elliptic
-%problems elsewhere \red{[cites?]}, this has not yet been pursued in
-%numerical relativity.
+targeted evolutionary problems (\citet*{Field:2010mn,brown2012numerical,field2009discontinuous,zumbusch2009,Radice:2011qr,teukolsky2015,Bugner:2015gqa,schaal2015astrophysicalfixed,zanotti2015,Miller:2016vik,fambri2018}). Radice and Rezzolla (\citet*{Radice:2011qr}) showed for spherically symmetric problems that the discontinuous Galerkin method could handle strong relativistic shock waves while maintaining exponential convergence rates in smooth regions of the flow. Teukolsky (\citet*{teukolsky2015}) showed how to develop discontinuous Galerkin methods for applications in relativistic astrophysics. Bugner et al. (\citet*{Bugner:2015gqa}) presented the first three-dimensional simulations of general relativistic hydrodynamics with a fixed spacetime background using a discontinuous Galerkin method coupled with a WENO algorithm. Kidder et al. (\citet*{kidder:16}) showcased the first discontinuous Galerkin code to use a task-based parallelism framework for applications in relativisitic astrophysics. Kidder et al. tested the scalability and convergence of the code on relativistic magnetohydrodynamics problems. Miller et al. (\citet*{Miller:2016vik}) developed a discontinuous Galerkin operator method for use in finite difference codes and used it to solve gauge wave problems involving the BSSN formulation of the Einstein field equations. Hebert et al. (\citet*{hebert:2018xbk}) presented the first discontinuous Galerkin method for evolving neutron stars in full General Relativity. Finally, Fambri et al. (\citet*{fambri2018}) used an ADER discontinuous Galerkin scheme to solve general relativistic ideal magnetohydrodynamics problems in fixed spacetimes. They compared their DG method to a finite volume scheme and showed that DG is much more efficient.
+%
 This paper explores DG for elliptic problems in numerical relativity.
-We present an elliptic solver with the following primary features:
-\begin{enumerate}
-\item It operates on curved meshes, with non-conforming elements.
-\item It supports adaptive h and p refinemement, driven by a
+We develop  an elliptic solver with the following primary features:
+(i) It operates on curved meshes, with non-conforming elements.
+(ii) It supports adaptive h and p refinement, driven by a
   posteriori error estimators.
-\item It employs multi-grid for efficient solution of the resulting
+(iii) It employs multi-grid for efficient solution of the resulting
   linear systems.
-\item It uses compactified domains to treat boundary conditions at infinity.
-\end{enumerate}
-While each of these features has appeared in the literature before
-(\cite{arnold.d;brezzi.f;cockburn.b;marini.l2002,stiller2017robust,hesthaven2008nodal,kronbichler2018performance,fick2014interior,kozdon2018energy,kozdon2019robust}), to our knowledge, our solver for the first
+(iv) It uses compactified domains to treat boundary conditions at infinity.
+  While each of these features has appeared in the literature before
+(\citet*{arnold.d;brezzi.f;cockburn.b;marini.l2002,stiller2017robust,hesthaven2008nodal,kronbichler2018performance,fick2014interior,kozdon2018energy,kozdon2019robust}), to our knowledge, our solver for the first
 time combines all these elements simultaneously and demonstrate their
 effectiveness on difficult numerical problems.
 
-Specifically, the present article is a step 
+Specifically, the present chapter is a step
 toward a solver for the Einstein constraint
 equations, which must be solved to
 construct initial data for the evolution of compact binary
-systems~(\cite{pfeiffer:2005,cook2000,baumgarte2010numerical}).  The
+systems~(\citet*{pfeiffer:2005,cook2000,baumgarte2010numerical}).  The
 constraint equations are generally rewritten as elliptic equations,
 and depending on detailed assumptions, this results in one or more
 coupled non-linear elliptic partial differential equations.
 Construction of initial data is arguably the most important
 elliptic problem in numerical relativity, but not the only one:
 Elliptic equations also occur in certain gauge
-conditions~(\cite{baumgarte2010numerical}) or for implicit
+conditions~(\citet*{baumgarte2010numerical}) or for implicit
 time-stepping to alleviate the computational cost of high-mass-ratio
-binaries~(\cite{laupfeiffer2008,lau:2011we})
+binaries~(\citet*{laupfeiffer2008,lau:2011we})
 .
 %
-
+%
 The motivation for developing
 a new solver is multi-fold. First, current spectral methods have
 difficulty obtaining certain initial data sets, such as binaries at
 short separation containing a neutron star, where the neutron star has
 high compactness and a realistic equation of state
-(\cite{henriksson:2014tba}).  Furthermore, there is a need for a
+(\citet*{henriksson:2014tba}).  Furthermore, there is a need for a
 solver which can routinely obtain high-accuracy. Errors from
 inaccurate initial data sets creep into the evolutions with sizeable
-effect: Ref.~(\cite{tsokaros2016initialfixed}) shows that despite only
+effect: (\citet*{tsokaros2016initialfixed}) shows that despite only
 global (local) differences of $0.02\%$ ($1\%$) in the initial data of
 the two codes COCAL and LORENE for irrotational neutron-star binaries,
-the gravitational wave phase at the merger time differed by 0.5
-radians after 3 orbits. The design of a more accurate code requires adaptive mesh refinement, load-balancing and
+the gravitational wave phase at the merger time differed by 0.5~radians after 3 orbits. The design of a more accurate code requires adaptive mesh refinement, load-balancing and
 scalability which a DG code potentially can
-provide. The present work also complements the DG evolution code presented in Ref.~(\cite{kidder:16}),
+provide. The present work also complements the DG evolution code presented in Ref.~(\citet*{kidder:16}),
 leading to a complete framework for solving both
 elliptic and hyperbolic PDEs in numerical relativity.
 %
-
+%
 The organization of the paper is as follows: 
 Section~\ref{sec:numericalalgorithm} presents the components of our
   discontinuous Galerkin code. Section~\ref{sec:testexamples} 
   showcases our hp-adaptive multigrid solver on  increasingly challenging test-problems, each
   illustrating the power of the discontinuous Galerkin method. This section includes a solution for the Einstein constraint equations in the case of a constant density star. This problem has a surface discontinuity which mimicks Neutron stars with phase transitions. Lastly, this section also presents solutions for
   initial-data of two orbiting non-spinning black-holes to
-  showcase and compare it with the elliptic solver Spells~(\cite{pfeiffer2003})
+  showcase and compare it with the elliptic solver Spells~(\citet*{pfeiffer2003})
  as well as solutions for the initial data
   of three black-holes with random locations, spins and momenta.  We
   close with a discussion in Sec.~\ref{sec:Conclusions}.
-
+%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Numerical Algorithm}
 \label{sec:numericalalgorithm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% \red{[harald: The following 'red' block is left over from an old conversation
-%%   between Trevor and Harald.  {\bf Trevor} please reconsider whether
-%%   some of these points could be moved into the second paragraph of the
-%%   introducion, to enforce claims that our code has novel features.]}
-%%   \red{
-%% ... no paper known to us which does curved multi-block with non-conforming elements.\\
-%% ... curved mesh elliptic equations have been done\\
-%% ... curved mesh elliptic with DG not known to Trevor\\
-%% ... one paper from 2013, interior penalty DG for general meshes (curved, non-conforming), but no numerical examples for curved meshes, and we do things differently:  They penalty factor is volume-factor / area(bdry).\\
-%% ... only Hesthaven+Warburton does curved elliptic meshes, but only with triangular mesh.\\
-%% However, we follow Hesthaven~(\cite{?}) in defining penality factor as Jacobian(Volume) / Jacobian(Boundary).  \\
-%% Hesthaven+Warburton has section on nonconforming meshes, and on curved meshes, but never deal with both simultaneously.  }
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{DGFEM discretization}
+\subsection{DG discretization}
 \label{sec:DGFEM}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We base our nomenclature on (\cite{arnold.d;brezzi.f;cockburn.b;marini.l2002,sherwin20062d,di2011mathematical,fick2014interior,kozdon2018energy,kozdon2019robust}), which we summarize here for completeness.
+We base our nomenclature on (\citet*{arnold.d;brezzi.f;cockburn.b;marini.l2002,sherwin20062d,di2011mathematical,fick2014interior,kozdon2018energy,kozdon2019robust}), which we summarize here for completeness.
 
 \subsubsection{Mesh}
 \label{sec:mesh}
-%% \red{[Trevor asks: should we add table of symbols?]}
-
-% The discontinuous Galerkin method for the solution of elliptic partial differential has a long history going back to the 1970's, with a seminal text being (Unified Analysis text here). We do not attempt to review the literature here, but refer the reader to the aforementioned paper or the valuable references (Sherwin, Kirby referennces).
-
-% We use the high-order nodal interior penalty dG (IPDG) method to discretize elliptic quations, following the manner of (HESTHAVEN REFERENCE HERE). In this section we derive the discrete IPDG equations for the Poisson equation on general meshes.
 
 Our purpose is to solve elliptic equations in a computational domain
 $\Omega \subset \mathbb{R}^d$ in $d$ dimensions.  To allow for
@@ -223,7 +133,7 @@ refinement.  The refined mesh $\mathbb{E}$ is referred to as the
 Fig.~\ref{fig:macromesh}.  In contrast to the macro-mesh, the fine
 mesh will generally be non-conforming at element boundaries, both
 within one macro-element and at boundaries between macro-elements. We
-assume that there are is at most a 2:1 refinement difference at any element
+assume that there is at most a 2:1 refinement difference at any element
 boundary, i.e.\ the boundary of a coarse element faces at most two
 smaller elements (per dimension). Each face of each element $e\in
 \mathbb{E}$ is endowed with an outward-pointing unit-normal $\Hat n$.
@@ -256,7 +166,7 @@ Similarly, $\Gamma$ splits into
     ID}=\mathbb{M}_{\rm I}\cup \mathbb{M}_{\rm D}$ and $\Gamma_{\rm ID}=\Gamma_{\rm I}\cup\Gamma_{\rm D}$. 
 Secondly, we refer to the set of mortar elements surrounding an element $e$ as $\mathbb{M}_e$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[ht!]
+\begin{figure}
   \centering
   \begin{tikzpicture}[node distance=.25cm, auto]
     \draw [black, ultra thick, fill=gray!20] (-2,0) circle [radius=2];
@@ -313,7 +223,6 @@ Secondly, we refer to the set of mortar elements surrounding an element $e$ as $
   macro-elements. (b) A representative mesh derived from the
   macro-mesh by refining once in the left-most macro-element.  (c) The
   boundary mortar $\Gamma_{\rm B}$. (d) The interior mortar $\Gamma_{\rm I}$.
-  %% \red{[In panels (b) and (d), refine one element one more time, to illustrate (1) the fine mesh can be non-conforming within a macro-element. and (2) to demonstrate whether or not mesh-refinement can jump by two levels across a macro-element boundary]}
 }
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -323,7 +232,7 @@ Secondly, we refer to the set of mortar elements surrounding an element $e$ as $
 
 On the fine mesh $\mathbb{E}$, we wish to discretize the following model elliptic
 problem with the symmetric interior penalty discontinuous Galerkin
-method (\cite{arnold.d;brezzi.f;cockburn.b;marini.l2002}):
+method (\citet*{arnold.d;brezzi.f;cockburn.b;marini.l2002}):
 
 \begin{subequations}\label{seq:modelproblem}
   \begin{align}
@@ -348,14 +257,12 @@ and~(\ref{eq:RobinBC}).
 In accordance with the underlying ideas of DG, we seek to approximate the
   solution of Eqs.~(\ref{seq:modelproblem}) with polynomials on each element $e\in \mathbb{E}$, without strictly enforcing continuity across elements. 
   Let $V_{h,e,p_e}$ denote the set of polynomials 
-  %\nilsf{\sout{$p$} $N_i^e$ [I think Hesthaven and much of the DG literature use $N$ for the polynomial degree. Also, we need to be careful since the degree can be anisotropic.]}
   on the reference cube $[-1,1]^d$ up to degree $p_e$ mapped to element $e\in \mathbb{E}$.
 We assume the same maximum polynomial order along each dimension; it is straightforward to extend to different polynomial order along different dimensions.
   The functions in $V_{h,e,p_e}$ are understood to be extended by $0$ outside of $e$ (i.e.\ on other elements).   The global function space is the direct sum of the per-element polynomial spaces,
   \begin{equation}
     \label{eq:Vh}
     V_h = \bigoplus_{e \in \mathbb{E}}V_{h,e,p_e},
-    %See page 86 of hesthaven
   \end{equation}
   where the polynomial order may vary between elements.
   Because
@@ -367,7 +274,7 @@ We assume the same maximum polynomial order along each dimension; it is straight
 The discretized solution $u_h\in V_h$ is determined, such that
   the residual of Eqs.~(\ref{eq:Laplacian}) is orthogonal to the function
   space $V_h$.  Within the symmetric interior penalty
-  discontinuous Galerkin discretization (\cite{arnold.d;brezzi.f;cockburn.b;marini.l2002,di2011mathematical}), this yields
+  discontinuous Galerkin discretization (\citet*{arnold.d;brezzi.f;cockburn.b;marini.l2002,di2011mathematical}), this yields
 %  
 \begin{equation}
   L_h(u_h,v_h) = F_h(v_h) \qquad  \forall v_h \in V_h,
@@ -375,25 +282,6 @@ The discretized solution $u_h\in V_h$ is determined, such that
 %
 where
 %
-% \begin{align} 
-%   \label{eq:lh}
-%  \nonumber
-%       L_h(u,v) =& \sum_{i=1}^3\int\displaylimits_{\mathbb{E}}  \partial_i v\partial_i u \,\mathrm{d}\tv{x} - \sum_{i=1}^3\int\displaylimits_{\Gamma_\text{I}\cup\Gamma_D} \llbracket u \rrbracket_i \dgal*{\partial_i v}\mathrm{d}\tv s \\ \nonumber
-%       &- \sum_{i=1}^3\int\displaylimits_{\Gamma_\text{I}\cup\Gamma_D} \llbracket v \rrbracket_i \dgal*{\partial_i u} \mathrm{d}\tv s + \sum_{i=1}^3\int\displaylimits_{\Gamma_\text{I}\cup\Gamma_D}\sigma \llbracket u \rrbracket_i \llbracket v \rrbracket_i \mathrm{d}\tv s  \\
-%     & + \int\displaylimits_{\mathbb{E}} f u v \,\mathrm{d}\tv{x},
-% \end{align}
-% %
-% and
-% %
-% \begin{align}
-%   \label{equationFh}
-% \nonumber
-% F_h(v) =& \int\displaylimits_\mathbb{E} gv \mathrm{d}x -  \sum_{i=1}^3\int\displaylimits_{\Gamma_D}g_D \hat n_i \partial_i v \mathrm{d}\tv s + \int\displaylimits_{\Gamma_D}\sigma g_D v \mathrm{d}\tv s \\
-% &+ \int\displaylimits_{\Gamma_N}g_Nv\mathrm{d}\tv s.
-% \end{align}
-%
-% \red{Harald considers to introduce sum-convention in Eq.~(\ref{seq:1}).  Until decided, here're the rewritten version of $L_h$, and $F_h$}
-% \harald{
 \begin{align} 
   \label{eq:lh}
  \nonumber
@@ -411,21 +299,18 @@ where
 %
 and
 
-% \harald{
+% 
 \begin{align}
   \label{equationFh}
 \nonumber
 F_h(v) =&
 \int\displaylimits_\mathbb{E} gv \mathrm{d}x
 - \int\displaylimits_{\Gamma_D}g_D \hat n_i \partial_i v \mathrm{d}\tv s + \int\displaylimits_{\Gamma_D}\sigma g_D v \mathrm{d}\tv s \\
-&+ \int\displaylimits_{\Gamma_N}g_Nv\mathrm{d}\tv s -  \int\displaylimits_{\Gamma_D}g_Rv \mathrm{d}\tv s.
+&+ \int\displaylimits_{\Gamma_N}g_Nv\mathrm{d}\tv s -  \int\displaylimits_{\Gamma_{R}}g_Rv \mathrm{d}\tv s.
 \end{align}
 % }
 %
-%% \red{[Here and elsewhere:  Ensure that integration variables are consistently bold-faced, and that the ``integration-d'' is always in mathrm-font: $\mathrm{d}\tv x,  \mathrm{d}\tv s$]}\\
-%% \red{[the boundary integrals are in general multi-dimensional, perhaps better to typeset $s$ in boldface $\tv s$ for all integrals with boundary terms ]}
-
-
+%%
 
 For internal boundaries, the operators $\llbracket\,.\, \rrbracket$ and $\dgal*{\,.\,}$ are
  defined by
@@ -451,19 +336,7 @@ mortar--elements, one finds
 % \begin{align} 
 %   \label{eq:lh2}
 %  \nonumber
-%       L_h(u,v) =& \sum_{i=1}^3\sum_{e\in\mathbb{E}}\int\displaylimits_{e}  \partial_i v\partial_i u \,\mathrm{d}\tv{x} -  \sum_{i=1}^3\sum_{m \in \Gamma_\text{I}\cup\Gamma_D}\int\displaylimits_m \llbracket u \rrbracket_i \dgal*{\partial_i v}\mathrm{d}\tv s \\ \nonumber
-%       &-  \sum_{i=1}^3\sum_{m \in \Gamma_\text{I}\cup\Gamma_D}\int\displaylimits_m \llbracket v \rrbracket_i \dgal*{\partial_i u} \mathrm{d}\tv s + \\ &\sum_{m \in \Gamma_\text{I}\cup\Gamma_D}\int\displaylimits_m\sigma \llbracket u \rrbracket_i \llbracket v \rrbracket_i \mathrm{d}\tv s  
-%     + \sum_{e\in\mathbb{E}}\int\displaylimits_{e}f u v \,\mathrm{d}\tv{x},
-% \end{align}
 % %
-% and
-% %
-% \begin{align}
-%   \label{equationFh2}
-% \nonumber
-% F_h(v) =& \sum_{e\in\mathbb{E}}\int\displaylimits_{e} gv \mathrm{d}x -  \sum_{i=1}^3\sum_{m \in \Gamma_D}\int\displaylimits_mg_D \hat n_i \partial_i v \mathrm{d}\tv s +  \sum_{m \in \Gamma_D}\int\displaylimits_m\sigma g_D v \mathrm{d}\tv s \\
-% &+  \sum_{m \in \Gamma_N}\int\displaylimits_mg_Nv\mathrm{d}\tv s.
-% \end{align}
 
 % \harald{\red{[Harald's sum-convention rewrite]}
 \begin{align} 
@@ -509,60 +382,18 @@ write
 \end{align}
 %
 
-% \harald{Neumann boundary conditions only appear through the last term in Eq.~(\ref{equationFh2}).}
-% \red{[The next few lines are too vague, for instance, it is not clear on \emph{which} boundaries Robin-BC are applied.  Since we use Robin BCs a lot in our main-results, I we should promote Robin-BC to the same standing as Dirichlet \& Neumann.  i.e.\ partition the boundary from the start into
-%     $\mathbb{G}_{\rm B}=\mathbb{G}_{\rm D}+\mathbb{G}_{\rm N}+\mathbb{G}_{\rm R}$,
-%     include an Eq.~(1d) for robin-BC, and then carry Robin through the $L_h$ and $F_h$ equations.   The ONLY reason I see not to do this is if that makes the presentation above SUBSTANTIALLY more cumbersome.   I don't know, so I cannot judge.  Please decide how to proceed, and make the relevant changes to this section SOON. ]}
-
-% To implement robin boundary conditions of the form $\gamma u + \tvhat
-% n_i\nabla_i u = g$, we make a few minor changes to equations
-% \ref{eq:lh} and \ref{equationFh}. The second and third integrals
-% in Eq. \ref{eq:lh} are replaced with the same integrals, but
-% only over non-boundary mortar elements and we add the term
-% $\int_{\Gamma_{\text{Robin}}} \gamma u_h v_h $. Finally
-% Eq. \ref{equationFh} becomes
-
-% \begin{equation}
-%     F_h(v) = \int\displaylimits_\mathbb{E} fv \mathrm{d}x - \int\displaylimits_{ \Gamma_D}gv_h \mathrm{d}\tv s \,\,\,.
-% \end{equation}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Basis Functions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 So far, we have not yet specified a concrete basis for the polynomial spaces $V_{h,e,p_e}$ introduced in Sec.~\ref{sec:weakequations}. We do so now.
 Recall that curvilinear elements $e \in \mathbb{E}$ are mapped to reference
 cubic elements $[-1,1]^d$.
 That is, each point $\tv x\in e$ corresponds to a reference cube coordinate $\tv\xi =\Phi_e^{-1}(\tv x)$, cf. Eq.~(\ref{eq:Phi_e}).
 
-%% \red{\sout{
-%% Along each dimension $\xi\in[-1,1]$, we expand in Lagrange
-%% polynomials,}
-%% \begin{equation}
-%%   l_i(\xi) := \prod_{j \neq i}^{p_e + 1} \frac{(\xi-\xi^{(j)})}{\xi^{(i)} - \xi^{(j)}} \quad i \in \{0,\ldots,p_e\} \,.
-%% \end{equation}
-%% \sout{where $\{\xi^{(j)}\}$, $j=0,\ldots p_e$ are the Legendre-Gauss-Lobatto collocation points.  In $d>1$ dimensions, we employ a tensor product of Lagrange polynomials in each coordinate, resulting in basis-functions}
-%% %
-%% \begin{equation}
-%% \label{eq:Lagrange_Basis}
-%% \psi_\alpha (\tv \xi) \rightarrow
-%% \psi_{ij\ldots k}(\tv\xi) = l_{i}(\xi_1)l_{j}(\xi_2)\ldots l_{k}(\xi_d),\\
-%% \end{equation}
-%% \sout{and collocation points}
-%% \begin{equation}
-%% \label{eq:LGL-grid}
-%% \tv\xi^\alpha=(\xi^{(i)}, \xi^{(j)}, \ldots, \xi^{(k)}).
-%% \end{equation}
-%% \sout{In Eq.~(\ref{eq:Lagrange_Basis}), the subscript $\xi_i$ indicates the $i$-th component
-%%   of the vector $\tv \xi\in[-1,1]^d$. Furthermore, lower greek letters iterate
-%%   over all $N_e=(p_e+1)^d$ index-combinations $ij\ldots k$}
-%% }
-
 Along each dimension $\xi_i\in[-1,1]$, where the subscript
   $i\in\{1,\ldots,d\}$ denotes dimension, we first choose
 $N_i + 1$ Legendre-Gauss-Lobatto collocation points
-%\footnote{\red{It is understood that the polynomial degree can vary between elements.}}
   $\xi^\mathrm{LGL}_{\alpha_i}$. The index
   $\alpha_i\in\{1,\ldots,N_i+1\}$ identifies the point along dimension
   $i$. We take $N_i\geq 1$ so that the points with $\xi_i=-1$ and
@@ -584,7 +415,6 @@ and employ their tensor product to define the $d$-dimensional basis functions
 \psi_\alpha(\tv \xi) = \prod_{i=1}^d l_{\alpha_i}(\xi_i) \text{.}
 \end{equation}
 
-
     When evaluating $\psi_\alpha$ in the physical coordinates $\tv x\in e$, one uses $\Phi_e^{-1}:\tv x\to \tv \xi$ to map the function argument. For instance, the set of test-functions on element $e\in \mathbb{E}$ becomes
   \begin{equation}
   V_{h,e,p_e}=\mbox{span}\left\{\,\Phi_e^{-1}\circ\psi_\alpha\,\right\}.
@@ -597,7 +427,6 @@ where $u^e_\alpha:= u^e_h\big(\tv \xi_\alpha^{\textrm{LGL}}\big)$.
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \subsubsection{Semi-Discrete Global Matrix Equations}
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %% \red{define ``semi-discrete''}
 
 The global solution over the entire mesh is the direct sum of the solutions on each element, that is
 %
@@ -615,8 +444,6 @@ With this, we may now turn Eqs.~\eqref{eq:lh2} and \eqref{equationFh2} into a gl
 Instead of forming the full global matrix $\mathbb{L}$ and performing the matrix-vector operator $\mathbb{L} \tv u$ over the global space, we can restrict the integrals in  \eqref{eq:lh2} and \eqref{equationFh2} to those pertaining to element $e$ and the mortar elements $m$ of $\partial e$, and perform elemental matrix-vector operations.
 
 Equation \ref{eq:semidiscrete} contains integrals and therefore represents only a semi-discrete set of equations. In the next section we show how to make Eq.~(\ref{eq:semidiscrete}) fully discrete by using quadrature to approximate the integrals.
-
-%% \red{[HP: The relation of this sub-section to the next is unclear.  How is the matrix equation discussed here related to the ones in the next subsection?  Does one need both sections? What does this section add?]}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Quadrature}
@@ -650,7 +477,7 @@ The Jacobian determinant is
  %
  where $j$ is the index of the reference coordinate which is constant on the surface under consideration (no sum-convention).
  For a mortar on a macro-element boundary, $S^m$ may change depending on which of the two macro-element mappings are used to compute Eqn.~(\ref{eq:Surface-Jacobian}). This ambiguity is not problematic as long as all quantities in a mortar integrand are transformed to the macro-element coordinate system in which $S^m$ is being computed.
- %% \red{[Harald:  Eq.~(\ref{eq:Surface-Jacobian}) assumes that each mortar element $m$ is associated with a cell $e$, from which to take the mapping $\Phi_e$.  This means an internal boundary is represented by \textit{two} $m$'s one each belonging to the 'left' and 'right' cell.  However, the text after Eq.~(\ref{eq:Phi_e}) is written such that there is only \textit{one} $m$ on each internal boundary.  Therefore, something seems to be missing here?  Is indeed each boundary represented by two $m$'s?   Or is it that  Eq.~(\ref{eq:Surface-Jacobian}) yields the identical result, no matter whether evaluated using the 'left' or 'right' $\Phi_e$?]}  \red{[NOTE ALSO COMMENT AFTER Eq.~(\ref{eq:Eta2_Local})]}
+%
 The normal is computed by
  %
 \begin{equation}
@@ -659,30 +486,6 @@ The normal is computed by
 %
 where $\text{sgn}$ is the signum function, where $j$ labels the dimension that is constant on the face under consideration (no sum-convention).
  
- % For $d = 2$, the surface Jacobian is
- 
-%  \begin{equation}
-%   S^m = \sqrt{\left(\frac{dx_1}{d\tau}\right)^2 + \left(\frac{dx_2}{d\tau}\right)^2}
-% \end{equation}
-
-% where the parametric curves $(\xi_1(\tau), \xi_2(\tau))$ parameterizes the mortar element and
-
-% \begin{equation}
-% \frac{dx_j}{d\tau} = \frac{\partial x_j}{\xi_1}\frac{d\xi_1}{d\tau} + \frac{\partial x_j}{\xi_2}\frac{d\xi_2}{d\tau}
-% \pageref{seq:1}% \end{equation}
-
-% For $d = 3$, the surface Jacobian is
-
-% \begin{equation}
-%   S^m = \left | \frac{\partial x_j}{\partial \tau}\times \frac{\partial x_k}{\partial \delta} \right|
-% \end{equation}
-
-% with the mortar element parameterized as $(\xi_1(\tau,\delta), \xi_2(\tau,\delta), \xi_3(\tau, \delta))$ and
-
-%   \begin{align}
-% \frac{\partial x_k}{\partial \tau} = \frac{\partial x_k}{\partial \xi_i}\frac{\partial \xi_i}{\partial \tau} && \frac{\partial x_k}{\partial \delta} = \frac{\partial x_k}{\partial \xi_i}\frac{\partial \xi_i}{\partial \delta} 
-%   \end{align}
-
 Let us now consider the stiffness integral in Eq.~(\ref{eq:lh2}). Because basis-functions are local to each element, we can consider each element $e$ individually, and we will omit the superscript $e$ to lighten the notational load.   Substituting the expansion of the solution $u_h=u_\alpha\psi_\alpha$, as well as $v=\psi_\beta$, the stiffness integral becomes
 %
 \begin{align}
@@ -690,13 +493,6 @@ Let us now consider the stiffness integral in Eq.~(\ref{eq:lh2}). Because basis-
   % \nonumber
   L^{\text{stiff}}_{h,e}(u_h, \psi_\beta) & = \int_e u_\alpha \frac{\partial\psi_\alpha}{\partial x_k}\frac{\partial \psi_\beta}{\partial x_k}\,\mathrm{d}\tv x.
   %
-  %
-  % \label{eq:Lstiff-in-xi}
-  % &= u_\alpha \int_{[-1,1]^3}
-  % J
-  % \frac{\partial \xi_l}{\partial x_k}\frac{\partial \psi_\alpha}{\partial \xi_l}
-  % \frac{\partial \xi_{l'}}{\partial x_k}\frac{\partial \psi_\beta}{\partial \xi_{l'}}
-  % \,\mathrm{d}\tv\xi 
   %
 \end{align}
 We recall that we employ the Einstein sum convention, i.e.\ Eq.~(\ref{eq:Lstiff-in-x}) has implicit sums over $\alpha$ and $k$. 
@@ -712,13 +508,6 @@ an integral in the reference coordinates, we obtain
 \begin{align}\label{eq:stiffness-3}
   L^{\text{stiff}}_{h,e}(u_h, v_h)
   %
-%  &= \int_e u_\alpha 
-%    (J^{-1})^l_kD^l_{\alpha\gamma}\psi_{\gamma}
-%    (J^{-1})^m_kD^m_{\beta\delta}\psi_{\delta}
-%    % \left[\frac{\partial \psi_i}{\partial \xi_l}(\tv \xi^{\eta})\psi_\eta\right]
-%  % \frac{\partial \xi_{l'}}{\partial x_k}
-%  % \left[\frac{\partial \psi_j}{\partial \xi_{l'}}(\tv\xi^\omega)\psi_\omega\right]
-%  \,\mathrm{d}\tv x \\
   %
 &  = u_\alpha \!
 \int\displaylimits_{[-1,1]^{d}}
@@ -731,13 +520,11 @@ an integral in the reference coordinates, we obtain
 \end{align}
   %
   %
-  % &= \frac{\partial \psi_i}{\partial \xi_l}(\tv \xi^\eta)\frac{\partial \psi_j}{\partial \xi_{l'}}(\tv\xi_m)\int_{[-1,1]^3} J \frac{\partial \xi_l}{\partial x_k} \psi_n  \frac{\partial \xi_{l'}}{\partial x_k}\psi_m\,\mathrm{d}\tv\xi \\
-  %
     %
 We evaluate the integral in Eq.~(\ref{eq:stiffness-3}) with Gauss-Legendre (GL) quadrature.
-This choice follows~(\cite{mengaldo2015dealiasing}) in the use of a stronger set of quadrature points
+This choice follows~(\citet*{mengaldo2015dealiasing}) in the use of a stronger set of quadrature points
  (higher order GL grids) to decrease the error in geometric aliasing.  We denote the GL abscissas and weights by $\xi_{\rm GL}^{(c)}$ and $w_{\rm GL}^{(c)}$, respectively, where $c=1,\ldots, N_{\rm GL}$.  In multiple dimensions these will be a tensor product of the 1-d GL abscissas and weights denotes by $\tv\xi^\sigma_{\rm GL}$ and $w^\sigma_{\rm GL}$, respectively.  All non-polynomial functions,
-including geometric quantities such $J, (J^{-1})^i_j, S^m, \Hat{\tv n}$, are evaluated directly at $\tv\xi^\sigma_{\rm GL}$, whereas polynomial functions like the trial
+including geometric quantities such as $J, (J^{-1})^i_j, S^m, \Hat{\tv n}$, are evaluated directly at $\tv\xi^\sigma_{\rm GL}$, whereas polynomial functions like the trial
 function $u_h$ and the test function $\psi_h$ ---which naturally are represented 
 on the Legendre-Gauss-Lobatto grid--- are interpolated to
 the GL--quadrature points. Denoting the interpolation matrix by $I_{\sigma\alpha}:=\psi_\alpha(\tv\xi^\sigma_{\rm GL})$, we find
@@ -752,67 +539,15 @@ L^{\text{stiff},e}_{\alpha\beta}
 \end{align}
 
 
-%% \red{[Starting from Eq.~(\ref{eq:stiffness-3}), Harald finds Eq.~(\ref{eq:harald-stiff}).  Harald cannot see how to get to the next line (now struck through), where index-pairs are differently placed.  Please check and correct as needed.]}
-
+%
 Here $I_{cm} = \psi_m(\xi^\zeta_{GL})$ is an interpolation matrix from
 the GLL points to the GL points.
 %
-%% $W_{cc}$ is a diagonal matrix equal
-%% to $w_{\sigma}\left(J (J^{-1})^l_k
-%% (J^{-1})^m_k\right)\Bigg|_{\xi^\sigma_{GL}}$.  \red{[Does this mean
-%%     $W$ has $d\times d$-matrices as entries?  If so, say so
-%%     explicitly]}
 %
 The other volume integrals in Eq.~(\ref{eq:lh3})
 are computed in a similar manner.
 
-%% The mortar integrals are a bit more
-%% involved \harald{owing to the two elements (named '+' and '-') that touch at each element $m\in\mathbb{M}$ of the mortar.  \sout{There are two sides that touch a mortar, which we denote as
-%% $-$ and $+$ and they belong to elements $e_-$ and $e_+$
-%% respectively.}}  Each of these elements has it's own basis functions,
-%% denoted by $\psi^-$ and $\psi^+$.  \harald{For test-functions $v_h$ that are a basis-function of the '-' element, we \sout{If we are computing the mortar
-%% integral for a basis function on the $-$ side, we would}} proceed as
-%% follows:
-%% %
-%% \begin{widetext}
-%% \begin{align}
-%% %  \nonumber
-%% %  L^{\text{pen}}_{m,h}(u_h, v_h) &=
-%%   L^{\text{pen}}_{m,h}(u_h, \psi^-_j) 
-%%   &= \int
-%%   %\displaylimits
-%%   _{m}\sigma \llbracket u_h \rrbracket_k \llbracket \psi^-_j \rrbracket_k \mathrm{d}\tv s \\
-%% %  &= \int\displaylimits_{m}\sigma \left(u_h^{-} - u_h^{+}\right) \psi^-_j\mathrm{d}\tv s \\
-%% %
-%%   &= \int
-%%   %\displaylimits
-%%   _{[-1,1]^{d-1}}\sigma \left(u_h^{-} - u_h^{+}\right)\psi^-_j\,S^m\,\mathrm{d}\tv\xi \\
-%%       &\approxeq \sum_{\sigma} w_\sigma \left(S^m\psi^-_j\sigma \left(u_h^{-} - u_h^{+}\right)\right)_{\xi_{GL}^\sigma} \\
-%%     % &= \sum_kL_{ik}\sum_j \left({\math\sigmaal{I}^-u^-}-{\math\sigmaal{I}^+u^+}\right)_j \int_e \psi^-_j \psi^-_k \,\mathrm{d}x \\
-%%     % &\approxeq \sum_{\sigma,k}L_{ik}(I^-)^T_{k\sigma}S^m_\sigma w_\sigma \left(I_{\sigmaj}^-u^-_j - I_{\sigmal}^+u^+_l\right)_{\xi^{GL}_\sigma}.
-%% \label{eq:temp-A}
-%%   &= \sum_{\alpha}(I^-)^T_{j\alpha}S^m_\alpha w_\alpha \sigma_\alpha\left(u_h^- - u_h^+\right)_{\alpha}. \\
-%%     &= \sum_{\alpha}(I^-)^T_{j\alpha}S^m_\alpha w_\alpha \sigma_\alpha\left(\sum_{j} u^-_h(\xi^-_j) \psi^-_j - \sum_{k} u^+_h(\xi^+_k) \psi^+_k\right)_\alpha. \\
-%% \label{eq:temp-B}
-%%   &= \sum_{\alpha}(I^-)^T_{j\alpha}S^m_\alpha w_\alpha \sigma_\alpha\left(\sum_{j} I^-_{\alpha j}u^-_h(\xi^-_j)  - \sum_{k} I^+_{\alpha k}u^+_h(\xi^+_k) \right). 
-%%     % &= \sum_{\alpha}(I^-)^T_{j\alpha}S^m_\alpha w_\alpha \alpha_\alpha\left(\sum_{j} I^-_{\alphaj}u^-_h(\xi^-_j)  - \sum_{k} I^+_{\alphak}u^+_h(\xi^+_k)\right).
-%%     % &= \sum_{\alpha}(I^-)^T_{j\alpha}S^m_\alpha w_\alpha \alpha_\alpha\sum_{j} u^-_h(\xi^-_j) \psi^-_j(\xi^{GL}_\alpha) - \sum_{k} u^+_h(\xi^+_k) \psi^+_k(\xi^{GL}_\alpha). \\
-%%     % &= \sum_{\alpha}(I^-)^T_{j\alpha}S^m_\alpha w_\alpha \sum_{j} I^-_{\alphaj}u^-_h(\xi^-_j)  - \sum_{k} I^+_{\alphak}u^+_h(\xi^+_k).
-%% \end{align}
-%% Here $(I^\pm)_{j\sigma} = \psi^\pm(\xi^\sigma_{GL})$.\\
-%% \red{Harald not fully sure about this derivation.  If it stays, a few
-%%     presentational things need to be fixed: (1) Before the equations,
-%%     introduce the GL-points on the face, their weights.  (2) Make type
-%%     of index of basis-function consistent, i.e.\ switch to lower-case
-%%     greek as in Eq.~(\ref{eq:temp-C}). (3) in Eqs.
-%%     and~(\ref{eq:temp-A}) and (\ref{eq:temp-B}), the $u_h^+(\xi^+_k)$
-%%     should be the expansion coefficient $u^+_\alpha$, see~(\ref{eq:GlobalExpansion}) (4) define $I^{\pm}$ carefully, i.e.\ with both indices.\\ 
-%%   \textit{However}, if there is no particular reason to point out fine detail of the transformations (e.g. if the final equation has a certain form that is important for, say, fast matrix-matrix products), then it may not be necessary to show the calculation at all.  Perhaps a rewrite like the following text would be in order:}
-%% \end{widetext}
-
-
-%% \harald{
-%% \red{[Harald simplified penality-discussion; previous version still in the latex file, commented out]}
+%
   The mortar integrals are a bit more
   involved owing to the extra book-keeping arising from the two elements (named '+' and '-') that touch at the boundary $m\in\mathbb{M}$, each with their own local basis-functions,
   denoted by $\psi^-_\alpha$ and $\psi^+_\alpha$.  Taking the penalty-integral as an example, for test-functions $v_h$ that are a basis-function of the '-' element, the definition Eq.~(\ref{eq:20}) yields
@@ -833,86 +568,14 @@ couple the two elements $e^\pm$.  Once the coefficients $u_\alpha^\pm$
 are moved outside the integral, the remaining integral only depends on
 basis-functions $\psi_\alpha^\pm$ and geometric quantities.  These integrals are
 evaluated with GL-quadrature, which is expressed in terms of interpolation matrices $I_{\alpha\rho}^\pm :=\psi^\pm_\alpha(\tv\xi^\rho_{\rm GL})$, where  $\rho$ labels the GL collocation points on the boundary $[-1,1]^{d-1}$ and $\alpha$ labels the local basis-functions in $e^\pm$, which are to be evaluated in the suitably mapped $\tv\xi_{\rm GL}$ locations.
-%% }
 % 
 %
-% \begin{widetext}
-% \begin{align}
-% \left(u_h^- - u_h^+\right)_\sigma &= \left(\sum_{j} u^-_h(\xi^-_j) \psi^-_j - \sum_{k} u^+_h(\xi^+_k) \psi^+_k\right)_\sigma \\
-% &= \sum_{j} u^-_h(\xi^-_j) \psi^-_j(\xi^{GL}_\sigma) - \sum_{k} u^+_h(\xi^+_k) \psi^+_k(\xi^{GL}_\sigma) \\
-% &= \sum_{j} I^-_{\sigmaj}u^-_h(\xi^-_j)  - \sum_{k} I^+_{\sigmak}u^+_h(\xi^+_k) \\
-% \end{align}
-% \end{widetext}
-
-% Finally, we will now show how to compute the quantities $(u_h^- -
-% u_h^+)_c$. $u_h^-$ and $u_h^+$ could be in different
-% polynomial spaces. Furthermore, these polynomial spaces may differ
-% from the one endowed on the mortar. Either way, in general we will
-% need to different interpolation matrices from the GLL points on the
-% element to the mortar quadrature points for $u^-$ and $u^+$, we will
-% denote these $I^-$ and $I^+$. Then:
 %
 
 %
-% \trevor{$\left(u^- - u^+\right)_c$ represents the difference of the solution on $e^-$ and $e^+$ at the mortar quadrature points $\{x_c\}$. To get the solution $u^-$ on the minus side onto the mortar quadrature points we must interpolate it from the face of the minus element $e^-$ and likewise for $u^+$. See Figure \ref{fig:mortar} for a example mortar where this computation is explained.}
-
-%% \begin{figure}
-%%   \label{fig:mortar}
-%% \centering
-%% \begin{tikzpicture}
-%% \begin{scope}[yscale=1,xscale=-1] 
-%% \draw[step=.5,black,thick] (4,0) grid (6,2.0);
-%% \draw[line width=2pt] (4,-.02) rectangle (6,2.02);
-%% \draw[step=.125,black,line width=.125pt] (1,1) grid (2,2);
-%% \draw[step=.33333,black,line width=.125pt] (1,0.02) grid (2,1);
-%% \draw[step=1,black,line width=1pt] (1,-.017) grid (2,2.02);
-%%  \draw[-][draw=red, very thick] (3,-.017) -- (3,1);
-%%  \draw[-][draw=green, very thick] (3,1) -- (3,2.02);
-%%  \draw (3-0.1,-.017) -- (3.1,-.017);
-%%  \draw (3-0.1,.25) -- (3.1,.25);
-%%  \draw (3-0.1,.5) -- (3.1,.5);
-%%  \draw (3-0.1,.75) -- (3.1,.75);
-%%  \draw (3-0.1,1) -- (3.1,1);
-%%  \draw (3-0.1,1.125) -- (3.1,1.125);
-%%  \draw (3-0.1,1.25) -- (3.1,1.25);
-%%  \draw (3-0.1,1.375) -- (3.1,1.375);
-%%  \draw (3-0.1,1.5) -- (3.1,1.5);
-%%  \draw (3-0.1,1.625) -- (3.1,1.625);
-%%  \draw (3-0.1,1.75) -- (3.1,1.75);
-%%  \draw (3-0.1,1.875) -- (3.1,1.875);
-%%  \draw (3-0.1,2.02) -- (3.1,2.02);
-%%  \node at (2.45,1.6) {$\mathcal{I}_{p}$};
-%%  \draw [->, thick] (2.2,1.3) -- (2.7,1.3);
-%% \node at (2.45,.6) {$\mathcal{I}_{p}$};
-%% \draw [->, thick] (2.2,.3) -- (2.7,.3);
-%% \node at (3.55,1.3) {$\mathcal{I}_{hp}$};
-%% \draw [<-, thick] (3.3,1.0) -- (3.8,1.0);
-%% \node at (3,-.4) {$\text{mortar}$};
-%% \end{scope}
-%% \end{tikzpicture}
-%% \medskip
-%% \caption{A representation of a 2:1 interface in two dimensions. On the
-%%   left we have a 4th-order element and on the right we have two
-%%   elements of degree 8 and degree 2 respectively. The data on the
-%%   faces of these three elements will be used in the mortar integrals
-%%   of equation \ref{eq:lh}, but since the interface is
-%%   non-conforming, we need to interpolate the face data to a shared
-%%   broken polynomial space on the mortar. To ensure that the face data
-%%   on each element is in a polynomial space which a subset of the
-%%   polynomial space on the mortar, we demand that the polynomial degree
-%%   p on the mortar is the maximum of the polynomial degrees on either
-%%   side. For the lower mortar face (red) this would be $\max(4,2) = 4$
-%%   and for the upper mortar face (green) this would be $\max(4,8) =
-%%   8$. Since the left element must interpolate it's face data to a
-%%   space containing two faces, we use the hp-interpolation operator
-%%   $\mathcal{I}_{hp}$. On the right side, each element has to map its
-%%   data from one face to one face, so we use the p-interpolation
-%%   operator $\mathcal{I}_p$.}
-%% \end{figure}
 
 
-
-\begin{figure}[ht!]
+\begin{figure}
   \label{fig:mortar}
 \centering
 \begin{tikzpicture}[thick,scale=0.6, every node/.style={scale=0.6}]
@@ -1086,13 +749,6 @@ evaluated with GL-quadrature, which is expressed in terms of interpolation matri
 \draw [fill=black,draw=black] (4.936684,5.958333) circle [radius=0.050000];
 \draw [fill=black,draw=black] (5.958333,5.958333) circle [radius=0.050000];
 
-%% \node at (8.000000,-0.400000) {\LARGE $\text{mortar}$};
-%% \node at (7.000000,3.410000) {\LARGE $I_{hp}$};
-%% \draw [->, line width=0.500000mm] (6.600000,3.000000) -- (7.400000,3.000000);
-%% \node at (9.000000,4.890000) {\LARGE $I_{p}$};
-%% \draw [->, line width=0.500000mm] (9.400000,4.500000) -- (8.600000,4.500000);
-%% \node at (9.000000,1.890000) {\LARGE $I_{p}$};
-%% \draw [->, line width=0.500000mm] (9.400000,1.500000) -- (8.600000,1.500000);
 
   \node at (8.000000,-0.400000) {\LARGE $\text{mortar}$};
 \node at (7.000000,3.60000) {\LARGE $I_{hp}$};
@@ -1126,7 +782,6 @@ evaluated with GL-quadrature, which is expressed in terms of interpolation matri
 
 \subsection{Penalty Function}
 
-%% \red{[Trevor: penalty parameter discussion is okay for now, but we should discuss further]}
 The penalty parameter $\sigma$ in Eqs.~(\ref{eq:lh}) and~(\ref{eq:lh2}) is a spatially dependent function on boundaries $m\in\mathbb{M}$, defined by
 \begin{equation}
 \label{eq:penaltyparameter}
@@ -1134,10 +789,9 @@ The penalty parameter $\sigma$ in Eqs.~(\ref{eq:lh}) and~(\ref{eq:lh2}) is a spa
 \end{equation}
 where $p_m$ and $h_m$ represent a typical polynomial degree and a typical length-scale of the elements touching at the boundary, respectively,  and where the parameter $C>0$ is large enough such
 that $L\left(\cdot, \cdot\right)$ is coercive. We choose $p_{m} = \max(p^+,p^-)$
-%% \red{[Harald:  this sentence leaves it ambiguous whether our definition of $h_m$ is also from~(\cite{bi2015posteriori}).  If 'yes', replace ``as this yielded'' by ``which we found to yield''.  If 'no', start a new sentence for the definition of $h_m$, to make it clear that the Ref.~(\cite{bi2015posteriori}) only applies to the choice for $p_m$]}
 and we set $h_{m} = \min(J^{+}/S^m,J^{-}/S^m)$ as this has yielded the best results empirically. Here $J^{\pm}$ is the
 volume Jacobian on $e^\pm$ mapping $[0,1]^d$ to $e^\pm$, and $S^m$ is the
-surface Jacobian mapping $[0,1]^{d-1}$ to the boundary face of $e^\pm$.
+surface Jacobian mapping $[0,1]^{d-1}$ to the boundary face of $e^\pm$. The general form of the penalty function, as the ratio of the polynomial order squared to the size of the element has been mathematically proven to keep $L\left(\cdot, \cdot\right)$ coercive on simpler meshes, that do not include stretched elements. As long as one chooses $h_{m} = \min(J^{+}/S^m,J^{-}/S^m)$, this penalty choice will also work for stretched elements.
   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1181,7 +835,7 @@ $\mathrm{J}_{R}(\tv u) \equiv \frac{\partial R}{\partial \tv u}(\tv u)$,
 %
 Newton-Raphson iteratively refines an initial guess for the solution
 $\tv u^{(k)}$ by solving the following 
-linear system for the correction $\delta \tv u^{(k)} = \tv u^{(k+1)} -
+linear system for the correction (no summation convention) $\delta \tv u^{(k)} = \tv u^{(k+1)} -
 \tv u^{(k)}$:
 %
 \begin{equation}
@@ -1191,29 +845,17 @@ linear system for the correction $\delta \tv u^{(k)} = \tv u^{(k+1)} -
 %
 Upon discretization as described in Sec.~\ref{sec:DGFEM}, Eq.~(\ref{eq:newtoncorrectionsystem}) results in
   a $\mathrm{N} \times \mathrm{N}$ linear system.
-%% \red{[HP: the original text had an ambigutity of whether one first discretizes and then applies Newton-Raphson, or whether one takes functional derivatives of the continuous solution.  I guessed you do the latter - please check and if not, correct text]}
 Once Eq.~(\ref{eq:newtoncorrectionsystem}) is solved, the improved solution is given by $\tv u^{(k+1)}=\tv u^{(k)}+\delta \tv u^{(k)}$.
   The Newton-Raphson iterations are continued until the residual $R(\tv u^{(k)})$ is sufficiently small. At each step, the linear system is solved by a linear solver we abbreviate as $LSOLVE$. The full algorithm is described in Algorithm~\ref{alg:newtonraphson}.
 
-%% At each step, the linear system Eq.~(\ref{eq:newtoncorrectionsystem})
-%% is solved using flexible conjugate gradients (FCG - a robust Krylov
-%% solver for symmetric problems)~(\cite{notay2015massively}) \nilsf{[you also mention GMRES below - combine these paragraphs?]} with a multigrid
-%% preconditioner.  We abbreviate this algorithm MGPCNK for
-%% multigrid-preconditioned Newton-Krylov, it is summarized in Algorithm~\ref{alg:newtonraphson}.
-
 %
-% See https://tex.stackexchange.com/questions/231191/algorithm-in-revtex4-1
-% for presence f figure-environment here
-\begin{figure}[ht!]
+\begin{figure}
 \begin{algorithm}[H]
   \caption{\label{alg:newtonraphson}
     Multigrid Preconditioned Newton-Krylov: Solves Eq.~(\ref{eq:Ru=0}).$N_{\text{iter,NK}}$ and $\text{tol}_{\text{NK}}$ are user-specified parameters.
  }
     \begin{algorithmic}[1]
       \Procedure{NK}{$u_0$}
-      %% \State Set initial guess $u_0$
-      %% \State k = 0
-      %% \red{[initialize $k$]}
       \State $k \leftarrow 0$
       \While {$k \leq N_{\text{iter,NK}}\;$  or $\;||R(u_k)|| \geq \text{tol}_{\text{NK}}$}
        \State  $\delta u_k\leftarrow $ LSOLVE($u_k$, $R(u_k)$, $\mathrm{J}_R(u_k)$) 
@@ -1230,14 +872,14 @@ For three-dimensional problems with a large number $\mathrm{N}$ of
 degrees of freedom, the Jacobian $\mathrm{J}$ is too large to form fully and partition across processes. For
 building a scalable solver, we are therefore limited to iterative
 solvers, the most popular class of which are the Krylov
-solvers~(\cite{saad2003iterative}) such as the Conjugate Gradient method or GMRES,
+solvers~(\citet*{saad2003iterative}) such as the Conjugate Gradient method or GMRES,
 which only involve matrix-vector operations. In this paper we use the
-flexible conjugate gradient Krylov~(\cite{notay2000flexible}) solver at each
+flexible conjugate gradient Krylov~(\citet*{notay2000flexible}) solver at each
 Newton-Raphson step, as summarized in Algorithm~\ref{alg:FCG}, where
 $u_0$ denotes the initial guess of the linear solver, and
 $N_{\text{its}}$ is the number of iterations.
 
-\begin{figure}[ht!]
+\begin{figure}
   \begin{algorithm}[H]
     \caption{\label{alg:FCG}
     Flexible Conjugate Gradients: Solves Eq.~(\ref{eq:newtoncorrectionsystem}), with the variable $u$ representing $\delta u^{(k)}$. $N_{\text{iter,FCG}}$ and $\text{tol}_{\text{FCG}}$ are user-specified parameters.}%
@@ -1274,25 +916,20 @@ iterations to reach a desired accuracy, where the condition number
 $\kappa$ is defined as the ratio of the maximum eigenvalue and minimum
 eigenvalue of $\mathrm{J}_R$. For the  discontinuous
 galerkin method, the discretized Laplacian matrix has a condition
-number that grows with p-refinement and h-refinement (see (\cite{antonietti2011class,hesthaven2008nodal}) for example) and therefore the number of iterations will grow with each AMR step unless Eq.~(\ref{eq:newtoncorrectionsystem}) is preconditioned.
-
-%% and therefore asymptotically reaches %% $\mathcal{O}(p^4/h^2)$
-%% (\cite{antonietti2011class}) \nilsf{[I find $p^3/h^2$ empirically, should we/I make more tests to make this more precise?]}, so the number of iterations will grow as
-%% the mesh is h-or-p refined,
-
+number that grows with p-refinement and h-refinement (see (\citet*{antonietti2011class,hesthaven2008nodal}) for example) and therefore the number of iterations will grow with each adaptive mesh refinement (AMR) step unless Eq.~(\ref{eq:newtoncorrectionsystem}) is preconditioned.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Multigrid preconditioner}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-We use a multigrid V-cycle~(\cite{briggs2000multigrid}) as a preconditioner for each
+The Jacobian matrix $\mathrm{J}_R$ in Eqn.~\ref{eq:newtoncorrectionsystem} can be ill-conditioned, which means that it's condition number, $\kappa$, will be large. As discussed in the previous section linear solvers converge slower when the condition number is large. To solve this problem, a preconditioner is used. A preconditioner is an approximate inverse of the Jacobian matrix. When applied to the Jacobian, the product of these two matrices is approximately the identity matrix, which has the lowest condition number. When a preconditioner is applied to the Jacobian the number of iterations can be substantially reduced.
+We use a multigrid V-cycle~(\citet*{briggs2000multigrid}) as a preconditioner for each
 FCG solve (called on line 4 in Algorithm~\ref{alg:FCG}). 
 Multigrid is an multi-level iterative method aimed at achieving
 mesh-independent error reduction rates through a clever method of
 solving for the error corrections on coarser grids and prolonging the
 corrections to the finer grids. For a detailed overview of multigrid
-methods see~(\cite{briggs2000multigrid}). The main drawback of multigrid
+methods see~(\citet*{briggs2000multigrid}). The main drawback of multigrid
 is its complexity. In this section we will briefly describe the
 components of the multigrid algorithm employed in solving problems in
 this paper with hp-grids in parallel with the interior penalty
@@ -1305,11 +942,6 @@ discontinuous Galerkin method.
 
 Multigrid uses a hierarchy of coarsened meshes, labeled with
 $l=0, \ldots L$, where $l=L$
-%% \red{[must use consistent notation. In
-%%       the Algorithms, $L$ denoted the finest grid.  In
-%%       Fig.~\ref{fig:vcycle}, it is $N$.  Harald used $L$ here to avoid
-%%       symbol overload with $N$=size of matrix.  Uniquify notation and
-%%       remove this red]}
 represents the fine mesh $\mathbf{E}$ on which the solution is
 desired, and $l=0$ represents the coarsest mesh.  One V-cycle proceeds
 from the fine grid to the coarsest grid, and back to the fine grid, as
@@ -1318,9 +950,9 @@ $l=L-1, \ldots 0$ by successively coarsening. Coarsening by
   combining $2^d$ elements into one element can lead to interfaces
   with a 4:1 balance, even if the original mesh is 2:1 balanced.  We
   avoid such 4:1 balance with
-surrogate meshes, which have been used before in large-scale FEM
+surrogate meshes, which have been used before in large-scale finite element method
 multigrid solvers, see for example
-(\cite{sampath2008dendro,sundar2012parallel}).  A surrogate mesh is the
+(\citet*{sampath2008dendro,sundar2012parallel}).  A surrogate mesh is the
 naively h-coarsened mesh, as indicated in blue in
 Fig.~\ref{fig:vcycle}.  If the surrogate mesh has indeed interfaces
 with 4:1 balance, the desired 2:1 balance is enforced by refining at
@@ -1330,34 +962,35 @@ at each coarsening the coarse level $l-1$ mesh is strictly
 coarser than the level $l$ fine mesh.  Following this, we must make a decision as to what
 polynomial degree we choose for the coarsened elements. We take the minimum polynomial degree of the $2^{d}$
 children elements for each parent element of the coarsened mesh, ensuring that functions on the coarse grid can be represented exactly on the fine mesh, a property we will utilize below in Eq.~(\ref{eq:psi-interpolation}). Lastly, it is important to note that we never purely p-coarsen on any of the multigrid levels.
-%% \red{[The preceeding discussion implies that there is never ``pure'' p-coarsening.  E.g. if you start with a fine-mesh that has everywhere $p=6$, then the same polynomial degree is still used on all coarse meshes.  Please comment on this in the actual text, and clarify whether there is \emph{ever} p-coarsening. ] }
 We do not store the multigrid meshes
 because we have empirically shown that the coarsening, refining and
 balancing is not the bottleneck for the multigrid algorithm.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%multigrid_hiearchy_begin 
+%
+\usetikzlibrary{arrows,positioning} 
 \begin{figure}[ht!]
+  \centering
 \includegraphics[width=\textwidth]{chap2/figures/general/multigrid_hierarchy.png}
 \caption{
   \label{fig:vcycle}
   A structural representation of a multigrid v-cycle. The nodes in yellow are actual grid-levels, while the nodes in blue represent surrogate grids which are not necessarily 2:1 balanced. In order for a multigrid v-cycle to represent a symmetric operation, the grid levels along the down arrow are exactly the same as the grid-levels along the up arrow. Level 0 represents the coarsest possible mesh.} 
 \end{figure}
-%multigrid_hiearchy_end
+
+%
 %
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Multigrid algorithm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-\begin{figure}[ht!]
+\begin{figure}
   \begin{algorithm}[H]
     \caption{\label{alg:Multigrid_Vcycle}
       Multigrid Preconditioner Vcycle.\\
       $L$ denotes the number of multigrid Levels.}
     \begin{algorithmic}[1]
       \Function{Vcycle}{$f_L,\mathrm{J}_L$}
-      %% \State $f_l \leftarrow f_L$  \red{[Harald:   Algs.~1 and 2 used equal-signs for assignment, but Alg.~3 uses a left-arrow, and Algs. 4+5 mix both.  Use consistent notation throughout \textbf{ALL} algorithms.]}
       \For {$l = L, 1$}
       \State $v_l \leftarrow 0$
       \State $v_l \leftarrow \text{SMOOTHER}(v_l,f_l,\mathrm{J}_l)$ 
@@ -1379,43 +1012,30 @@ balancing is not the bottleneck for the multigrid algorithm.
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%% \red{[Algorithm \ref{alg:Multigrid_Vcycle} indicates that the coarse meshes are constructed \emph{anew} in \emph{each} iteration of the multi-grid.  Harald would have expected that the grids are constructed \emph{once} before the multi-grid is started.  Which is it?  Please make language clear.]}
-%
 Having constructed the coarse meshes, we can now turn to the
   multigrid algorithm, summarized in
   Algorithm~\ref{alg:Multigrid_Vcycle}.  It consists of several
-  important components: Smoothing (line 7 and 16), coarsening and
-  balancing of the mesh (line 8 and 9), restriction (line 10), a
-  bottom solver (line 12) and prolongation (line 15). We now look
+  important components most importantly smoothing and inter-mesh operators like coarsening,  balancing of the mesh, restriction and prolongation. We now look
   at each of these in turn.
-%
-%
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Multigrid Smoother}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-We explore two different smoothers, Chebyshev smoothing and a Schwarz smoother.  Both of these avoid explicit storage of the matrix, as required by smoothers like the Gauss-Seidel method~(\cite{shang2009distributed}).
+We explore two different smoothers, Chebyshev smoothing and a Schwarz smoother.  Both of these avoid explicit storage of the matrix, as required by smoothers like the Gauss-Seidel method~(\citet*{shang2009distributed}).
 
-Chebyshev smoothing~(\cite{li2011chebyshev}), a type of polynomial
-smoother~(\cite{saad2003iterative})
+Chebyshev smoothing~(\citet*{li2011chebyshev}), a type of polynomial
+smoother~(\citet*{saad2003iterative})
 requires only matrix-vector operations and has been shown to work
 satisfactorily in scalable multigrid
-solvers~(\cite{ghysels2012improving}).  Our implementation of
-Chebyshev smoothing (\cite{li2011chebyshev}) is presented in
+solvers~(\citet*{ghysels2012improving}).  Our implementation of
+Chebyshev smoothing (\citet*{li2011chebyshev}) is presented in
 Algorithm~\ref{alg:Chebyshev_Smoother}. For this algorithm there are two user-defined parameters: $N_\text{iter,Cheb}$ and $\Lambda$. Typical values we use for $N_\text{iter,Cheby}$ are in the range $8-15$ and $\Lambda$ is usually set in the range $10-30$.
 %
 %
-\begin{figure}[ht!]
+\begin{figure}
   \begin{algorithm}[H]
     \caption{Chebyshev Smoothing\\ $N_\text{iter,Cheb}$ and $\Lambda$ are user-defined parameters.
-      %% \red{Give values of $\Lambda$ in the main text}
-      %% \red{Make function arguments consistent with Alg.~3 line 7}\\
-      %% \red{Add return statement, to indicate what is returned into Alg.~3}\\
-      %% \red{change line 2 to indicate that x is also returned from CGEIGS (i.e.\ the smoothing performed inside CGEIG)}\\
-      %% \red{$J$ in line 7 is not defined.  Add the Jacobian as another parameter to SMOOTHER, and pass in $J_l$ in Alg.~3, and catch it here as $J$.}
-      %% \red{[remove parameters $N_s$ and $N_{\rm eig}$ from argument list]}
-      %% \red{[Make sure $\kappa$ is set somewhere, and that it is passed consistently through the algorithms (compare Alg.~2/Line 4  with Alg.3/Line 1).  Since it is only used inside SMOOTHER, perhaps define right here?]}
 }\label{alg:Chebyshev_Smoother}
     \begin{algorithmic}[1]
       \Function{SMOOTHER}{$x, b, \mathrm{J}$}
@@ -1444,25 +1064,8 @@ Algorithm~\ref{alg:Chebyshev_Smoother}. For this algorithm there are two user-de
 \end{figure}
 %
 Chebyshev polynomial smoothers require a spectral bound on the
-eigenvalues of the linear operator. We use conjugate gradients to estimate the eigenvalues of a general symmetric linear operator, as implemented in Algorithm~\ref{alg:CG_Spectral_Bound_Solver}.  It can be shown~(\cite{scales1989use}) that each iteration of conjugate gradients obtains one row of the underlying linear operator in tri-diagonal form:
-% \begin{equation*}
-%     \left(
-%     \begin{array}{ccccccc}
-%       \frac{1}{\alpha_1} & - \frac{\sqrt{\beta_2}}{\alpha_1}  & & \\
-%       & & & & \\
-%       - \frac{\sqrt{\beta_2}}{\alpha_1} & \frac{1}{\alpha_2} + \frac{\beta_2}{\alpha_1} & - \frac{\sqrt{\beta_3}}{\alpha_2} & & \,\,\, &  \text{\Huge 0} & \\
-%             & & & & \\
-%                        & -\frac{\sqrt{\beta_3}}{\alpha_2} & \frac{1}{\alpha_3} + \frac{\beta_3}{\alpha_2} &  \quad \ddots             \\
-%                        &\quad\quad\quad\quad\ddots  &     & \ddots  &   \quad\ddots          \\
-%       & &\ddots &  &  \ddots &  \ddots & \\
-%                          & \text{\Huge 0} &  & \ddots  &  &   \quad\ddots  &-\frac{\sqrt{\beta_k}}{\alpha_{k-1}} \\
-%       & & & & \\
-%                        &      &       &    &  &\frac{-\sqrt{\beta_k}}{\alpha_{k-1}}  & \frac{1}{\alpha_k} + \frac{\beta_k}{\alpha_{k-1}}
-%     \end{array}
-%     \right)
-% \end{equation*}
+eigenvalues of the linear operator. We use conjugate gradients to estimate the eigenvalues of a general symmetric linear operator, as implemented in Algorithm~\ref{alg:CG_Spectral_Bound_Solver}.  It can be shown~(\citet*{scales1989use}) that each iteration of conjugate gradients obtains one row of the underlying linear operator in tri-diagonal form:
 
-%% \red{[Connect Eq.~(\ref{eq:tridiag}) into the main-text]}
 \begin{equation}\label{eq:tridiag}
     \left(
     \begin{array}{ccccc}
@@ -1478,25 +1081,16 @@ The values $\alpha_k$ and $\beta_k$ in this expression are obtained
   from the conjugate gradients algorithm~\ref{alg:CG_Spectral_Bound_Solver} on lines 6 and 9. Furthermore,
 the eigenvalues of each of the sub tri-diagonal matrices is a subset
 of the eigenvalues of the full matrix. So at each iteration we can get
-an estimate of the bound by using the Gershgorin circle theorem ~(\cite{bell1965gershgorin}). Our Alg.~\ref{alg:CG_Spectral_Bound_Solver} combines the CG steps with the estimation of the bound $\lambda_{\rm max}$ of the largest eigenvalue.
-
-
+an estimate of the bound by using the Gershgorin circle theorem ~(\citet*{bell1965gershgorin}). Our Alg.~\ref{alg:CG_Spectral_Bound_Solver} combines the CG steps with the estimation of the bound $\lambda_{\rm max}$ of the largest eigenvalue.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[ht!]
+\begin{figure}
   \begin{algorithm}[H]
     \caption{\label{alg:CG_Spectral_Bound_Solver}
       CG Spectral Bound Solver\\ $N_{\rm{iter,eigs}}$ is a user-defined parameter.
-      %% \red{the N defined in Line 2 is not used.  Remove?}
-      %% \red{indices inconsistent: before the loop, $x_0$ and $r_0$ are initialized, but in the first pass through the loop ($k=1$), $r_1$ and $p_1$ are accessed.  Please decide on a most sensible resolution of this. Perhaps, inside the loop shift $r_k$, $p_k$, $x_k$ from $k$ -> $k-1$.  Then all data with subscipt $k$ is computed in the $k$-th loop.}\\
-        %% \red{Also return $x_{N_{\rm its}}$ to indicate that the smoothed residual $x$ is then used in Alg.~4.  (if this is indeed what happens!)}\\
-        %% \red{Middle line of line 11, $k=2\ldots N_{\rm its}-1$}\\
-        %% \red{Last line of line 11, $N_{\rm its}$}
-        %% \red{}
     }
     \begin{algorithmic}[1]
       \Function{CGEIGS}{$x_1, b, \mathrm{J}$} 
-      %% \State $N \leftarrow \rm{size}(x_1)$
       \State $r_1 \leftarrow b - \mathrm{J}x_1$  
       \State $p_1 \leftarrow r_1$
       \State $\lambda_{\rm{max}} \leftarrow 0$
@@ -1516,34 +1110,21 @@ $\;
 \EndFor\\
 \Return $\lambda_{\rm{max}},x_{k + 1}$ 
   \EndFunction
-  %% \Function{Tk-Gergshgorin}{$N_s$}
-  %% \If {k > 0}
-  %%     \State $\gamma_k = v_k^Tq_{k-1}$
-  %%     \State $d_k = v_k - (\gamma_k/\rho_{k-1})d_{k-1}$
-  %%     \State $q_k = w_k - (\gamma_k/\rho_{k-1})q_{k-1}$
-  %%     \State $\rho_k = \beta_k - \gamma^2_k/\rho_{k-1}$
-  %%     \ElseIf {k > 0}
-  %%     \State $d_k = v_k$
-  %%     \State $q_k = w_k$
-  %%     \State $\rho_k = \beta_k$
-  %%     \Else
-  %%     \EndIf
-  %% \EndFunction
     \end{algorithmic}
   \end{algorithm}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Besides estimating the spectral radius, we also use the CG iterations to further smooth the
-solution. This adds robustness to multigrid algorithms (\cite{elman2001multigrid}).
+solution. This adds robustness to multigrid algorithms (\citet*{elman2001multigrid}).
 
-While the Chebyshev smoother is easy to implement, it is reliant on a robust estimate of the largest eigenvalue and this may not be always true in our case. Thus we also implement an additive Schwarz smoother in the manner of (\cite{stiller2017robust}), which is much more robust. The Schwarz smoother works by performing local solves on element-centered subdomains and then adding a weighted sum of these local solves to obtain the smoothed solution. A simple example of one of these subdomains (where the grid is both p and h-uniform) is shown in Figure~\ref{fig:schwarz_subdomain}.
-%% \red{[Harald: This is my understanding of how the Schwarz subdomain is formed.  Trevor, please adjust as needed]}
+While the Chebyshev smoother is easy to implement, it is reliant on a robust estimate of the largest eigenvalue and this may not be always true in our case. Thus we also implement an additive Schwarz smoother in the manner of (\citet*{stiller2017robust}), which is much more robust. The Schwarz smoother works by performing local solves on element-centered subdomains and then adding a weighted sum of these local solves to obtain the smoothed solution. A simple example of one of these subdomains (where the grid is both p and h-uniform) is shown in Figure~\ref{fig:schwarz_subdomain}.
+%
 More generally, the Schwarz subdomain centered on element $e_c$
   of the mesh is constructed as follows: Starting with all collocation
   points on $e_c$, one adds all boundary points of neighboring elements
   which coincide with faces, vertices or corners of $e_c$.  Around these
-  initial set of collocation points on neighboring elements, one then
+  collocation points, one then
   adds $N_{\rm overlap}-1$ layers of additional collocation points (in Fig.~\ref{fig:schwarz_subdomain}, $N_{\rm overlap}=2$).  If the mesh has non-uniform $h$ or $p$ refinement, the resulting set of collocation points will have ragged boundaries.
 
 \begin{figure}[ht!]
@@ -1551,8 +1132,6 @@ More generally, the Schwarz subdomain centered on element $e_c$
 \begin{tikzpicture}[thick,scale=0.75, every node/.style={scale=0.8}]
 \draw [fill=gray!30, draw=black] (7.500000,7.500000) rectangle (1.500000,1.500000);
 \draw [fill=gray!90, draw=black] (6.000000,6.000000) rectangle (3.000000,3.000000);
-%% \draw [<->, line width=0.600000mm] (1.500000,2.000000) -- (3.000000,2.000000);
-%% \node at (2.250000,2.500000) {\LARGE $\delta_0$};
 \draw [fill=none, draw=black] (3.000000,3.000000) rectangle (0.000000,0.000000);
 \draw [fill=black,draw=black] (0.075000,0.075000) circle [radius=0.050000];
 \draw [fill=black,draw=black] (1.500000,0.075000) circle [radius=0.050000];
@@ -1648,7 +1227,7 @@ More generally, the Schwarz subdomain centered on element $e_c$
   p-nonconforming boundaries. In grey is the element $e$ which is the
   center of the subdomain. The light grey area is the overlap (of size
   $\delta_\xi$) into the other elements. The subdomain is composed of
-  everything in light and dark grey.  %% \red{[remove $\delta_0$.  ]}
+  everything in light and dark grey. 
 }
 \label{fig:schwarz_subdomain}
 \end{figure}
@@ -1673,27 +1252,12 @@ where $\xi^*$ is the LGL coordinate of the collocation point $x$ in the referenc
   these definitions we compute the weights for this 1-D subdomain using
   the function $w_h:\mathbb{R}\to\mathbb{R}$ defined as
   
-  %% For a collocation point $\tv
-  %% x$ of the subdomain centered on element $e$, the weight is computed
-  %% as follows: First, $\tv x$ is mapped into reference coordinates,
-  %% $\tv\xi = \Phi_e^{-1}(\tv x)$.  For collocation points outside of $e$
-  %% this yields $\tv\xi$ outside of the reference cube $[-1,1]^d$, and
-  %% we assume that the range of $\Phi_e$ can be extended to encompass
-  %% $\tv x$ (this is the case for all problems presented here).
-  
-  %% The weight of this collocation point is now computed as a
-  %% product of 1-dimensional weights along each dimension,
-  %% \begin{equation}
-  %%   w = \prod_{i=1}^{d} w_h(\xi_i).
-  %% \end{equation}
-
 \begin{equation}
   \label{eqn:schwarz_weight}
   w_h(\xi_{\text{ext}}) = \frac{1}{2}\left(\phi\left(\frac{\xi_{\text{ext}}+1}{\delta_\xi}\right) - \phi\left(\frac{\xi_{\text{ext}}-1}{\delta_\xi}\right)\right),
 \end{equation}
 %
-where the $\phi$ function is given by
-%% \red{[Eq.(25) uses 'sgn', here it is 'sign'.  Unify notation.  And define the 'sgn' function once near Eq.(25).]}
+where the $\phi$ function is given by a piecewise polynomial hat function
 %
 \begin{equation}
 \phi(\xi) = \begin{cases} 
@@ -1702,7 +1266,7 @@ where the $\phi$ function is given by
    \end{cases}
 \end{equation}
 We have plotted the weighting function $w_h$ in
-Figure~\ref{fig:schwarz_weight}.
+Figure~\ref{fig:schwarz_weight}. The weighting function has this form because the local Schwarz solutions will be the most accurate near the center of the Schwarz subdomain and less accurate further away. Hence we want the weighting function to be largest over the center element.
 
 For Schwarz subdomains in d-dimensions, the weights are computed
 as a product of 1-dimensional weights along each dimension,
@@ -1713,7 +1277,7 @@ as a product of 1-dimensional weights along each dimension,
 
 %
 For the Schwarz subdomain solves we
-need to define the following operators\harald{\sout{,}:} $R_s$ is the restriction
+need to define the following operators: $R_s$ is the restriction
 operator for a Schwarz subdomain, it reduces the data on the mesh to
 the nodes of the subdomain. $R_s^T$ is the transpose of this
 operator. $W_s$ are the weights for a Schwarz subdomain, computed by
@@ -1724,16 +1288,16 @@ Alg.~\ref{alg:schwarz_smoother}, $N_s$ indicates the number of
 smoothing cycles (typically, $N_s=3$), $N_{subs}$ indicates the number of subdomains which for our implementation is equal to the number of elements. The linear
 system on line 6 of Alg.~\ref{alg:schwarz_smoother} is of the size of the Schwarz-subdomain; we solve it with conjugate gradients to a relative tolerance of $10^{-3}$.
 
-\begin{figure}[ht!]
+\begin{figure}
   \centering
-  \includegraphics[width=.75\textwidth,trim=15 0 25 25,clip=true]{chap2/figures/general/schwarz_weighting_fcn.png}
+  \includegraphics[width=0.75\textwidth,trim=15 0 25 25,clip=true]{chap2/figures/general/schwarz_weighting_fcn.png}
 \caption{
   \label{fig:schwarz_weight}
   A plot of the Schwarz weighting function defined by Eq.~(\ref{eqn:schwarz_weight}). The dark grey shaded region is the center element of the Schwarz subdomain  $e_c$  and the light grey shaded region is the overlap of width $\delta_\xi$. For this plot, we set $\delta_\xi = .25$.
 }
 \end{figure}
 %
-\begin{figure}[ht!]
+\begin{figure}
   \begin{algorithm}[H]
     \caption{\label{alg:schwarz_smoother}
       Schwarz Smoother\\ $N_{\text{iter,Sch}}$ is a user-defined parameter.
@@ -1759,8 +1323,6 @@ system on line 6 of Alg.~\ref{alg:schwarz_smoother} is of the size of the Schwar
 \subsubsection{Multigrid Inter-mesh Operators}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% \red{[After working through this section again, Harald realized that there are few enough equations with indices, that it was quite simple to switch them to consistent usage of greek indices.  Harald did so.]}
-
 Let us now turn to the implementation of restriction and prolongation operators.
 For clarity, we use the
 following notation: a superscript lowercase h refers to the children
@@ -1773,19 +1335,16 @@ its children. In particular, the coarse-mesh basis-functions can be written, exa
 \begin{equation}\label{eq:psi-interpolation}
   \psi_\alpha^{H}=(I_{h}^{H})_{\beta\alpha}\psi_\beta^{h},
 \end{equation}
-%% \red{[Note Harald added greek indices to the equation above and the next line.  Including changing the index-placement on $\tv\xi^\beta_h$ for consistency with Eq.~(\ref{eq:LGL-grid}).  Trevor, if you agree with that index-placement and greek indices, please propagate further down]}
+%
 where $(I_{h}^{H})_{\beta\alpha}=\psi_\alpha^H(\tv \xi^\beta_h)$ is the interpolation-matrix
 of the coarse-mesh basis-functions to the fine-mesh collocation
 points, and where we utilized our choice of a \emph{nodal} basis.
-%% \red{[Note that harald defined $I$ as the transpose of Trevor's symbol.  This simplifies notation in this passage, removing several transpose-t's.  However, it may be inconsistent with other passages of this paper and/or other literature.  So, Trevor, you decide on index ordering on $I$]}
-%% \trevor{[Trevor: This definition of the interpolation matrix is standard (see Hesthaven) and it is the one we actually compute, it does lead to more transposes, but I don't want to confuse readers of Hesthaven. To get rid of the transpose problem I only show the transpose if there are no indices (e.g. abstract matrix notation - see final operator equation of this section), otherwise I just flip the indices and remove the transpose sign]}
+
 For
 $h$-refinement, each $\psi_\beta^{h}$ has support in only one of the
 child-elements and, consequently, the implicit sum over $\beta$ in
 Eq.~(\ref{eq:psi-interpolation}) goes over the basis-elements of all
 children elements.
-
-%% \red{[Here and in the rest of this section:  Unify usage of 'operator' and 'matrix'  (interpolation-operator vs. interpolation-matrix).  Alsom, check all index-placements, as Harald didn't quite understand your conventions when he started to reorder text.]}
 
 The preceding paragraph immediately suggests the natural definition of the prolongation operator from a coarse-grid function $u^{H}\!=\!u^{H}_\alpha\psi_\alpha^{H}$ to a fine-grid
   function $u^{h}\!=\!u^{h}_\beta\psi_\beta^{h}$ such that $u^{h}\equiv u^{H}$.   This yields
@@ -1798,30 +1357,6 @@ Because the left hand side operator for the weak equations ---e.g. $L(\cdot,\cdo
     B(\,\cdot\,, \,\psi_\alpha^{H})=(I_{h}^{H})_{\beta\alpha}B(\,\cdot\,,\psi_\beta^{h}),
   \end{equation}
   which defines our coarse grid residual.
-%% \harald{\sout{For restricting the residual} As restriction operator,} we use the transpose of the interpolation
-%% operator. \harald{\sout{This comes from the fact that}  Because} the residual is a bilinear
-%% form $B(\,\cdot\,,\cdot)$\harald{, it holds \sout{ and therefore we have:}}
-%% %
-%% \begin{align}
-%%   B(\, \cdot\,, \psi^{h}_j) &= B(\, \cdot \,, \sum_i\psi^{h}_j(\xi^{h}_i)\psi^{h}_i ) \\
-%%                   &= \sum_i\psi^{h}_j(\xi^{h}_i) B(\, \cdot \,, \psi^{h}_i ) \\
-%%                   &= (I^{h}_{h})^T_{ji} B(\, \cdot \,,\psi^{h}_i ),
-%% \end{align}
-%% \harald{\sout{For prolonging the solution, we want an operator which will take the
-%% error corrections on coarse meshes and represent them on fine
-%% meshes.}
-%%   The prolongation-operator ideally allows to represent the correction exactly on the finer mesh, which is achieved by \sout{
-%% We can represent the error corrections on the finer meshes
-%% exactly if we do two things. First, when we coarsen, we demand that} (i)}
-%% the choice of polynomial order of the parent element as the minimum polynomial order of its $2^d$
-%% children\harald{, ensuring that \sout{.  With this demand,}} the parent elements will have a Lagrange
-%% polynomial space embedded in the broken lagrange polynomial space of
-%% its children \harald{\sout{ and we can then guarantee that the solution corrections
-%% will be exactly represented in the new mesh.  Second, if we use the
-%% lagrange interpolation operator as our prolongation operator, this
-%% will ensure the error corrections are represented in the finer space.} And, (ii) the prologation operator is chosen to be the Lagrange interpolation $(I_{h}^{h})_{ij}$.}
-
- %% \red{[Please double-check, original eqns for the residual operator still commented out in tex]}
 
 Lastly, let us consider restriction of the operators itself.  After linearization  around the current solution $u_0$, the problems we consider here take the form
 %
@@ -1830,7 +1365,6 @@ Lastly, let us consider restriction of the operators itself.  After linearizatio
 \end{equation}
 %
 for some function $f$. The associated weak form reads
-%% \red{Use either $u$ or $\delta u$ consistently.  Also define $u_0$ ni next eqns.  Probably best to add words ``'' in last sentence before Eq.~(\ref{eq:temp-F})?}
 %
 \begin{equation}
 L_{h}( \delta u, \psi_\alpha) + \int f(u_0)\psi_\alpha \delta u\,\mathrm{d}\tv x = 0\qquad\forall\; \psi_\alpha.
@@ -1846,60 +1380,6 @@ The weak Laplacian operator ($L_{h}(\cdot,\cdot)$) can be computed on any coarse
     \label{eqn:operator_oh}
       O^{H} = (I_{h}^{H})^T\;O^{h}\;(I_{h}^{H}).
     \end{equation}
-
-    %% \red{[From talking to Trevor: evaluating $O^H$ on Schwarzdomains
-    %%     is logistically difficult, because it requires data for all
-    %%     cells which overlap with the Schwarz subdomains.  This
-    %%     operator is only needed in the puncture data, i.e.\ where a
-    %%     linear-in-u term ($f(u_0)\delta u$) appears.  Therefore,
-    %%     Schwarz is not used for puncture data.  TREVOR, please add a
-    %%     few sentences either here or in the puncture-data section
-    %%     explaining this]}
-%
-%
-
-
-%% The latter term is much more straightforward to restrict. To see
-%% why, let's look at the second term of the operator on the coarse mesh,
-%% denoted with an uppercase H \harald{and writing $\delta u^H=\delta
-%%   u_\alpha^H\psi^H_\alpha$}:
-
-%% \begin{align}
-%%   &\int f(u_0)\psi_i^H\,\delta u^H\,dx = \delta u^H_j\int f(u_0)\psi_j^H\psi_i^Hdx \\
-%%   &=\sum_j\delta u^H_j\int f(u_0)\sum_k\psi_j^H(\xi_k^h)\psi_k^h\sum_l\psi^H_i(\xi^h_l)\psi_l^hdx \\
-%%   &\approxeq \sum_{c,j}w_cJ_c\delta u^H_jf_c\sum_k\psi_j^H(\xi_k^h)\psi_k^h(\xi^{GL}_c)\sum_l\psi^H_i(\xi^h_l)\psi_l^h(\xi^{GL}_c) \\
-%%   &= \sum_{c,j,k,l}P^T_{il}I^T_{lc}w_cJ_cI_{ck}P_{kj} \delta u^H_j\\
-%%   \label{eq:temp-G}
-%%   &= \sum_{c,j,k,l}P^T_{il} O_{lk}^h P_{kj} \delta u^H_j
-%% \end{align}
-%% %
-%% \red{[$w_c$, $J_c$ should have subscript $H$.  Make symbols consistent with Sec. II A 5.]}
-%% Here $O_{lk}$ is the operator on the fine level (e.g. $O_{lk} = \int
-%% f(u_0)\psi_l^h\psi_k^hdx$) and therefore the restriction operator for
-%% this operator is a left multiplication by $P^T_{il}$ and a right
-%% multiplication by $P_{kj}=\mbox{\red{defn here}}$. Here $P$ is the prolongation operator
-%% between mesh levels (interpolation operator). We have labelled it $P$
-%% to not confuse it with the interpolation operator from the GLL basis
-%% nodes to the GL quadrature nodes.  \red{[Isn't $P$ simply the $I_h^H$ defined after Eq.~(41)?  If yes, use same symbol.  If no, define.]}
-
-% The second issue involving the choices of intergrid operators is
-% important for obtaining textbook multigrid convergence. We prolong the
-% error corrections with the Galerkin (least-squares) projection
-% operator for hp-prolongation. For Lagrange basis functions, this
-% operation is equivalent to interpolation. The operators for coarsening
-% are much less obvious. The first issue is that we are coarsening a
-% family of elements with potentially different degrees into a single
-% parent element. We take the minimum p-value when we
-% coarsen so that when we prolong the error correction, the error on the
-% coarse mesh is precisely represented on the fine-mesh due to the
-% coarse and fine broken polynomial spaces being nested. To restrict the
-% residual we use transpose of the prolongation operator. Empirically we
-% have found that other restriction operations such as injection negatively impact the convergence of the MG-preconditioned Krylov method. For a more detailed discussion of the prolongation and restriction operations for hp-multigrid, see (\cite{tesini2008h}).
-
-%% \subsubsection{Multigrid Bottom Solver}
-%% For the bottom solver we reuse the smoother.
-%% \red{[Give reason for the choice of the number 100.  State whether this is preconditioned.  State considerations pro/cons explicit solve.]}
-%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{hp-Adaptivity}
@@ -1924,8 +1404,6 @@ or p-refine; (4) an efficient method to apply discrete operators in multi-dimens
 \subsubsection{Expected Convergence}
 \label{sec:expectedconvergence}
 
-%% \red{[consider whether this section can be incorporated into the start of Sec.~\ref{sec:hp-adaptivity}, to avoid cross-referencing]}
-
  For quasi-linear problems with piecewise-analytic solutions $u$ on polygonal domains, the convergence of the energy norm (Eq. \ref{eq:energynorm}) of the analytical error for the numerical solution $u_h$ is
 % 
  \begin{equation}
@@ -1933,9 +1411,9 @@ or p-refine; (4) an efficient method to apply discrete operators in multi-dimens
  || u - u_h ||_* \leq C\left( \sum\limits_{e \in \mathbb{E}} \frac{ h_e^{2s_e - 2}}{ p_e^{2k_e -3}} ||u||^2_{H^{k_e}} \right)^{1/2}.
  \end{equation}
 %
- Here ${H^{k_{e}}}$ is the Sobolev space on element $e$ with Sobolev order $k_{e}$ and $1 \leq s_{e} \leq \text{min}(p_{e}+1, k_{e})$ (\cite{houston2007energy, houston2008posteriori,houston2005discontinuous, bi2015posteriori}). For uniform refinement and uniform Sobolev order k across elements, we expect $|| u - u_h ||_* \leq Ch^{\text{min}(p+1, k) - 1}$. Thus, for smooth problems we expect $|| u - u_h ||_* \leq Ch^{p}$.
+ Here ${H^{k_{e}}}$ is the Sobolev space on element $e$ with Sobolev order $k_{e}$ and $1 \leq s_{e} \leq \text{min}(p_{e}+1, k_{e})$ (\citet*{houston2007energy, houston2008posteriori,houston2005discontinuous, bi2015posteriori}). For uniform refinement and uniform Sobolev order k across elements, we expect $|| u - u_h ||_* \leq Ch^{\text{min}(p+1, k) - 1}$. Thus, for smooth problems we expect $|| u - u_h ||_* \leq Ch^{p}$.
 
- One can show~(\cite{schotzau2014exponential}) that there exists a series of hp-adaptive refinement steps where the convergence of the energy norm is asymptotically bounded by
+ One can show~(\citet*{schotzau2014exponential}) that there exists a series of hp-adaptive refinement steps where the convergence of the energy norm is asymptotically bounded by
  
   \begin{equation}
  \label{eq:expconvergence}
@@ -1947,7 +1425,7 @@ Here $C_{1}$ and $C_{2}$ are constants, $d$ is the dimension of the mesh and DOF
 
 \subsubsection{A Posteriori Error Estimator}
 
- Ref.~(\cite{bi2015posteriori}) derives a local a posteriori
+ Ref.~(\citet*{bi2015posteriori}) derives a local a posteriori
 error estimator for an interior penalty hp-DG discretization of the
 following class of strongly nonlinear elliptic problems with Dirichlet
 boundary conditions
@@ -1993,29 +1471,16 @@ Here, $|| . ||^2_{0,e} = \int_e ( . )^2 \mathrm{d}\tv x = \int_{[-1,1]^d} J ( . 
   Furthermore, $h_e$ is the diameter of the element $e$, $p_m, h_m$
   and $\sigma$ are defined in Eq.~(\ref{eq:penaltyparameter}) and $J,S^m$ are defined in Eq.~(\ref{eq:Jacobian}) and Eq.~(\ref{eq:Surface-Jacobian}).
   
-%
-%% The global error estimator is then
-%% %
-%% \begin{equation}
-%% \label{eq:Eta2_Global}
-%% \eta^2 = \sum_{e \in \mathrm{E}}\eta^{2}_{e} + \sum_{m \in \Gamma_I}\eta^{2}_{m,2} + \sum_{m \in \Gamma_I}\eta^{2}_{m,2}  + \sum_{m \in \Gamma_D}\eta^{2}_{m,3}
-%% \end{equation}
-%% %
-%% \red{[Is Eq.~(\ref{eq:Eta2_Global}) needed at all? ]}
-%% \red{[Should subscript of second term in Eq.~(\ref{eq:Eta2_Global}) be ``m,1''?]}\\
-%% \red{[Sums over mortar in Eq.~(\ref{eq:Eta2_Global}):  use $\mathbf{M}$ instead of $\Gamma$]}\\
-%% \red{[Is there a factor of 2 double-counting in Eq.~(\ref{eq:Eta2_Local}) compared to Eq.~(\ref{eq:Eta2_Integrals})?  Mortar-elements exist only \emph{once} for each boundary, but $m\in\partial e$ counts boundaries twice?]}\\
-Following (\cite{bi2015posteriori}), we take the local estimator on the element to be
+Following (\citet*{bi2015posteriori}), we take the local estimator on the element to be
 %
 \begin{equation}
 \label{eq:Eta2_Local}
 \eta^2(e) =\eta^{2}_{e} + \sum_{m \subset \mathbb{M}_e}\eta^{2}_{m,1} + \sum_{m \subset \mathbb{M}_e\setminus \mathbb{M}_D}\eta^{2}_{m,2} + \sum_{m \subset \mathbb{M}_e \cap \mathbb{M}_D}\eta^{2}_{m,3},
 \end{equation}
 %
-%% \red{[$\mathbb{M}_e$ would also be very useful to simplify the discussion around Eq.~(23) and (24).  Define $\mathbb{M}_e$ much earlier, ideally in the text after Eq.~(1)]}
-where $\mathbb{M}_e$ and $\mathbb{M}_d$ are the sets of mortar elements touching the element $e$ and  $\partial \Omega_d$ respectively (see Sec.\ref{sec:mesh}). %% \red{[Trevor, please double-check that Eq.~(\ref{eq:Eta2_Local}) is actually correct now.  I've changed the subscript in the first sum, and all indexing, to avoid remaining inconsistencies.  Specifically, is it really true that on faces with von Neuman or Robin BCs, $\eta_{m,2}$ is added to the estimator?]}
-%% \trevor{[Trevors answer: This estimator was only derived for Dirichlet BCs and can be extended for Neumann BCs. For Robin problems, I actually evaluate the estimator as is but with the more approximate Dirichlet BCs with only the Laplacian having Robin BCs. However, now that problems on the cubed sphere are working with Dirichlet BCs and very stretched spheres I think we should remove Robin and Neuman BCs from the paper and then everything will be nice and clean.]} 
-The estimator provides an estimate of the error in the energy norm, $ || u - u_h ||_* $, see Eq.~(\ref{eq:energynorm}).  Similar error estimators for various classes of linear and non-linear elliptic PDEs can be found in (\cite{houstonschotzau05,hansbo2011energy,zhu2011energy,houston2007energy,schotzau.d;zhu.l2009,houstonperugia05,lovadina.c;marini.l2009}).
+
+where $\mathbb{M}_e$ and $\mathbb{M}_d$ are the sets of mortar elements touching the element $e$ and  $\partial \Omega_d$ respectively (see Sec.\ref{sec:mesh}). %%
+The estimator provides an estimate of the error in the energy norm, $ || u - u_h ||_* $, see Eq.~(\ref{eq:energynorm}).  Similar error estimators for various classes of linear and non-linear elliptic PDEs can be found in (\citet*{houstonschotzau05,hansbo2011energy,zhu2011energy,houston2007energy,schotzau.d;zhu.l2009,houstonperugia05,lovadina.c;marini.l2009}).
 %
   Equations~(\ref{eq:Eta2_Integrals}) are typically computed on the physical grid on which the elliptic PDE is solved.
   For highly stretched grids (for instance, when a mapping inverse in
@@ -2032,8 +1497,8 @@ detail.
 %
 \subsubsection{Driving Strategy}
 
-Given the a posteriori estimator
-Eq.~(\ref{eq:Eta2_Local}) we next need to determine if  to h-refine or p-refine elements with a large error $\eta(e)$. In the survey paper (\cite{mitchell2011survey}), Mitchell and McClain looked at 15 different hp-adaptive strategies with a finite elements scheme. Their results indicate that the strategy known as smooth-pred, first introduced in~(\cite{melenk2001residual}) performs quite well, if not the best under
+The a posteriori estimator
+Eq.~(\ref{eq:Eta2_Local}) indicates which elements to refine.  Then the choice must be made for each cell, whether to h-refine or p-refine elements with a large error $\eta(e)$. In the survey paper (\citet*{mitchell2011survey}), Mitchell and McClain looked at 15 different hp-adaptive strategies with a finite elements scheme. Their results indicate that the strategy known as smooth-pred, first introduced in~(\citet*{melenk2001residual}) performs quite well, if not the best under
 the example problems they tested. For this reason alone we use it, but
 our code is flexible enough to use any of strategies studied in
 Mitchell and McClain's paper.
@@ -2043,23 +1508,14 @@ The idea behind the smooth-pred strategy is based on the observation that for a 
 energy norm Eq.~(\ref{eq:energynorm}) $\eta(e)$ will converge as
 $h^{p}$, (see~Sec.~\ref{sec:expectedconvergence}).  To take advantage of this observation, we first predict the error in the next refinement step and test if this prediction satisfies the smooth error convergence law, if so we p-refine, otherwise we h-refine. The full algorithm is given in Algorithm~\ref{alg:hpamr}.
 
-\begin{figure}[ht!]
+\begin{figure}
   \begin{algorithm}[H]
     \caption{\label{alg:hpamr}
       hp-AMR Driving Strategy\\
       $\gamma_{h}$ and $\gamma_{p}$ are user-defined parameters.
-      %% \red{[Should $p$ be written as $p_e$ in this algorithm?]}
-      %% \red{[Should there be an extra line after 8:  $p_e\leftarrow p_e+1$?]}\trevor{I think this is implied in the line ``p-refine element''}
-      %% \red{[Lines 10 + 11 seem redundant -- remove?]}
     }
     \begin{algorithmic}[1]
       \Procedure{SMOOTH-PRED}{}
-        % \State $r\gets a\bmod b$
-        % \While{$r\not=0$}\Comment{We have the answer if r is 0}
-        %   \State $a\gets b$
-        %   \State $b\gets r$
-        %   \State $r\gets a\bmod b$
-        % \EndWhile\label{euclidendwhile}
         \If{$\eta^2(e)\text{ is large}$}
           \If{$\eta^2(e) > \eta^2_{\rm pred}(e)$}
            \State h-refine element
@@ -2068,10 +1524,7 @@ $h^{p}$, (see~Sec.~\ref{sec:expectedconvergence}).  To take advantage of this ob
                      \State p-refine element
           \State $\eta^2_{\rm pred}(e) \gets \gamma_{p_e}\eta^2(e)$
           \EndIf
-          %% \Else
-          %% \State $\eta^2_{\rm pred}(e) \gets \eta_{\rm pred}^{2}(e)$
         \EndIf
-        % \State \textbf{return} $b$\Comment{blahblah}
       \EndProcedure
     \end{algorithmic}
   \end{algorithm}
@@ -2085,11 +1538,6 @@ estimator, Eq.~(\ref{eq:Eta2_Local}) of the element under
   each element will first be $p$-refined, before $h$-refinement is
   considered.
 
-  %% \red{[Harald: when staring at the actual $\gamma_h$ an $\gamma_p$
-  %%   values of the examples, I remembered that we had the nice
-  %%   explanation of how Alg.~\ref{alg:hpamr} works.  I've tried to
-  %%   capture this here, where the wording of how $\gamma_h$ matters is
-  %%   still weak]}
   The parameters $\gamma_p$ and $\gamma_h$
       influence the behavior of Alg.~\ref{alg:hpamr} as follows: As
       long as the actual $\eta^2(e)$ is \textit{small} compared to the
@@ -2114,13 +1562,11 @@ In the numerical examples of this paper we use the
   following two alternatives for the conditional on line 2 of
   Alg.~\ref{alg:hpamr}, i.e.\ to decide which elements should be
   refined: In the first test-problem, we refine if $\eta^2$ is
-greater than some constant factor times the mean $\bar \eta^2$ across all elements $e$. This criterion was used in the original description of the hp-AMR scheme (See (\cite{melenk2001residual})).  In
+greater than some constant factor times the mean $\bar \eta^2$ across all elements $e$. This criterion was used in the original description of the hp-AMR scheme (See (\citet*{melenk2001residual})).  In
 the remaining problems we refine a percentage of elements with the largest $\eta(e)$. We change criterion because the estimator may vary over orders of magnitude and this variation may change at each refinement step. In such cases, the percentage criterion robustly captures more of the elements with a large estimator than thresholding on a constant times the average estimator). However, the constant factor times the
 mean method has the advantage that it is computationally cheap and
 does not require a global sort of the estimator over all cores like the
-percentage method does. When we use the percentage indicator, we make use of the highly parallel global sort outlined in (\cite{feng2015mp}).
-
-%% \red{[Readers will wonder here why we change the selection criterion.  Specifically, they will wonder why we switch to a criterion that is \textit{harder} to implement on the more complex domains.  Can you add some reason why the switch to a fractional refinement?]}
+percentage method does. When we use the percentage indicator, we make use of the highly parallel global sort outlined in (\citet*{feng2015mp}).
 
 \subsubsection{On-the-fly hp Tensor-Product Operations}
 \label{sec:tensorproduct}
@@ -2130,8 +1576,6 @@ To solve the elliptic equations with multigrid on grids that are hp-adaptively r
 \item interpolation operators on faces, edges and volumes of size $(p'+1) \times (p+1)$ in 1-D, where p is the order of the original data and p' is the order of the new interpolated data
 \item restriction operators on faces, edges and volumes of size $(p+1) \times (p'+1)$ in 1-D, where p' is the order of the original data and p is the order of the new restricted data
 \item derivative operator of order p on the reference element, which has size $(p+1) \times (p+1)$ in 1-D.
-% \item lifting operator of order p, which has size $(p+1) \times 1$ in 1-D.
-% \item slice operator of order p, which has size $(p+1) \times 1$ in 1-D.
 \end{itemize}
 
 We can take advantage of the tensor product nature of the reference element in order to efficiently generate these operators on demand. All of the operators
@@ -2143,42 +1587,11 @@ listed can be reduced to a tensor product of 1-D operators when applied in $d\ge
 \item Apply the 2-D or 3-D version of the operator on a vector by using optimized Kronecker product matrix vector operation on the nodal vector v: $(A_{1D} \otimes B_{1D})\vec{v}$ for $d=2$, or $(A_{1D} \otimes B_{1D} \otimes C_{1D})\vec{v}$ for $d=3$. Here $A,B, C$ denote the 1-D matrices of the respective operator, as applied to the first, second, and third dimension.
 \end{enumerate}
 
-A Kronecker product matrix vector operation can be efficiently performed using a series of BLAS matrix-multiply calls, see (\cite{buis1996efficient}) for example.
-
-%% Reference (\cite{buis1996efficient}) describes how to perform an optimized Kronecker product matrix vector operation.  \red{[Let's talk about this]}
-
-% \subsubsection{Mortar Projection}
-
-% A typical hp-mesh will have interfaces that are shared by different number of elements on each of its two sides. This creates hanging nodes at interfaces where one side of the interface is more refined. We only allow for one level of refinement separation between elements sharing an interface, the so-called 2:1 balance condition. We however allow no such restriction on the polynomial spaces on either side of the shared face, which adds to the possible non-conforming nature of the interfaces. At such non-conforming interfaces, one has to deal with the problem of computing the flux function and flux integrals on the interface that is shared by two non-conforming spaces. The strategy we employ is known as mortar projection (\cite{kopriva1995conservative}), where the data from the adjacent elements is projected up to a conforming broken polynomial space, which is referred to as the mortar space, and then once the computations have finished, we project the computed data back down to either element. This method will preserve the underlying symmetry of the discrete Poisson dG operator.
-
-
-% % \tikzstyle{my help lines}=[gray,
-% % thick,dashed]
-
-% \begin{tikzpicture}[yscale=4]
-%  \draw[-][draw=red, very thick, dashed] (0,0) -- (0,.5);
-%  \draw[-][draw=green, very thick, dashed] (0,.5) -- (0,1);
-%  % \draw [thick] (-0.1,0.2) -- (0.1,.2);
-
-%  % \draw [thick] (-0.1,0.2) -- (0.1,.2) node[align=left, right]{};
-%  % \draw [thick] (-0.1,0.85) -- (0.1,.85) node[align=left, right]{};
-%  \draw (-0.1,0) -- (0.1,0);
-%  \draw (-0.1,.5) -- (0.1,.5);
-%  \draw (-0.1,1) -- (0.1,1);
-% \end{tikzpicture}
-
-
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "../paper"
-%%% End: 
+A Kronecker product matrix vector operation can be efficiently performed using a series of BLAS matrix-multiply calls, see (\citet*{buis1996efficient}) for example.
 
 \subsection{Implementation}
 
-To implement the multi-block adaptive mesh refinement we use the p4est library, which has been shown to scale to $\mathcal{O}$(100,000) cores (\cite{burstedde2011p4est}). We use PETSc (\cite{petsc_home_page}) for the Krylov subspace linear solves and the Newton Raphson iterations. The components of the multigrid algorithm is written by the authors and does not use PETSc.
-
-% \Note{\st{TV: TODO: 1-3 paragraphs describing implement incl. p4est and petsc}}
+To implement the multi-block adaptive mesh refinement we use the p4est library, which has been shown to scale to $\mathcal{O}$(100,000) cores (\citet*{burstedde2011p4est}). We use PETSc (\citet*{petsc_home_page}) for the Krylov subspace linear solves and the Newton Raphson iterations. The components of the multigrid algorithm are written by the authors and do not use PETSc.
 
 \section{Test Examples}
 
@@ -2187,14 +1600,14 @@ We examine the components of our code through three test examples, the first a l
 
 \subsection{Poisson with $H^{4-\epsilon}$ solution}
 
-The first test problem we will investigate numerically is taken from (\cite{stamm2010hp}), where the authors solve $\nabla^{2}u = f$ on $\Omega = (0,1)^{2}$ with the solution chosen as
+The first test problem we will investigate numerically is taken from (\citet*{stamm2010hp}), where the authors solve $\nabla^{2}u = f$ on $\Omega = (0,1)^{2}$ with the solution chosen as
 
 \begin{equation}
     \label{eq:testexample1solution}
  u = x\left(1-x\right)y\left(1-y\right)\left[\left(x-\frac{1}{2}\right)^2 + \left(y-\frac{1}{2}\right)^2\right]^{3/2}.
 \end{equation}
 
-Here $u \in H^{4-\epsilon}$, where $\epsilon > 0$ so from
+Here $u \in H^{4-\epsilon}$ (e.g. there exist continuous derivatives up to third order only), where $\epsilon > 0$ so from
 Eq.~(\ref{eq:expectedconvergence}) we expect third order convergence
 for uniform refinement. We have confirmed this numerically. However,
 with hp-adaptivity, it is possible to achieve $||u-u_{h}||_{*} \sim
@@ -2216,28 +1629,16 @@ Our preferred value for the rest of the paper ($\gamma_h=0.25$) also
 yields good convergence, but leads to a more uniform polynomial
 degree through the mesh.
 
-% Since the solution is an element of the fractional Sobolev space $H^{4-\epsilon}$ with $\epsilon > 0$, the expected convergence is only $\mathcal{O}(h^{3})$. With our hp-amr scheme we achieve the predicted exponential convergence as shown in Figure \ref{fig:test_example_1_u_convergence} with the error estimator and the the real error plotted in Figure \ref{fig:test_example_1_est_convergence}. The final mesh is shown in Figure \ref{fig:test_example_1_mesh}.
-
 \begin{figure}[ht!]
   \centering
-  % \fbox{\includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./stamm/stamm_convergence.pdf}}  
   \includegraphics[width=.75\textwidth,trim=10 0 40 30, clip=true]{./chap2/figures/problem_a/prob_a_convergence.pdf}
   \caption{Problem A, Eq.~(\ref{eq:testexample1solution}): Convergence of the energy norm estimator $\eta^2$ and the error between the numerical solution $u_h$ and the analytic solution $u$ in the energy norm $||\cdot||_*$ (Eq. \ref{eq:energynorm}) and the $L_2$ norm $||\cdot||_2$ (Eq. \ref{eq:l2norm}).}
   \label{fig:test_example_1_u_convergence} 
 \end{figure}
 
-% \begin{figure}[ht]
-%   \centering
-%   \includegraphics[scale=0.42]{./chap2/figures/test_example_1_est_convergence.pdf}
-%   \caption{We plot the global sum of the a posteriori error estimator, which is computed locally on each element at every hp-refinement step without any knowledge of the analytical solution, versus the energy norm of the analytical error. The plot shows very good agreement for an estimator.}
-%   \label{fig:test_example_1_est_convergence}
-% \end{figure}
-
-\begin{figure}
+\begin{figure}[htbp!]
   \centering
-  %% \fbox{\includegraphics[width=.45\textwidth,trim=130 70 180 70, clip=true]{./chap2/figures/problem_a/prob_a_mesh.png}}
-  %% \includegraphics[width=.45\textwidth]{./chap2/figures/problem_a/prob_a_mesh_4.png}
-  \includegraphics[width=.75\textwidth,trim=500 450 400 680,clip=true]{./chap2/figures/problem_a/prob_a_mesh_4.png}
+  \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./chap2/figures/problem_a/prob_a_mesh_4.png}
   
   \caption{ \label{fig:test_example_1_mesh} Problem A,
     Eq.~(\ref{eq:testexample1solution}): Visualization of the
@@ -2249,17 +1650,6 @@ degree through the mesh.
       domain.}
 \end{figure}
 
-% \begin{figure}[ht]
-%   \centering
-%  \includegraphics[scale=0.42]{./chap2/figures/test_example_1_mg_vs_cg.pdf}
-%   \caption{}
-%   \label{fig:test_example_1_mg_vs_cg}
-% \end{figure}
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "../paper"
-%%% End:
 \begin{figure}[ht!]
   \centering
   \includegraphics[width=.75\textwidth,trim=10 0 0 10,clip=true]{./chap2/figures/problem_a/prob_a_pc_comparison.eps}
@@ -2269,17 +1659,15 @@ degree through the mesh.
 
 \subsection{Constant density star}
 
-For the next test problem, taken from ~(\cite{baumgarte2007}),  we solve the Einstein constraints in the simplest possible scenario, a constant density star. The goal of this test problem is to investigate how the elliptic solver behaves for problems that contain surface discontinuities that mimick surface and phase transition discontinuities in a Neutron star. The Einstein constraint equations for the case of a constant density star reduce to
+For the next test problem, taken from ~(\citet*{baumgarte2007}),  we solve the Einstein constraints in the simplest possible scenario, a constant density star. The goal of this test problem is to investigate how the elliptic solver behaves for problems that contain surface discontinuities that mimick surface and phase transition discontinuities in a Neutron star. The Einstein constraint equations for the case of a constant density star reduce to
 %
-%% For \red{[The next sentences need to be rewritten, since the appendix is now gone.  State ``we solve the Einstein constraints in the simplest possible scenario, a constant density star.''  Refer to~(\cite{baumgarte2007}).  Also state immediately that the discontinuity at the surface of the constant density star is meant to investigate how the elliptic solver will behave in neutron stars, where discontinuities arise at the surface as well as (possibly) at internal surfaces where the equation of state has a phase-transition]}
-%% For our second test problem we will consider the constraint equations (Eq. \ref{eq:constraintequations}) for initial data at a moment of time symmetry, then $K_{ij} = 0$ and the momentum constraint is satisfied identically. Furthermore, we will choose a conformally flat 3-metric, $\bar g_{ij} = \delta_{ij}$ and impose spherical symmetry. The Hamiltonian constraint then reduces to
 %
 \begin{equation}
 \label{eq:Constant_Density_Star_PDE}
  \nabla^{2}\psi + 2\pi \rho \psi^{5} = 0,
 \end{equation}
 %
-where $\rho$ is the density of the star and $\psi$ is the conformal factor which describes the deviation of the space from flat space. In (\cite{baumgarte2007}) the authors solve the above equation for the case of a star with radius $r_0$ and mass-density
+where $\rho$ is the density of the star and $\psi$ is the conformal factor which describes the deviation of the space from flat space. In (\citet*{baumgarte2007}) the authors solve the above equation for the case of a star with radius $r_0$ and mass-density
 %
 \begin{equation}
 \rho = \begin{cases} 
@@ -2305,26 +1693,21 @@ u_{\alpha}(r) \equiv \frac{(\alpha r_0)^{1/2}}{(r^{2} + (\alpha r_0)^{2})^{1/2}}
 
 The parameters $\alpha$ and $\beta$ are determined from the continuity of $\psi$ and it's first derivative at the surface of the star, and are given by
 
-% \begin{equation}
-% \label{eq:16}
 \begin{align}
  &\beta = r_0(Cu_{\alpha}(r_0) - 1) \\
  &\rho_{0}r_0^{2} = \frac{3}{2\pi}\frac{\alpha^{10}}{(1+\alpha^{2})^{3}}
 \end{align}
-% \end{equation}
 
 We solve the above problem on a cubic domain with $\rho_0 =
 0.001$ and analytic Dirichlet boundary conditions on a boundary at
 $8r_0$. The non-linear term in Eqn.~\ref{eq:Constant_Density_Star_PDE} is handled by first interpolating $\psi$ onto the GL quadrature points of an element, evaluating $\psi^{5}$ at the GL quadrature points and then performing the necessary Gaussian quadrature sum on each element.
-Figure \ref{fig:problem_b_convergence} we showcase the
-convergence of the solution and note the nice agreement between the
+Figure~\ref{fig:problem_b_convergence} showcases the
+convergence of the solution and the nice agreement between the
 energy norm estimator $\eta^2$ and the energy norm of the analytic
 error. To achieve this convergence we used the following AMR parameters, $\gamma_h = 0.25$, $\gamma_p = 0.1$.  At each AMR refinement iteration, 10\% of the elements are refined. In Figure~\ref{fig:problem_b_pc_comparison} we show a comparison between multigrid-preconditioned FCG iterations and unpreconditioned FCG iterations. We notice that for the preconditioned case, the iteration count is roughly constant with increases in DOF, whereas the unpreconditioned iterations grow with DOF. Finally, in Figure~\ref{fig:problem_b_mesh} we show the mesh after the last AMR step. This mesh showcases the highest h-refinement around the star boundary (yellow circle) as expected, since this area is not smooth. 
-%% \red{[FINISH TEXT.]} 
  
 \begin{figure}[ht!]
   \centering
-  % \fbox{\includegraphics[width=.47\textwidth,trim=10 0 30 30, clip=true]{./cds/cds_convergence.pdf}}
   \includegraphics[width=.75\textwidth,trim=10 0 30 34, clip=true]{./chap2/figures/problem_b/prob_b_convergence.pdf}
   \caption{Problem B, Eq.~(\ref{eq:Constant_Density_Star_PDE}): Convergence of the energy norm estimator $\eta^2$ and the error between the numerical solution $u_h$ and the analytic solution $u$ in the energy norm $||\cdot||_*$ and the $||\cdot||_2$ norm}
   \label{fig:problem_b_convergence} 
@@ -2332,8 +1715,8 @@ error. To achieve this convergence we used the following AMR parameters, $\gamma
 
 \begin{figure}[ht!]
   \centering
-  % \fbox{\includegraphics[width=.47\textwidth,trim=10 0 30 30, clip=true]{./cds/cds_convergence.pdf}}
-  \includegraphics[width=.75\textwidth,trim=10 11 12 14, clip=true]{./chap2/figures/problem_b/prob_b_pc_comparison.png}
+ \includegraphics[width=.75\textwidth%,trim=10 11 12 14
+    ]{./chap2/figures/problem_b/prob_b_pc_comparison.eps}
   \caption{Comparison of the average number of iterations per Newton-Raphson step when using a Chebyshev smoothed Multigrid preconditioner and no preconditioner.}
   \label{fig:problem_b_pc_comparison} 
 \end{figure}
@@ -2352,17 +1735,6 @@ error. To achieve this convergence we used the following AMR parameters, $\gamma
       $h$-refinement level.  A cell on level $l$ has size $2^{-l}$ of
       the overall computational domain. }
 \end{figure}
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "../paper"
-%%% End: 
-%
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "../paper"
-%%% End: 
 
 \subsection{Cubed sphere Meshes and Stretched Boundary Elements}
   \label{sec:CompactifiedLorentizan}
@@ -2457,12 +1829,6 @@ final mesh for the problem.  The AMR algorithm increases the polynomial order $p
     increased across all elements for uniform case and as the degree p
     is adaptively increased in the amr case.  (Dirichlet BC at
     R=1000).
-    %\red{uniform: 53248 elements,
-    %  i.e.\ $\text{DOF}=53248(p+1)^3$ (run on 6656 cores, each with 8
-    %  elements); grid-geometry: cube from $-10/\sqrt{3}\le x,y,z\le
-    %  10\sqrt{3}$; $R_{\rm intermediate}=20$, $R = 1000$ } \red{amr:
-    %  degree 1 elements, 8 per core, 104 cores, $\gamma_h = 1000000$,
-    %  $\gamma_p = 1000000$, $percentile = 25$}
   }
 \end{figure}
 
@@ -2546,7 +1912,6 @@ two sections.  Here, the Schwarz subdomains have $N_{\rm
   uses $N_{\rm iter,eigs}=15$ iterations for the eigenvalue estimate,
   and $N_{\rm iter,Cheb}=15$ iterations in the Chebyshev smoother.
 
-
 \begin{figure}[ht!]
   \centering
   \includegraphics[width=.75\textwidth,trim=10 14 10 10,clip=true]{./chap2/figures/problem_c/prob_c_pc_comparison.pdf}
@@ -2554,25 +1919,8 @@ two sections.  Here, the Schwarz subdomains have $N_{\rm
     different methods of preconditioning FCG.  All runs use the AMR/dG
     parameters of the p-amr run in
     Figure~\ref{fig:prob_c_convergence}.
-    %\red{[For
-    %    Fig.~\ref{fig:prob_c_convergence}, p-refinement only.  Schwarz
-    %    smoother would work less well for h-refinement, as the Schwarz
-    %    elements are oddly shaped]}
   }
 \end{figure}
-
-
-%% \red{Describe this problem show AMR grid (illustrating both geometry \& AMR), show convergence (i.e.\ error vs. DOF), show MG-effectiveness, i.e.\ iteration count vs. DOF.}
-
-%% \red{Delineate where the code fails:\\
-%%   --- good: cubed sphere, uniform refinement, small R\\
-%%   --- ???: cubed sphere, AMR, small R\\
-%%   --- ???: cubed sphere, uniform refinement or AMR, intermediate R (say 100...200)\\
-%%   --- bad: cubed sphere, uniform refinement, large R\\
-%%   }
-
-%% \red{Explain why 13-tree is important.  Discuss choices in how outer BCs are implemented, and how they matter for symmetry and sparsity of the lapalacian}
-%%
 
 \subsection{Puncture Initial Data}
 \label{sec:punctureinitialdata}
@@ -2581,21 +1929,21 @@ There are various approaches to solving for binary black hole initial
 data sets and these approaches are primarily distinguished by the
 initial choice of hypersurface and how the physical singularity inside
 the black holes is treated. One possibility when considering two black
-holes is to work on $\mathbb{R}^{3}$ with two balls excised(\cite{cook1994,cook2004excision,caudill2006circular}). This approach has
+holes is to work on $\mathbb{R}^{3}$ with two balls excised(\citet*{cook1994,cook2004excision,caudill2006circular}). This approach has
 been shown to work well with the spectral finite element method
-(e.g. (\cite{pfeiffer2003multidomain})), but is more problematic for
+(e.g. (\citet*{pfeiffer2003multidomain})), but is more problematic for
 finite-difference codes because special stencils must be created near
 the curved boundaries. Another popular approach, which is more
-amenable to finite difference codes is the puncture method~(\cite{brandt1997simple}),
+amenable to finite difference codes is the puncture method~(\citet*{brandt1997simple}),
 where an elliptic equation is solved on $\mathbb{R}^3$, with
 two points where the solution becomes singular.  These points represent
 the inner asymptotically flat infinity (Brill-Lindquist
 topology).   The puncture
 method simplifies the numerical method because no special inner
 boundary condition has to be considered, however the solution is only
-$C^4$ smooth at the puncture points~(\cite{brandt1997simple}). Without using contrived
+$C^4$ smooth at the puncture points~(\citet*{brandt1997simple}). Without using contrived
 coordinate systems to remove the $C^4$-smooth nature of the
-punctures (See~(\cite{ansorg2004single}) for example), spectral methods
+punctures (See~(\citet*{ansorg2004single}) for example), spectral methods
 cannot perform optimally, because they would require the solution to
 be smooth on the computational domain in order to obtain exponential
 convergence. We choose to solve for binary black hole initial-data
@@ -2606,7 +1954,7 @@ Galerkin method to the spectral method. Secondly, the equation we must
 solve is less complicated than the excision case because it only
 involves a solve for a single field, the conformal factor, as opposed
 to the 5 fields one must solve for with the excision method (see
-e.g. (\cite{pfeiffer2003multidomain})), so it is easier to implement
+e.g. (\citet*{pfeiffer2003multidomain})), so it is easier to implement
 numerically.
 
 Nevertheless, puncture data provides a testing ground for many
@@ -2620,7 +1968,7 @@ Nevertheless, puncture data provides a testing ground for many
   arbitrary coordinates with arbitrary spins.
 
 For the case of puncture data, the initial data equations of general relativity
-reduce down to a single equation~(\cite{brandt1997simple}):
+reduce down to a single equation~(\citet*{brandt1997simple}):
 
 \begin{equation}
 \label{eq:Two_Punctures_PDE}
@@ -2634,7 +1982,7 @@ where $\bar A_{ij}$ is a spatially dependent function given by
 \bar{A}_{ij} = \frac{3}{2}\sum_{I}\frac{1}{r^{2}_{I}}[2P^{I}_{(i}n^{l}_{j)}-(f_{ij}-n^{l}_{i}n^l_j)P^{k}_{I}n^I_k + \frac{4}{r_{I}}n^l_{(i}\epsilon_{j)kl}S^k_In^l_I].
 \end{equation}
 %
-Here, $n^i_I$ are the spatially varying components of the radial unit-vector $\hat n_{I}(\vec x)=(\vec{x}-\vec c_{I})/|\vec x-\vec c_I|$ relative to the position $\vec c_I$ of the $I$-th black hole~(\cite{brandt1997simple}). The constant vectors $\tv P_{I}$ and $\tv S_{I}$
+Here, $n^i_I$ are the spatially varying components of the radial unit-vector $\hat n_{I}(\vec x)=(\vec{x}-\vec c_{I})/|\vec x-\vec c_I|$ relative to the position $\vec c_I$ of the $I$-th black hole~(\citet*{brandt1997simple}). The constant vectors $\tv P_{I}$ and $\tv S_{I}$
 quantify the momentum and spin of the $I$-th black-hole and $\psi = 1 + \sum_I \frac{m_{I}}{2r_{I}}+u$. The boundary condition is
 %
 \begin{equation}
@@ -2645,18 +1993,18 @@ We solve the above elliptic PDE using first the spectral code SpEC and
 then the dG solver presented in this paper. We solve for the case of
 two orbiting equal mass black holes with momenta $\pm .2$, zero spin
 and initial positions $(\pm 3, 0, 0)$ in units of total mass M. This
-is the test case used in (\cite{ansorg2007}). Since there is no
+is the test case used in (\citet*{ansorg2007}). Since there is no
 analytical solution, we will compare the solutions between refinement
 levels at four reference points on the x-axis. These are $(0,0,0)$,
 $(3,0,0)$, the location of the right-most puncture, $(10,0,0)$ and
 $(100,0,0)$.
 
 The SpEC solver was already used to solve for puncture data
-in~(\cite{dennison2006,lovelace2008}).  This spectral code is apriori
+in~(\citet*{dennison2006,lovelace2008}).  This spectral code is apriori
 not well suited for puncture data which results in a non-smooth
 solution $u(\vec x)$.  Because we know where the singularities of the
 punctures are, this can be overcome manually, by covering the
-punctures will very small rectangular blocks, at high enough
+punctures with very small rectangular blocks, at high enough
 resolution, to compensate for the loss of exponential
 convergence. Figure \ref{fig:spec_point_convergence} shows the
 difference in the solution at the four reference points as the
@@ -2664,8 +2012,6 @@ resolution is manually increased. We emphasize that this
   solution obtained with SpEC depents on (i) \textit{prior knowledge}
   of the locations of the singularities; and (ii) tuning of SpEC's
   mesh and resolution \textit{by hand}.
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \begin{figure}[ht!]
@@ -2679,7 +2025,6 @@ resolution is manually increased. We emphasize that this
   next-\emph{lower} resolution at four points in the computational domain. }
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 For the dG solver, we start with a uniformly refined cubed-sphere mesh
 at level $l=1$, i.e.\ 13 blocks, each consisting of eight cells.  The  outer radius at $10^{11}$M and the size of the inner cube is 10M.  We start further with elements of  polynomial
@@ -2704,15 +2049,12 @@ in the $(3,0,0)$ at the second to last iteration arises because the dG-solution 
   \centering
   \includegraphics[width=.75\textwidth,trim=0 12 0 14,clip=true]{./chap2/figures/two_punctures/tp_point_convergence.pdf}
   \caption{Problem D: Black hole initial data with two punctures.  Convergence of the error between the dG solution and the SpEC solution.
-    %Here, \red{$\gamma_h=0.25$, $\gamma_p=0.1$, $F_{\rm refined}=0.125$.}
-    %% \red{[The large jumps from DOF$^{1/3}\approx 17$ to $\approx 26$, and from $54$ to $85$ seem \textbf{too large} for $F_{\rm refined}=0.125$.  Let's talk about this.]}
   }
   \label{fig:Two_Punctures_Mesh_Convergence} 
 \end{figure}
 
 \begin{figure}[ht!]
   \centering
-%  \fbox{\includegraphics[width=.45\textwidth,trim=80 0 80 10, clip=true]{./chap2/figures/two_punctures/tp_mesh.png}}
 \includegraphics[width=.75\textwidth,trim=830 350 270 390,clip=true]{./chap2/DomainImages/Harald_TwoPunctures_4000x3000.png}
   \caption{Problem D (Black hole initial data with two punctures):
     Visualization of the hp-refined computational mesh.  The bottom
@@ -2720,12 +2062,9 @@ in the $(3,0,0)$ at the second to last iteration arises because the dG-solution 
     of the computational domain, with two blocks removed, and
     color-coded by the h-refinement level.  The top portion of the
     image shows the $z=0$ cross-section of the computational grid, color-coded by the polynomial degree, with the height representing the solution $u$. For ease of visualization, grid-points are mapped onto the compactified grid on which the estimator $\eta_e$ is computed; the compactified outer radius $R=3$ corresponds to the physical outer radius $R=10^{11}$.}
-    %% \red{[describe how radius is handled here.  Clearly, this image does NOT show the physical outer radius $R=10^{11}$]}}
   \label{fig:Two_Punctures_Mesh_Final}
 \end{figure}
-
-
-
+%
 Next, we solve for the puncture initial data of three black-holes
 randomly located in the xy-plane, with random spins and random
 momenta. Spectral solvers such as SpEC cannot perform well when the
@@ -2734,9 +2073,8 @@ this paper showcasing a problem that our discontinuous Galerkin code
 can solve, but SpEC cannot. Table \ref{tab:Multi_Punctures}
 illustrates the parameters for the randomly placed punctures and their
 spin and momenta.
-
-
-\begin{figure}[H]
+%
+\begin{figure}[htbp!]
   \centering
   \includegraphics[width=.75\textwidth,trim=770 100 27 40,clip=true]{./chap2/DomainImages/Harald_ThreePunctures_4000x3000.png}
   \\
@@ -2757,7 +2095,6 @@ spin and momenta.
 
 \begin{table}
 \centering
-\label{tab:Multi_Punctures}
 \begin{tabular}{cccc}
 \hline
  \,\,\,\, & Puncture 1  \,\,\,\, & Puncture 2  \,\,\,\, & Puncture 3 \\ \hline
@@ -2770,8 +2107,8 @@ spin and momenta.
 \end{tabular}
 \caption{
   The randomly generated parameters for the three black holes.  We list the mass m, the position $(x,y,0)$, the momentum $(P_x, P_y, 0)$ and the spin $(0,0,S_z)$ of the black holes.
-  %% \red{[To explain:  The 'total mass $M$' is the sum of the 3 BH Christoudoulou masses, which would require running AH finders.  The 'ADM-mass' would require to analyse the $1/r$ falloff of $u$.  We do neither, so we cannot normalize in a meningful way.  Let's just not say anything]}
 }
+\label{tab:Multi_Punctures}
 \end{table}
 
 Figure~\ref{fig:three_punctures_convergence} shows the convergence of four points, three at the location of the punctures, and one at $(100,0,0)$. We use amr parameters $\gamma_h=0.25$, $\gamma_p=0.1$, $F_{\rm refined}=0.125$ for this run.
@@ -2779,9 +2116,8 @@ Figure~\ref{fig:three_punctures_convergence} shows the convergence of four point
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[H]
   \centering
-  \includegraphics[width=.75\textwidth,trim=0 12 0 14,clip=true]{./chap2/figures/three_punctures/3p_point_convergence.pdf}
+  \includegraphics[width=.7\textwidth,trim=0 12 0 14,clip=true]{./chap2/figures/three_punctures/3p_point_convergence.pdf}
   \caption{Problem D: Black hole initial data with three randomly generated punctures.  Convergence of the error between AMR steps at four different points, three corresponding to the location of the punctures and one at $(100,0,0)$.
-    %Here, \red{$\gamma_h=0.25$, $\gamma_p=0.1$, $F_{\rm refined}=0.125$.}
   }
   \label{fig:three_punctures_convergence} 
 \end{figure}
@@ -2792,7 +2128,7 @@ Figure~\ref{fig:three_punctures_convergence} shows the convergence of four point
 \section{Conclusion and Future Work}
 \label{sec:Conclusions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
+
 
 We presented a new code for solving
 elliptic equations intended for numerical
@@ -2802,22 +2138,17 @@ discontinuous Galerkin method to discretize the equations, an
 hp-adaptive mesh refinement scheme driven by an a posteriori estimator
 and a matrix-free, scalable Multigrid preconditioned Newton-Krylov
 solver.
-%% \red{[At this point, we need to remind the reader of the
-    %% unique combination of features unique across all of science.  An
-    %% attempt to do so by Harald follows.  Trevor, please read carefully
-    %% whether this is correct, and improve/correct/extend as
-    %% appropriate.]}
 Individually, many of the features of our
-  code have been implemented before~(\cite{kozdon2018energy,kozdon2019robust,stiller2017robust,sundar2012parallel,hesthaven2008nodal}), but they have never been combined together to create a general dG solver.  In particular, the combination of curved meshes (cf.\ Fig.~\ref{fig:cubed_sphere_mesh}) and non-conforming elements
+  code have been implemented before~(\citet*{kozdon2018energy,kozdon2019robust,stiller2017robust,sundar2012parallel,hesthaven2008nodal}), but they have never been combined together to create a general dG solver.  In particular, the combination of curved meshes (cf.\ Fig.~\ref{fig:cubed_sphere_mesh}) and non-conforming elements
   is novel and is crucial for generic solution-driven AMR.  Moreover,
   the compactified AMR-driver introduced in
-  Sec.~\ref{sec:CompactifiedLorentizan} is also new, allowing for compactified computational domains with outer boundary near infinity. Lastly, the use of a multigrid-preconditioned solver with a Schwarz (or Chebyshev) smoother on non-polygonal meshes has not been investigated in a dG setting until this paper.
+  Sec.~\ref{sec:CompactifiedLorentizan} is also new, enabling AMR on compactified computational domains with outer boundary near infinity. Lastly, the use of a multigrid-preconditioned solver with a Schwarz (or Chebyshev) smoother on non-polygonal meshes has not been investigated in a dG setting until this paper.
 
 
 For BBH puncture data, our new code approaches the accuracy of
   existing, specialized codes like SpEC.  In addition, the automatic
   AMR in the new code does not require manual tuning of the
-  computational mesh, and does not independent of prior knowledge of
+  computational mesh, and does not utilize any prior knowledge of
   features of the solution like the location of black hole punctures.
   The new code already improves on the more specialized codes by being
   able to handle an arbitrary number of puncture-black holes.  AMR can
@@ -2832,10 +2163,9 @@ from:
 \item {\bf Load balancing}: For problems that require adaptive mesh
   refinement and multi-grid, there will naturally be a unbalanced
   number of degrees of freedom (DOF) across processors and this can
-  slow down the Krylov iterations substantially. This can be ammended
+  slow down the Krylov iterations substantially. This can be amended
   by incorporating a task-based parallelism framework for load
-  balancing.  We plan on reworking our elliptic solver into the
-  task-based parallel code SpECTRE, which is concurrently being developed~(\cite{kidder:16}).
+  balancing.  The elliptic solver developed in this article will be incorporated  task-based parallel code SpECTRE, which is concurrently being developed~(\citet*{kidder:16}).
 \item {\bf Anisotropic refinement}: Most realistic problems have some
   anisotropy and therefore a solver would benefit from anisotropic
   mesh refinement.  Indeed, most of the problems in this paper could
@@ -2849,7 +2179,7 @@ from:
   certain error. Recently, a method called Hybridizable dG has been
   coupled with matrix-free multigrid methods to solve elliptic
   problems with substantially reduced DOF over the classical dG
-  method~(\cite{fabien2019manycore,muralikrishnan2019multilevel}). Whether
+  method~(\citet*{fabien2019manycore,muralikrishnan2019multilevel}). Whether
   this method can be fully incorporated into the complex scheme
   presented in this paper, will be an area of further inquiry.
 \end{enumerate}
@@ -2857,7 +2187,7 @@ from:
 In future work, we plan to use this solver to expand the physics in
 compact object initial data, for instance, neutron star initial data
 for equation of state with phase-transitions, neutron stars with
-very high compactness (where current solvers fail~(\cite{henriksson:2014tba})),
+very high compactness (where current solvers fail~(\citet*{henriksson:2014tba})),
 or compact objects in alternative theories of gravity, or with novel matter fields like boson stars.
 
 

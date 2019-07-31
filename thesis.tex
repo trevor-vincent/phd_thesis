@@ -83,7 +83,7 @@
 \ifpdf
 \usepackage[pdftex]{graphicx}
 \usepackage[protrusion=true,expansion=true]{microtype}
-\else
+\else 
 \usepackage{graphicx}
 \fi
 
@@ -93,6 +93,7 @@
 \usepackage{amsmath}
 % Bibliography Stuff 
 \usepackage{natbib}
+%% \usepackage{bibentry}
 \setcitestyle{aysep={},yysep={;}}
 
 % AAS Tex Stuff
@@ -104,7 +105,12 @@
 % Using Better Fonts
 \usepackage[sc]{mathpazo}
 \usepackage[T1]{fontenc}
+%% \usepackage{biblatex}
 
+
+%
+\input{thesis_glossary}
+%% \nobibliography*
 % Paragraph Spacing Issue:
 \setlength{\parskip}{0cm plus1mm minus1mm}
 \usepackage{url}
@@ -141,9 +147,9 @@
 
 %% ***   Change this example to appropriate values.   ***
 \degree{Doctor of Philosophy} \department{Physics}
-\gradyear{2018} \author{Trevor Vincent}
+\gradyear{2019} \author{Trevor Vincent}
 \title{Binary Neutron Star Simulations: New Tools and Insights}
-
+%
 %% ***   NOTE   ***
 %% Put here all other formatting commands that belong in the preamble.
 
@@ -174,7 +180,7 @@
 %% This generates the abstract page, with the line spacing adjusted
 %% according to SGS guidelines.
 \begin{abstract}
-  On September 14th, 2015 LIGO detected gravitational waves from a merging binary black hole. Just under two years later, LIGO detected gravitational waves from merging neutron stars in coincidence with detections of a gamma ray burst and kilonova. Many more detections of this kind are expected in the future. There are several problems that are facing the numerical relativity community now that binary neutron stars (BNS) have been detected by LIGO and this thesis will tackle two of them. We first present a new numerical scheme that aims to lay the groundwork for more realistic BNS simulations in the future. This code uses discontinuous Galerkin numerical methods to solve elliptic problems on curvilinear and non-conforming meshes in parallel on large supercomputers. We test this code on several problems in numerical relativity, including one that mimicks the discontinuities in the phase transitions of a Neutron star, as well as the two and three black-hole initial gravitational data problem. This code will be used in the future to obtain highly accurate initial gravitational data for BNS simulations. Following this, we present a set of twelve new BNS simulations using a current state-of-the-art numerical relativity code. We study the neutrino and matter emission from this set of twelve simulations to establish trends between the source parameters and the emission from the binary. Large sets of simulations of BNS mergers will be crucial for the upcoming LIGO observation runs to maximize the extractions of astrophysical information from the instrument data. Finally we conclude the thesis by overviewing upcoming work involving the developments in this thesis, this includes porting our discontinuous Galerkin code to the new task-based parallel framework SpECTRE \cite{kidder:16} and importing our BNS simulation data into long-term disk evolution codes and nuclear reaction networks to develop kilonova light curves as was done by our collaborators in \cite{fernandez2016dynamics} for neutron star black hole simulation data.
+  On September 14th, 2015 the Laser Interferometer Gravitational-Wave Observatory (LIGO) detected gravitational waves from a merging binary black hole. Just under two years later, LIGO detected gravitational waves from merging neutron stars in coincidence with detections of a gamma ray burst and kilonova. Many more detections of this kind are expected in the future. There are several problems that are facing the numerical relativity community now that binary neutron stars (BNS) have been detected by LIGO and this thesis will tackle two of them. We first present a new numerical scheme that aims to lay the groundwork for more realistic BNS simulations in the future. This code uses discontinuous Galerkin numerical methods to solve elliptic problems on curvilinear and non-conforming meshes in parallel on large supercomputers. We test this code on several problems in numerical relativity, including one that mimicks the discontinuities in the phase transitions of a Neutron star, as well as the two and three black-hole initial gravitational data problem. This code will be used in the future to obtain highly accurate initial gravitational data for BNS simulations. Following this, we present a set of twelve new BNS simulations using a current state-of-the-art numerical relativity code. We study the neutrino and matter emission from this set of twelve simulations to establish trends between the source parameters and the emission from the binary. Large sets of BNS merger simulations will be crucial for the upcoming LIGO observation runs to maximize the extractions of astrophysical information from the instrument data. Finally we conclude the thesis by overviewing upcoming work involving our new code and simulations. This includes porting our discontinuous Galerkin code to the new task-based parallel framework SpECTRE \cite{kidder:16} and importing our BNS simulation data into long-term disk evolution codes and nuclear reaction networks to compute kilonova light curves as was done by our collaborators in \cite{fernandez2016dynamics} with neutron star black hole simulation data.
 
   %% There are several problems that are facing the numerical relativity community now that binary neutron stars have been detected by LIGO and we will highlight two important ones. To date, there is no code that can simulate binary neutron stars with all of the microphysics known, the complexity and computing power required is just too high. Secondly, there are very few large sets of simulations of merging binary neutron stars with even some of the microphysics included. Having such sets would allow us to analyze the relationship between optical, neutrino and gravitational emissions and the parameters of the binaries. This thesis aims at making progress towards solutions of both these problems. In Chapter 1 of this thesis, we introduce the main concepts to understand the rest of the text. In Chapter 2, we describe a new code we developed to tackle difficult initial data problems in numerical relativity and we show tests of this solver on a problem mimicking Neutron stars with phase transitions and also on multi-black-hole initial data. The future aim of this code will be to solve for binary neutron star initial data with all of the microphysics we can throw at it. In Chapter 3, we describe a large set of binary neutron star simulations we ran using the SpEC code and a state of the art neutrino transport scheme. We study the matter and neutrino emission of these merger simulations across different realistic equations of state and different mass ratios. Finally, in the last chapter we conclude our work and describe ongoing efforts to extend the work done in this thesis.
   
@@ -241,18 +247,27 @@ Lastly, a big thank you to my family, the constant support of my dad, mother, si
 %% This generates the List of Figures (on a separate page), if needed.
 %% (uncomment to have it appear in the document)
 \listoffigures
+%%%%
+\glsaddall
+\printnoidxglossary[type=acronym,nonumberlist]
+\printnoidxglossary[type=chap2symbols,nonumberlist,sort=def]
+\printnoidxglossary[type=chap3symbols,nonumberlist,sort=def]
+%% \printnoidxglossary[type=symbols,nonumberlist]
+%% \printnoidxglossary[type=terms,nonumberlist]
 
 %% End of the preliminary sections: reset page style and numbering.
-\end{preliminary}
+\end{preliminary}%
+%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%o%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Put your Chapters here; the easiest way to do this is to keep   %%
 %%  each chapter in a separate file and `\include' all the files    %%
 %%  right here.  Note that each chapter file should start with the  %%
 %%  line "\chapter{ChapterName}".  Note that using `\include'       %%
 %%  instead of `\input' makes each chapter start on a new page.     %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
+%%
 %% ***   Include chapter files here.   ***
 
 \include{intro/intro}
@@ -266,6 +281,9 @@ Lastly, a big thank you to my family, the constant support of my dad, mother, si
 %% ***   Set the bibliography style.   ***
 %% (change according to your preference)
 \bibliographystyle{apj}
+%% \bibliographystyle{abbrv}
+%% \bibliographystyle{plain}%
+%% \bibliographystyle{IEEEtran}
 %% ***   Set the bibliography file.   ***
 %% ("thesis.bib" by default; change if needed)
 %% \nocite{*}
@@ -277,9 +295,14 @@ Lastly, a big thank you to my family, the constant support of my dad, mother, si
 %% case, you should probably put the bibliography in a separate file
 %% and `\include' or `\input' it here).
 
+%%
+%
 \end{document}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  End of UT-THESIS.TEX
+%%%  End of UT-THESIS.TEX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%
 %
