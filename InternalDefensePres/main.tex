@@ -2,7 +2,7 @@
 
 \mode<presentation>
 \usetheme{Berkeley}
-
+\setbeamertemplate{footline}[frame number]
 % define your own colours:
 \definecolor{Red}{rgb}{1,0,0}
 \definecolor{Blue}{rgb}{0,0,1}
@@ -25,6 +25,7 @@
 \setbeamercolor{block title}{bg=black,fg=white}
 
 %% \renewcommand{\qedsymbol}{$\blacksquare$}
+%% \setbeamerfont{page number in head/foot}{size=\medium}
 
 \newenvironment<>{varblock}[2][.9\textwidth]{%
   \setlength{\textwidth}{#1}
@@ -222,11 +223,11 @@
     \begin{itemize}[label=\FilledSmallSquare]
     \item short gamma ray burst
     \item kilonova (optical $\rightarrow$ radio)
-    \item neutrinos (none-found)
-    \item r-process nuclei 
-    \item speed of gravity
+    \item r-process elements
+    \item $v_{\rm grav}$ constraints
     \item EOS constraints
     \item $H_0$ constraints
+    \item neutrinos (none-found)
     \end{itemize}
 \end{mybox}    
 %% \vspace{1cm}
@@ -331,14 +332,14 @@
     \centering Problem 1
     \begin{itemize}[label=\FilledSmallSquare]
       \scriptsize
-    \item Currently no code can handle multi-scales/microphysics required for all realistic simulations (10cm for MRI, 1-2000km for GW).
+    \item Currently no code can handle multi-scales/microphysics required for realistic BNS simulations (10cm for MRI, 1-2000km for GW).
     \item Current Spectral codes have problems with discontinuities in EOS phase transitions. 
     \item Supercomputers are becoming exascale in 2020 and SpEC doesn't scale very well.
     \end{itemize}
 
     \begin{mybox}{white}{\centering \scriptsize Chapter 2}
      \scriptsize
-      Develop a new code using new more powerful numerical techniques for problems in numerical realtivity.
+      Develop a new code using new more powerful numerical techniques for problems in numerical relativity.
     \end{mybox}
     
   \end{column}
@@ -629,50 +630,109 @@
 %% }
 
 
+%% \frame{
+%%   \frametitle{Test Problem 1: Single Non-smooth point}
+%%   \includegraphics[width=\textwidth]{./pictures/haraldslide4.png}
+%% }
+
+
 \frame{
   \frametitle{Test Problem 1: Single Non-smooth point}
-  \includegraphics[width=\textwidth]{./pictures/haraldslide4.png}
-}
+  %%        \begin{mybox}{white}{\centering \scriptsize Test Problem Details}
+  %%       \centering
+  %%   %% \tiny
+  %% $\nabla^2 u = f$ \\
+  %%       $\Omega = [0,1]^2$ \\
+  %%       $u = 0 \quad x \in \partial\Omega$ \\
+  %%       $u = x\left(1-x\right)y\left(1-y\right)\left[\left(x-\frac{1}{2}\right)^2 + \left(y-\frac{1}{2}\right)^2\right]^{3/2}.$ 
+  %%        \end{mybox}
+  %%        \vspace{.5cm}
 
 
-%% \frame{
-%%   \frametitle{Test Problem 2: Constant Density Star}
-%% \begin{mybox}{white}{\centering \scriptsize Test Problem Details}
-%%         \centering
-%%     %% \tiny
-%%         $ \nabla^{2}\psi + 2\pi \rho \psi^{5} = 0$ \\
-%%         %% $\Omega = [0,1]^3$ \\
-%%         $\rho = \begin{cases} 
-%%       \rho_{0} & r\leq r_0 \\
-%%       0 & r > r_0,
-%%    \end{cases}$ \\
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+  \begin{itemize}[label=\FilledSmallSquare]
+  \item Spectral \\ \textcolor{red}{smooth solution} \\ $\rightarrow$ error $\sim e^{\rm{DOF}^{1/d}}$
+\end{itemize}
+\end{column}
+
+    \begin{column}{.48\textwidth}
+  \begin{itemize}[label=\FilledSmallSquare]
+ \item  DG + hp-AMR \\ \textcolor{red}{non-smooth solution} \\ $\rightarrow$ error $\sim e^{\rm{DOF}^{1/(2d-1)}}$
+\end{itemize}
+\end{column}
+\end{columns}
+  
+ %% \item Numerical Proof:
+  %% \end{itemize}
+
+  \vspace{1cm}
+  
+  %% Test Problem with single $C^4$-smooth point at (0,0):
+
+  %% \vspace{1cm}
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
 %% \end{mybox}
-%% \vspace{.5cm}
-%%  %% \includegraphics[width=.47\textwidth%,trim=10 11 12 14
-%%     %% ]{./figures/problem_b/prob_b_pc_comparison.eps}
-%% %% \includegraphics[width=.45\textwidth,trim=10 0 30 34, clip=true]{./figures/problem_b/prob_b_convergence.pdf}
-%
-%%   \begin{columns}
-%%     \begin{column}{.48\textwidth}
-%%       %% \begin{mybox}{white}{\centering \scriptsize Stamm}
-%% %% \end{mybox}
-%%       \includegraphics[width=\textwidth,trim=10 0 40 30, clip=false]{./pictures/chap2/figures/problem_b/prob_b_convergence.pdf}
-%%   \end{column}
-%%   \begin{column}{.48\textwidth}
-%%   %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
-%% \includegraphics[width=\textwidth,trim=10 0 0 10,clip=false]{./pictures/chap2/figures/problem_b/prob_b_pc_comparison.eps}
-%%   %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
-%%   \end{column}
-%%   \end{columns}
-%% }
+      \includegraphics[width=\textwidth,trim=10 0 40 30, clip=false]{./pictures/chap2/figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+\includegraphics[width=\textwidth,trim=100 0 0 10,clip=false]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+  %% \subsection{Test Problem 2: Constant Density Star}
+}
 
 
 
 \frame{
   \frametitle{Test Problem 2: Constant Density Star}
-      \includegraphics[width=\textwidth,trim=10 0 40 30, clip=false]{./pictures/haraldslide6.png}
+
+ %% \includegraphics[width=.47\textwidth%,trim=10 11 12 14
+    %% ]{./figures/problem_b/prob_b_pc_comparison.eps}
+%% \includegraphics[width=.45\textwidth,trim=10 0 30 34, clip=true]{./figures/problem_b/prob_b_convergence.pdf}
+
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+%% \end{mybox}
+\begin{mybox}{white}{\centering \scriptsize Hamiltonian Constraint}
+        \centering
+    %% \tiny
+        $ \nabla^{2}\psi + 2\pi \rho \psi^{5} = 0$ \\
+        %% $\Omega = [0,1]^3$ \\
+        $\rho = \begin{cases} 
+      \rho_{0} & r\leq r_0 \\
+      0 & r > r_0,
+   \end{cases}$ \\
+\end{mybox}
+\vspace{.5cm}
+      \includegraphics[width=\textwidth,trim=10 0 40 30, clip=false]{./pictures/chap2/figures/problem_b/prob_b_convergence.pdf}
+  \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+  \begin{itemize}[label=\FilledSmallSquare]
+  \item AMR finds star surface!
+  \end{itemize}
+    \includegraphics[width=1.3\textwidth,trim=1500 0 0 10,clip=true]{./pictures/chap2/figures/problem_b/prob_b_mesh_4.png}
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+
+
 
 }
+
+
+
+%% \frame{
+%%   \frametitle{Test Problem 2: Constant Density Star}
+%%       \includegraphics[width=\textwidth,trim=10 0 40 30, clip=false]{./pictures/haraldslide6.png}
+
+%% }
 
 %% \frame{
 %%   \frametitle{Test Problem 2: Constant Density Star}
@@ -685,9 +745,19 @@
   %% \includegraphics[width=.45\textwidth,trim=10 0 30 34, clip=true]{./figures/problem_b/prob_b_convergence.pdf}
 %% \subsection{Test Problem 3: Cubed-sphere with Compactified grids}
 
-%% \frame{
-%%   \frametitle{Compactified Cubed Spheres}
+\frame{
+  \frametitle{Test Problem 3: Compactified Cubed-Spheres}
 
+  \begin{itemize}[label=\FilledSmallSquare]
+    %% \scriptsize
+    %% \item A subset already published in one paper [arXiv:1808.03836]
+    %% \item Main paper outlining Chap. 2 results is being prepared for Phys. Rev D.
+    \item Cubed-sphere composed of two spherical regions
+    \item Must compactify outer spherical region for bndry cond.
+    \item Must ``compactify'' estimator $\eta$
+  \end{itemize}  
+\vspace{1cm}
+  
 %% \begin{mybox}{white}{\centering \scriptsize Lorentzian}
 %%         \centering
 %%     %% \tiny
@@ -696,42 +766,72 @@
 %%         Mesh: Cubed Sphere with $R = 1000,10^9$
 %% \end{mybox}
   
-%%   %% \includegraphics[width=\textwidth,trim=2220 800 2580 2630,clip=true]{./pictures/chap2/figures/problem_c/prob_c_mesh.png}
+  %% \includegraphics[width=\textwidth,trim=2220 800 2580 2630,clip=true]{./pictures/chap2/figures/problem_c/prob_c_mesh.png}
 
-%%   \begin{columns}
-%%     \begin{column}{.48\textwidth}
-%%       %% \begin{mybox}{white}{\centering \scriptsize Stamm}
-%%       %% \end{mybox}
-%%           %% \centering \tiny [dG]\\
-%%    \includegraphics[width=\textwidth,trim=0 2 40 37,clip=true]{./pictures/chap2/figures/problem_c/prob_c_noncompact_vs_compact.pdf}
-%%     \end{column}
-%%   \begin{column}{.48\textwidth}
-%%   %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
-%%    \includegraphics[width=\textwidth,trim=700 450 470 420, clip=true]{./pictures/chap2/figures/general/cubed_sphere.png}
-%%   %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
-%%   \end{column}
-%%   \end{columns}
-%% }
-
-
-\frame{
-  \frametitle{Test Problem 3: Compactified Cubed-Spheres}
-
-   \includegraphics[width=\textwidth]{./pictures/haraldslide7.png}
-
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+      %% \end{mybox}
+          %% \centering \tiny [dG]\\
+   \includegraphics[width=\textwidth,trim=0 2 40 37,clip=true]{./pictures/chap2/figures/problem_c/prob_c_noncompact_vs_compact.pdf}
+    \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+   \includegraphics[width=\textwidth,trim=700 450 470 420, clip=true]{./pictures/chap2/figures/general/cubed_sphere.png}
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
 }
+
 
 %% \frame{
 %%   \frametitle{Test Problem 3: Compactified Cubed-Spheres}
-%%  \includegraphics[width=\textwidth,trim=10 14 10 10,clip=true]{./pictures/chap2/figures/problem_c/prob_c_pc_comparison.pdf}
-%% }
-%
 
+%%    \includegraphics[width=\textwidth]{./pictures/haraldslide7.png}
+
+%% }
 
 \frame{
   \frametitle{Test Problem 3: Compactified Cubed-Spheres}
- \includegraphics[width=\textwidth]{./pictures/haraldslide9.png}
+
+
+
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+      %% \end{mybox}
+      %% \centering \tiny [dG]\\
+      %% \vspace{.1cm}
+
+      \begin{itemize}[label=\FilledSmallSquare]
+      \item  Multigrid + Schwarz Smoother Solve
+        \item Optimal even for Compactified Cubed-Spheres
+      \end{itemize}
+      \vspace{1cm}
+      
+ \includegraphics[width=\textwidth,trim=10 14 10 10,clip=true]{./pictures/chap2/figures/problem_c/prob_c_pc_comparison.pdf}
+
+    \end{column}
+    \begin{column}{.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{./pictures/multigrid.jpg} \\
+%% Multigrid
+ \includegraphics[width=.7\textwidth]{./pictures/schwarzelement.png}\\
+%% Schwarz Subdomain
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+
+  
+
 }
+
+
+
+%% \frame{
+  %% \frametitle{Test Problem 3: Compactified Cubed-Spheres}
+ %% \includegraphics[width=\textwidth]{./pictures/haraldslide9.png}
+%% }
 
 \subsection{Two Punctures: Old Code vs New Code}
 \frame{
@@ -754,7 +854,7 @@
     \begin{column}{.48\textwidth}
       %% \begin{mybox}{white}{\centering \scriptsize Stamm}
       %% \end{mybox}
-      \centering \tiny [dG]\\
+      \phantom dG Code\\
       \vspace{.1cm}
   \includegraphics[width=\textwidth,trim=0 12 0 14,clip=false]{./pictures/chap2/figures/two_punctures/tp_point_convergence.pdf}
 
@@ -804,7 +904,32 @@
 \frame{
   \frametitle{Scalability}
   \centering
-\includegraphics[width=\textwidth]{./pictures/haraldslidesecondlast.png}
+
+  \begin{itemize}[label=\FilledSmallSquare]
+    \item The elliptic dG code scales, but is missing task-based load balancing in SpECTRE.
+    \end{itemize}
+
+\vspace{1cm}
+  
+  \begin{columns}
+    \begin{column}{.48\textwidth}
+      %% \begin{mybox}{white}{\centering \scriptsize Stamm}
+      %% \end{mybox}
+      \centering \tiny [elliptic dG Code; MPI-based]\\
+      \vspace{.1cm}
+  \includegraphics[width=\textwidth]{./pictures/ellipticscalability.png}
+
+    \end{column}
+  \begin{column}{.48\textwidth}
+  %% \includegraphics[width=\textwidth,trim=500 450 400 680,clip=true]{./pictures/chap2/figures/problem_a/prob_a_mesh_4.png}
+    \centering \tiny [SpECTRE; Task-based] \\    \includegraphics[width=\textwidth]{./pictures/spectrescalability.png} 
+  %% \includegraphics[width=.47\textwidth,trim=10 0 40 30, clip=true]{./figures/problem_a/prob_a_convergence.pdf}
+  \end{column}
+  \end{columns}
+
+
+
+  
   }
 
 
@@ -870,7 +995,7 @@
 \frame{
   \frametitle{Chapter 3: Unequal Mass BNS + Neutrino Transport}
 
-  12 new simulations... [arXiv:1808.03836, arXiv:19XX.XXXXX]
+  12 new SpEC simulations... [arXiv:1808.03836, arXiv:1908.00655]
   \vspace{.5cm}
 
   \begin{columns}
@@ -878,7 +1003,7 @@
 \includegraphics[width=\textwidth]{./pictures/bns-runs.png}
     \end{column}
     \begin{column}{.48\textwidth}
-      \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos.png}
+     \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos.eps}
     \end{column}
   \end{columns}
   
@@ -952,13 +1077,13 @@
 \frame{
   \frametitle{General Overview: 3ms}
     \vspace{-.15cm}
-\includegraphics[width=.9\textwidth,trim=0 0 0  60,clip=true]{./pictures/chap3/Figures/{misc_tabular_3ms_2}.png}
+\includegraphics[width=.9\textwidth,trim=0 0 0  60,clip=true]{./pictures/chap3/Figures/{misc_tabular_3ms_3}.png}
 }
 
 \frame{
   \frametitle{General Overview: 7.5ms}
     \vspace{-.15cm}
-\includegraphics[width=.9\textwidth,trim=0 0 0  60,clip=true]{./pictures/chap3/Figures/{misc_tabular_7.5ms_2}.png}
+\includegraphics[width=.9\textwidth,trim=0 0 0  60,clip=true]{./pictures/chap3/Figures/{misc_tabular_7.5ms_3}.png}
 }
 
 %% \subsection{Ejecta Types}
@@ -973,13 +1098,16 @@
 \frame{
   \frametitle{Dynamical Ejecta}
 
+  \begin{itemize}[label=\FilledSmallSquare]
+  \item SFHo has the most ejecta
+  \item Collapse runs produce no ejecta
+  \item Ejecta is mostly equatorial
+  \end{itemize}  
+
+  \vspace{.5cm}
+  
   \centering \includegraphics[width=\textwidth]{./pictures/bns-ejecta.png}
 
-      \begin{itemize}[label=\FilledSmallSquare]
-      \item SFHo has the most ejecta
-      \item Collapse runs produce no ejecta
-      \item Ejecta is mostly equatorial
-      \end{itemize}  
 }
 
 \subsection{Secular Ejecta}
@@ -992,6 +1120,7 @@
       \begin{itemize}[label=\FilledSmallSquare]
       \item GW170817 $M_{ej} \sim 0.05M_\odot$
       \item $40\%$ of disk mass can get ejected [arXiv:1808.00461]
+      \item We compute disk masses $\sim .1M_\odot$
       \end{itemize}
       
       \includegraphics[width=\textwidth]{./pictures/chap3/Figures/disk_masses.png}
@@ -1011,13 +1140,17 @@
 \frame{
   \frametitle{Velocity Distribution}
 
+  \begin{itemize}[label=\FilledSmallSquare]
+      \item Ejecta faster in the poles, $<v_{ej}> \sim 0.2c$
+  \end{itemize}
+  
     \begin{columns}
     \begin{column}{.48\textwidth}
       \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_12132_vinf_equa.eps} \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_12132_vinf_polar.eps}
     \end{column}
     \begin{column}{.48\textwidth}
-  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_sfho_vinf_equa.png}
-  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_sfho_vinf_polar.png}
+  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_sfho_vinf_equa.eps}
+  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_sfho_vinf_polar.eps}
     \end{column}
     \end{columns}
   
@@ -1026,13 +1159,17 @@
 \frame{
   \frametitle{$Y_e$ Distribution}
 
+  \begin{itemize}[label=\FilledSmallSquare]
+      \item Ejecta neutron-poor in the poles, $<Y_e> \sim 0.2$
+  \end{itemize}
+  
    \begin{columns}
     \begin{column}{.48\textwidth}
       \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_12132_ye_equa.eps} \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_12132_ye_polar.eps}
     \end{column}
     \begin{column}{.48\textwidth}
-  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_sfho_ye_equa.png}
-  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_sfho_ye_polar.png}
+  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_sfho_ye_equa.eps}
+  \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos_sfho_ye_polar.eps}
     \end{column}
     \end{columns}
   
@@ -1044,10 +1181,14 @@
 \subsection{Neutrino Irradiation}
 \frame{
   \frametitle{$Y_e$ distributions shift over time}
-  \centering Neutrinos deposit net lepton number into the ejecta
+
+  \begin{itemize}[label=\FilledSmallSquare]
+      \item   \centering Neutrinos deposit net lepton number into the ejecta
+  \end{itemize}
+  
   \centering \includegraphics[width=.6\textwidth]{./pictures/chap3/Figures/s12132_7_5_and_10.png}
 }
-
+%
 \subsection{Neutrino Emission}
 \frame{
   \frametitle{Neutrino Emission}
@@ -1055,8 +1196,12 @@
 
   \begin{columns}
     \begin{column}{.48\textwidth}
-\scriptsize
-Largest concentration of neutrinos in polar regions, tail and disk.\\
+      \scriptsize
+
+  \begin{itemize}[label=\FilledSmallSquare]
+      \item  Largest concentration of neutrinos in polar regions, tail and disk.
+  \end{itemize}      
+
 %% \includegraphics[width=\textwidth]{./pictures/chap3/Figures/eos-nulum-antionly.png}
 \vspace{.5cm}
 \includegraphics[width=\textwidth]{./pictures/d12132-neutrino-angular.png}
@@ -1067,11 +1212,16 @@ Largest concentration of neutrinos in polar regions, tail and disk.\\
   \end{column}
   \end{columns}
 }
-
+%
   %% \subsection{Neutrino Emission}
 \frame{
   \frametitle{Neutrino Emission}
 
+    \begin{itemize}[label=\FilledSmallSquare]
+      \item SFHo has largest luminosity
+      \item No Dependence on mass-ratio
+      \end{itemize}
+  
     \begin{columns}
     \begin{column}{.48\textwidth}
       \includegraphics[width=\textwidth]{./pictures/chap3/Figures/nulumnew.png}
@@ -1082,11 +1232,8 @@ Largest concentration of neutrinos in polar regions, tail and disk.\\
     \end{columns}
     \vspace{1cm}
 
-    \centering
-    \begin{itemize}[label=\FilledSmallSquare]
-      \item SFHo has largest luminosity
-      \item No Dependence on mass-ratio
-      \end{itemize}
+    %% \centering
+
 
     
   %% \centering \includegraphics[width=\textwidth,trim=300 0 300 0,clip=true]{Figures/eos_theta_hist_flux.pdf}
@@ -1100,14 +1247,15 @@ Largest concentration of neutrinos in polar regions, tail and disk.\\
   
   \begin{itemize}[label=\FilledSmallSquare]
     %% \scriptsize
-  \item 12 new simulations used in two studies so far
-    [arXiv:1808.03836; arXiv:19XX.XXXXX]
-    \item Collapse models $\rightarrow$ no ejecta, small disk mass
-    \item Softest model has most ejecta $\sim .01M_\odot$
-    \item Broad $Y_e$ distribution, mean 0.2 increasing over time
-    \item Broad $v_\infty$ distribution, mean 0.2-0.3c decreasing with binary asymmetry 
-    \item Disk masses increase with binary-asymmetry and stiffness
-    \item Neutrino emission dominated by SFHO, no dependence of emission/morphology on mass-ratio.
+  \item 12 new SpEC simulations used in two studies submitted to PRD
+    [arXiv:1808.03836; arXiv:1908.00655]
+    \item Multiple robust trends established/confirmed.
+    %% \item Collapse models $\rightarrow$ no ejecta, small disk mass
+    %% \item Softest model has most ejecta $\sim .01M_\odot$
+    %% \item Broad $Y_e$ distribution, mean 0.2 increasing over time
+    %% \item Broad $v_\infty$ distribution, mean 0.2-0.3c decreasing with binary asymmetry 
+    %% \item Disk masses increase with binary-asymmetry and stiffness
+    %% \item Neutrino emission dominated by SFHO, no dependence of emission/morphology on mass-ratio.
   \end{itemize}
 
   Future work:

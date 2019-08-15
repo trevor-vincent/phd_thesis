@@ -887,7 +887,7 @@ $N_{\text{its}}$ is the number of iterations.
       \Function{LSOLVE}{$u_0$,$R$,$\mathrm{J}$}
       \State $r_0 \leftarrow \mathrm{J}u_0 + R$
       \State $k \leftarrow 0$
-      \While {$k$++ $\leq N_{\text{iter,FCG}}\;$ or $\;||r_k|| \geq \text{tol}_{\text{FCG}}$}
+      \While {$k \leq N_{\text{iter,FCG}}\;$ or $\;||r_k|| \geq \text{tol}_{\text{FCG}}$}
       \State $v_k \leftarrow \text{VCYCLE}(r_k,\mathrm{J}v_k)$
       \State $w_k \leftarrow \mathrm{J}v_k$
       \State $\alpha_k \leftarrow v_k \cdot r_k$ 
@@ -904,6 +904,7 @@ $N_{\text{its}}$ is the number of iterations.
       \EndIf
       \State $u_{k+1} \leftarrow u_k + (\alpha_k/\rho_k)d_k$
       \State $r_{k+1} \leftarrow r_k - (\alpha_k/\rho_k)q_k$
+      \State $k \leftarrow k+1$
       \EndWhile
       \State \Return $u_k$
       \EndFunction
@@ -972,7 +973,7 @@ balancing is not the bottleneck for the multigrid algorithm.
 \usetikzlibrary{arrows,positioning} 
 \begin{figure}[ht!]
   \centering
-\includegraphics[width=\textwidth]{chap2/figures/general/multigrid_hierarchy.png}
+\includegraphics[width=.75\textwidth]{chap2/figures/general/multigrid_hierarchy.png}
 \caption{
   \label{fig:vcycle}
   A structural representation of a multigrid v-cycle. The nodes in yellow are actual grid-levels, while the nodes in blue represent surrogate grids which are not necessarily 2:1 balanced. In order for a multigrid v-cycle to represent a symmetric operation, the grid levels along the down arrow are exactly the same as the grid-levels along the up arrow. Level 0 represents the coarsest possible mesh.} 
@@ -1118,7 +1119,7 @@ $\;
 Besides estimating the spectral radius, we also use the CG iterations to further smooth the
 solution. This adds robustness to multigrid algorithms (\citet*{elman2001multigrid}).
 
-While the Chebyshev smoother is easy to implement, it is reliant on a robust estimate of the largest eigenvalue and this may not be always true in our case. Thus we also implement an additive Schwarz smoother in the manner of (\citet*{stiller2017robust}), which is much more robust. The Schwarz smoother works by performing local solves on element-centered subdomains and then adding a weighted sum of these local solves to obtain the smoothed solution. A simple example of one of these subdomains (where the grid is both p and h-uniform) is shown in Figure~\ref{fig:schwarz_subdomain}.
+While the Chebyshev smoother is easy to implement, it is reliant on a robust estimate of the largest eigenvalue and this may not be always available. Thus we also implement an additive Schwarz smoother in the manner of (\citet*{stiller2017robust}), which is much more robust. The Schwarz smoother works by performing local solves on element-centered subdomains and then adding a weighted sum of these local solves to obtain the smoothed solution. A simple example of one of these subdomains (where the grid is both p and h-uniform) is shown in Figure~\ref{fig:schwarz_subdomain}.
 %
 More generally, the Schwarz subdomain centered on element $e_c$
   of the mesh is constructed as follows: Starting with all collocation
@@ -1694,8 +1695,8 @@ u_{\alpha}(r) \equiv \frac{(\alpha r_0)^{1/2}}{(r^{2} + (\alpha r_0)^{2})^{1/2}}
 The parameters $\alpha$ and $\beta$ are determined from the continuity of $\psi$ and it's first derivative at the surface of the star, and are given by
 
 \begin{align}
- &\beta = r_0(Cu_{\alpha}(r_0) - 1) \\
- &\rho_{0}r_0^{2} = \frac{3}{2\pi}\frac{\alpha^{10}}{(1+\alpha^{2})^{3}}
+ &\beta = r_0(Cu_{\alpha}(r_0) - 1), \\
+ &\rho_{0}r_0^{2} = \frac{3}{2\pi}\frac{\alpha^{10}}{(1+\alpha^{2})^{3}}.
 \end{align}
 
 We solve the above problem on a cubic domain with $\rho_0 =
@@ -1751,7 +1752,7 @@ So far, we have only investigated meshes with a regular,
   Cartesian structure and with a rectangular outer boundary at close
   distance.  We will now investigate scenarios with a spherical outer
   boundary, where we use a macro-mesh arising from the 3-dimensional
-  generalization of Fig.~\ref{fig:macromesh} (a).  We will also place
+  generalization of Fig.~\ref{fig:macromesh}~(a).  We will also place
   the outer boundary at very large radius, typically $10^9$, to
   approximate boundary conditions at infinity. Typically, such problems have solutions which fall off as a
 power series in $1/r$.
@@ -1968,11 +1969,11 @@ Nevertheless, puncture data provides a testing ground for many
   arbitrary coordinates with arbitrary spins.
 
 For the case of puncture data, the initial data equations of general relativity
-reduce down to a single equation~(\citet*{brandt1997simple}):
+reduce down to a single equation~(\citet*{brandt1997simple}),
 
 \begin{equation}
 \label{eq:Two_Punctures_PDE}
--\nabla^2 u = \frac{1}{8}\bar A^{ij} \bar A_{ij}\psi^{-7}
+-\nabla^2 u = \frac{1}{8}\bar A^{ij} \bar A_{ij}\psi^{-7},
 \end{equation}
 %
 where $\bar A_{ij}$ is a spatially dependent function given by
@@ -2193,4 +2194,5 @@ or compact objects in alternative theories of gravity, or with novel matter fiel
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Acknowledgments%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%

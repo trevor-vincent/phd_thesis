@@ -7,7 +7,7 @@
 \textit{The material in this chapter is based on ”Unequal Mass Binary Neutron Star Simulations with M1 Neutrino Transport: Ejecta and Neutrino Emission" by Trevor Vincent, Francois Foucart, Roland Haas, Matthew Duez, Lawrence Kidder, Harald Pfeiffer, Mark Scheel being prepared for Phys. Rev. D. The first author also contributed to the paper "Discerning the binary neutron star or neutron star-black hole nature of GW170817 with Gravitational Wave and Electromagnetic Measurements" by Tanja Hinderer, Samaya Nissanke, Francois Foucart, Kenta Hotokezaka, Trevor Vincent, et al. submitted to Phys. Rev. D. and available on the arXiv here https://arxiv.org/abs/1808.03836.}
 
 %from sekiguchi
-We present twelve new simulations of unequal mass neutron star mergers. The simulations were preformed with the SpEC code, and utilize nuclear-theory based equations of state and a two-moment gray neutrino transport scheme with an improved energy estimate based on evolving the number density. We model the neutron stars with the SFHo, LS220 and DD2 equations of state (EOS) and we study the neutrino and matter emission of all twelve models to search for robust trends between binary parameters and emission characteristics. We find that the total mass of the dynamical ejecta exceeds $0.01M_\odot$ only for SFHo with weak dependence on the mass-ratio across all models.  We find that the  ejecta have a broad electron fraction $Y_e$ (ratio of electrons to baryons) distribution ($\approx 0.06-0.48$), with mean $0.2$. $Y_e$ increases with neutrino irradiation over time, but decreases with increasing binary asymmetry. We also find that the models have ejecta with a broad asymptotic velocity distribution ($\approx 0.05-0.7c$). The average velocity lies in the range $0.2c - 0.3c$ and decreases with binary asymmetry. Furthermore, we find that disk mass increases with binary asymmetry and stiffness of the EOS. $Y_e$ of the disk increases with softness of the EOS. Finally, the strongest neutrino emission occurs for the models with soft EOS and we find no significant dependence of the magnitude or angular distribution of the neutrino luminosity with mass-ratio except in the case of the heavier (non-electron) neutrino species. This is the first time unequal mass binary neutron stars have been simulated with SpEC and the largest set of BNS simulations ever run with the code. Due to this being the first time such simulations have been run, enormous difficulties had to be overcome to achieve these simulations. At the time this project started, there were no scientific papers in the literature addressing unequal mass BNS simulations with neutrino transport in full general relativity (circa early 2016), so the authors planned on this being the first study. However, the BNS simulations, which should take $\mathcal{O}(1-2)$ months of compute time took over two years to finish. This was due to the bugs and issues that cropped up in the code. These bugs were solved primarily by the first author and Prof. Francois Foucart. All of the analysis and visuals in this chapter was done by the first author. Dr. Roland Haas and Prof. Harald Pfeiffer provided help with debugging and editing. While this is no longer the first time unequal mass BNS simulations have been studied in full general relativity, our simulations still add value to the current set of studies in the literature. We use a completely different set of mass-ratios and equations of state than the other groups and our neutrino transport scheme is the most advanced to date (the other groups also use different methods to evolve the spacetime and hydrodynamics).
+We present twelve new simulations of unequal mass neutron star mergers. The simulations were performed with the SpEC code, and utilize nuclear-theory based equations of state and a two-moment gray neutrino transport scheme with an improved energy estimate based on evolving the number density. We model the neutron stars with the SFHo, LS220 and DD2 equations of state (EOS) and we study the neutrino and matter emission of all twelve models to search for robust trends between binary parameters and emission characteristics. We find that the total mass of the dynamical ejecta exceeds $0.01M_\odot$ only for SFHo with weak dependence on the mass-ratio across all models.  We find that the  ejecta have a broad electron fraction $Y_e$ (ratio of electrons to baryons) distribution ($\approx 0.06-0.48$), with mean $0.2$. $Y_e$ increases with neutrino irradiation over time, but decreases with increasing binary asymmetry. We also find that the models have ejecta with a broad asymptotic velocity distribution ($\approx 0.05-0.7c$). The average velocity lies in the range $0.2c - 0.3c$ and decreases with binary asymmetry. Furthermore, we find that disk mass increases with binary asymmetry and stiffness of the EOS. $Y_e$ of the disk increases with softness of the EOS. Finally, the strongest neutrino emission occurs for the models with soft EOS and we find no significant dependence of the magnitude or angular distribution of the neutrino luminosity with mass-ratio except in the case of the heavier (non-electron) neutrino species. This is the first time unequal mass binary neutron stars have been simulated with SpEC and the largest set of BNS simulations ever run with the code. Due to this being the first time such simulations have been run, enormous difficulties had to be overcome to achieve these simulations. At the time this project started, there were no scientific papers in the literature addressing unequal mass BNS simulations with neutrino transport in full general relativity (circa early 2016), so the authors planned on this being the first study. However, the BNS simulations, which should take $\mathcal{O}(1-2)$ months of compute time took over two years to finish. This was due to the bugs and issues that cropped up in the code. These bugs were solved primarily by the first author and Prof. Francois Foucart. All of the analysis and visuals in this chapter was done by the first author. Dr. Roland Haas and Prof. Harald Pfeiffer provided help with debugging and editing. While this is no longer the first time unequal mass BNS simulations have been studied in full general relativity, our simulations still add value to the current set of studies in the literature. We use a completely different set of mass-ratios and equations of state than the other groups and our neutrino transport scheme is the most advanced to date (the other groups also use different methods to evolve the spacetime and hydrodynamics).
 
 \section{Introduction}
 
@@ -225,7 +225,7 @@ we transition according to
 %
 with $t_{DH}$ the time at which we turn on the damped harmonic gauge and $\tau_m = 100M$.
 
-With these gauge choices we solve a first order representation of the generalized harmonic system (Eq.~\ref{eqn:efe_gh}) in which the fundamental variables are the spacetime metric $ g_{ab}$, its spatial first derivatives $\phi_{iab}$ and its first derivatives in the direction normal to the $t=$ constant slice $\Pi_{ab} = t^c\partial_c g_{ab}$. The generalized harmonic first order system is then:
+With these gauge choices we solve a first order representation of the generalized harmonic system (Eq.~\ref{eqn:efe_gh}) in which the fundamental variables are the spacetime metric $ g_{\alpha\beta}$, its spatial first derivatives $\phi_{i\alpha\beta}$ and its first derivatives in the direction normal to the $t=$ constant slice $\Pi_{\alpha\beta} = t^\delta\partial_\delta g_{\alpha\beta}$. Multiples of the expressions $\partial_i\psi_{\alpha\beta} - \Phi_{i\alpha\beta}$ and $H_\alpha + \Gamma_\alpha$ (which equate to zero) are added to the equations to ensure hyperbolicity of generalized harmonic formulation. The multiplicative factors for these expressions are given by the constraint damping parameters $\{\gamma_0,\gamma_1,\gamma_2\}$ which dampen any constraint violating modes that may grow due to small numerical errors in the evolution. The generalized harmonic first order system is then:
 %
 \begin{align}
   \partial_t g_{\alpha\beta} &- (1 + \gamma_1)\beta^k\partial_k g_{\alpha\beta} = -\alpha\Pi_{\alpha\beta} - \gamma_1\beta^i\Phi_{i\alpha\beta},  \\
@@ -256,7 +256,7 @@ With these gauge choices we solve a first order representation of the generalize
 %%   &\partial_i g_{ab} := \phi_{iab}.
 %% \end{align}
 %
-This amounts to a symmetric hyperbolic system of 50 coupled nonlinear equations. The constraint damping parameters $\{\gamma_0,\gamma_1,\gamma_2\}$ are additional free parameters which dampen any constraint violating modes which may grow due to small numerical errors in the evolution. To set the $\gamma$ parameters we use a trial-and-error process which concludes when we find that the constraint-violating modes do not grow significantly over time. In practice, we set the parameters to
+This amounts to a symmetric hyperbolic system of 50 coupled nonlinear equations. To set the $\gamma$ parameters we use a trial-and-error process which concludes when we find that the constraint-violating modes do not grow significantly over time. In practice, we set the parameters to
 %
 \begin{align}
 \gamma_0 &= \frac{.005}{M}+\frac{.2}{M_1}f(r^i_1, 2.5R_1)\notag\\
@@ -271,7 +271,7 @@ where $r^i_{1,2,c}$ correspond to the coordinate locations of the first neutron 
 
 \subsection{Neutrino Evolution}
 
-We use a gray two moment scheme for neutrino transport introduced in (\citet*{foucart2016impact}). By evolving the number density of neutrinos in addition to their energy and flux densities, this new scheme guarantees exact conservation of the total lepton number. It also provides is with a local estimate of the average neutrino energy, an important quantity given the strong dependence of neutrino-matter cross-sections on the energy of neutrinos. In this section we will give an overview of this algorithm.
+We use a gray two moment scheme for neutrino transport introduced in (\citet*{foucart2016impact}). By evolving the number density of neutrinos in addition to their energy and flux densities, this new scheme guarantees exact conservation of the total lepton number. It also provides us with a local estimate of the average neutrino energy, an important quantity given the strong dependence of neutrino-matter cross-sections on the energy of neutrinos. In this section we will give an overview of this algorithm.
 
 For each species of (anti)neutrino $\nu_i$ we can describe the neutrinos by their distribution function $f_{\nu}(x^\mu, p^\mu)$ where $x^\mu = (t, x^i)$ gives the time and the position of the neutrinos and $p^\alpha$ is the 4-momentum of the neutrinos. The distribution function $f_{(\nu)}$ evolves according to the Boltzmann equation:
 %%
@@ -283,7 +283,7 @@ where the right-hand side includes all collisional processes (emissions, absorpt
 In general, this is a 7-dimensional problem which is extremely expensive to solve numerically. Approximations to the Boltzmann equation have thus been developed for numerical applications. In this work, we consider the moment formalism developed by Thorne (\citet*{1981mnras.194..439t}) and Shibata et al.~(\citet*{shibata:11}), in which only the lowest moments of the distribution function in momentum space are evolved.  We limit ourselves to the use of this formalism in the gray approximation, that is we only consider energy-integrated moments.  We will consider three independent neutrino species: the electron neutrino $\nu_e$, the electron antineutrinos $\bar \nu_e$, and the heavy lepton neutrinos $\nu_x$. The latter represents the 4 species $(\nu_\mu, \bar \nu_\mu, \nu_\tau, \bar \nu_\tau)$. This merging is justified because the temperatures and neutrino energies reached in our merger calculations are low enough to suppress the formation of the corresponding heavy leptons. The presence of heavy leptons would then require including the charged current neutrino interactions that differentiate between these individual species.
 
 In the gray approximation with the first two moments of the distribution function, we evolve for each species projections of the stress-energy tensor of the neutrino radiation $T^{\mu\nu}_{rad}$. We write
-
+%
 \begin{equation}
 T^{\mu\nu}_{rad}  = Ju^\mu u^\nu + H^\mu u^\nu + H^\nu u^\mu + S^{\mu\nu},
 \end{equation}
@@ -295,10 +295,10 @@ with $H^\mu u_\mu = S^{\mu\nu}u_\mu = 0$ and $u^\mu$ the 4-velocity of the fluid
 \end{equation}
 %
 with $l^\alpha u_\alpha = 0$ and $l^\alpha l_\alpha = 1$. With this decomposition, the energy $J$, flux $H^\mu$ and stress tensor $S^{\mu\nu}$ of the neutrino radiation as observed by an observer comoving with the fluid are related to the neutrino distribution function by
-
+%
 \begin{align}
-  J &= \int^\infty_0 \mathrm{d}\nu \nu^3 \int \mathrm{d}\Omega f_{(\nu)}(x^{\alpha}, \nu, \Omega) \\
-  H^\mu &= \int^\infty_0 \mathrm{d}\nu \nu^3 \int \mathrm{d}\Omega f_{(\nu)}(x^{\alpha}, \nu, \Omega) l^{\mu}\\
+  J &= \int^\infty_0 \mathrm{d}\nu \nu^3 \int \mathrm{d}\Omega f_{(\nu)}(x^{\alpha}, \nu, \Omega), \\
+  H^\mu &= \int^\infty_0 \mathrm{d}\nu \nu^3 \int \mathrm{d}\Omega f_{(\nu)}(x^{\alpha}, \nu, \Omega) l^{\mu},\\
   S^{\mu\nu} &= \int^\infty_0 \mathrm{d}\nu \nu^3 \int \mathrm{d}\Omega f_{(\nu)}(x^{\alpha}, \nu, \Omega) l^{\mu}l^\nu,
 \end{align}
 %
@@ -306,20 +306,20 @@ where $\nu$ is the neutrino energy in the fluid frame, and $\int\mathrm{d}\Omega
 %
 %
 We also utilize the decomposition of $T^{\mu\nu}_{rad}$ in terms of the energy, flux and stress tensor observed by an inertial observer (i.e. an observer whose worldline is tangent to the normal vector $n^\mu$),
-
+%
 \begin{equation}
   T^{\mu\nu}_{rad} = En^\mu n^\nu + F^\mu n^\nu + F^\nu n^\mu + P^{\mu\nu},
 \end{equation}
 %
 with $F^\mu n_\nu = P^{\mu\nu}n_\mu = F^t = P^{t\nu} = 0$.%, and $n^\alpha$ the unit normal to a $t$ = constant slice.
 
-We define a projection operator on the reference frame of an observer comoving with the fluid:
+Using a projection operator defined in the reference frame of an observer comoving with the fluid:
 %
 \begin{equation}
-  h_{\alpha\beta} = g_{\alpha\beta} + u_\alpha u_\beta.
+  h_{\alpha\beta} = g_{\alpha\beta} + u_\alpha u_\beta,
 \end{equation}
 %
-We can then write equations relating the fluid frame moments to the inertial frame moments
+we can then write equations relating the fluid frame moments to the inertial frame moments
 
 \begin{align}
   E &= W^2 J + 2 W v_\mu H^\mu + v_\mu v_\nu S^{\mu\nu}, \\
@@ -343,8 +343,7 @@ where $v^\mu n_\mu = 0$ and $W = \sqrt{1 + v_i v^i}$.
 By taking moments of the Boltzmann equation, the evolution equations for $\tilde E = \sqrt{\gamma}E$ and $\tilde F^i = \sqrt{\gamma} F^i$ can then be written in conservative form
 
 \begin{align}
-  \partial_t \tilde E &+ \partial_j (\alpha \tilde F^j - \beta^j \tilde E) \\
-  &= \alpha(\tilde P^{ij} K_{ij} - \tilde F^j \partial_j \ln \alpha - \tilde S_\text{rad}^\alpha n_\alpha), \notag\\
+  \partial_t \tilde E &+ \partial_j (\alpha \tilde F^j - \beta^j \tilde E) = \alpha(\tilde P^{ij} K_{ij} - \tilde F^j \partial_j \ln \alpha - \tilde S_\text{rad}^\alpha n_\alpha), \\
   \partial_t \tilde F_i &+ \partial_j (\alpha \tilde P_i^j - \beta^j \tilde F_i) \\
   &= (-\tilde{E} \partial_i \alpha + \tilde{F}_k \partial_i \beta^k + \frac{\alpha}{2} \tilde{P}^{jk} \partial_i \gamma_{jk} + \alpha \tilde{S}_{\text{rad}}^\alpha \gamma_{i\alpha}) \notag,
 \end{align}
@@ -375,7 +374,7 @@ where $W$ is the Lorentz factor introduced in Eq.~\ref{eqn:vel_decomp}. The evol
 \end{equation}
 where the source term accounts for neutrino-matter interactions.
 
-To close this system of equations we need three additional ingredients: a prescription for the computation of $P^{ij}(E, F_i)$ which is called the closure relation, a prescription for the computation of the number flux $\mathcal{F}^j$ (specific to te evolution of the number density N in this chapter) and the collisional source terms $\tilde{S}^\alpha_{\rm rad}, C_{(0)}$.
+To close this system of equations we need three additional ingredients: a prescription for the computation of $P^{ij}(E, F_i)$ which is called the closure relation, a prescription for the computation of the number flux $\mathcal{F}^j$ (specific to the evolution of the number density N in this chapter) and the collisional source terms $\tilde{S}^\alpha_{\rm rad}, C_{(0)}$.
 
 For $P^{ij}(E, F_i)$  we interpolate between optically thick and thin limits:
 %
@@ -433,13 +432,13 @@ The collisional source term for the number density $\bar N$ is given by
 Thus we need the energy integrated emissivities $(\bar \eta, \bar \eta_N)$ and the energy-averaged opacities $(\bar \kappa_A, \bar \kappa_S, \bar \kappa_N)$ to compute the source terms. 
 We begin by computing the energy-integrated energy and number emissivities $(\bar \eta, \bar \eta_N)$ and energy-averaged equilibrium opacities $(\bar \kappa^{eq}_A, \bar \kappa^{eq}_S)$, which assume a thermal distribution of neutrinos in equilibrium with the fluid. The emissivities are computed following Ruffert et al.~(\citet*{ruffert1996}), except for nucleon-nucleon Bremsstrahlung for which the emissivity is computed following Burrows et al.~(\citet*{burrows2006b}). The equilibrium opacities are computed using Kirchoff's Law:
 %To do this we need the equilibrium energy-integrated emissivities $(\bar \eta^{eq}, \bar \eta^{eq}_N)$ and equilibrium opacities $(\bar \kappa^{eq}_A, \bar \kappa^{eq}_S)$ which assume a Fermi-Dirac distribution with temperature $T_{\rm fluid}$. When they are available, we use the equilibrium emissitivies and opacities from Ruffert et al.~(\citet*{ruffert1996}), except for nucleon-nucleon Bremsstrahlung for which the emissivity is computed following Burrows et al.~(\citet*{burrows2006b}). When either an equilibrium emissitivity or opacity is not available for a reaction, we compute whichever is unknown using Kirchoff's Law:
-
+%
 \begin{equation}
 \bar \eta = \bar\kappa^{eq}\int B_{(\nu)}\mathrm{d}\nu,
 \end{equation}
 
 where $B_{(\nu)}$ is the blackbody spectrum in equilibrium with the fluid. This ensures that, in regions where neutrinos are in thermal equilibrium with the fluid, they have the correct energy density $\bar \eta/\bar\kappa^{eq}$. To account for the fact that the average energy of neutrinos may be very different from its equilibrium value, we then correct the opacities by making use of the fact that processes computed here have cross-sections scaling as $T_\nu^2$:
-
+%
 %% \Francois{I think that we take the emissivities and $\kappa_s^{eq}$ from these references, but set $\kappa_a^{eq}$ using Kirkhoff's law ($\eta^{eq}/\kappa_a^{eq}=B$, with $B$ the energy density for black-body radiation in equilibirum with the fluid). For some reactions, we do the opposite (set $\eta^{eq}$ from $\kappa_a^{eq}$ and Kirkhoff's law). The details are in the M1 code chapter.}
 %
 \begin{align}
@@ -511,7 +510,7 @@ The 3 + 1 stress-energy conservation equations for radiation-hydrodynamics $\nab
   \partial_t S_i + \partial_j(\alpha\sqrt{\gamma}T^j_i) =&\: \frac{1}{2}\alpha \sqrt{\gamma} T^{\mu\nu} \partial_i \gamma_{\mu\nu} \\
   &- \alpha \tilde S_\text{rad}^\alpha \gamma_{i\alpha},\notag
 \end{align}
-
+%
 where $v_t^i = u^i/u^0$ is the transport velocity.
 
 We evolve these equations using standard high-order shock-capturing finite volume method. We compute values of the physical quantities $(\rho_0,T,u_i)$ on cell faces from their cell-average values using fifth order WENO5 reconstruction~(\citet*{borges}), and compute numerical fluxes on faces using the approximate HLL Riemann solver~(\citet*{hll}).
@@ -519,13 +518,13 @@ We evolve these equations using standard high-order shock-capturing finite volum
 \subsection{Composition Evolution}
 
 The fluid composition in our simulations is described by the electron fraction:
-
+%
 \begin{equation}
   Y_e = \frac{n_p}{n_p + n_n},
 \end{equation}
 %
 where $n_p$ and $n_n$ are the proton and neutron number densities, respectively (the net electron number density $n_{e^{-}} - n_{e^{+}} = n_p$, due to charge neutrality in the fluid). From lepton number conservation, we have:
-
+%
 \begin{equation}
   \partial_t \left(\rho_* Y_e \right) + \partial_i\left(\rho_*Y_e v_t^i\right)= -\sum_{\nu}\textrm{sign}(\nu)\alpha \sqrt{\gamma} C^{\nu}_{(0)},
 \end{equation}
@@ -559,7 +558,7 @@ deviations from Chiral effective field theory calculations (\citet*{hempel2017we
 \end{figure}
 
 While each EOS shows deviations from theoretical calculations, they all have a radius, maximum mass and tidal deformalibity that are compatible with observations of isolated neutron stars~(\citet*{demorest:2010bx,hempel2017well}). The LS220 and SFHo EOSs are also compatible with all constraints derived from the gravitational wave signal emitted by GW170817~(\citet*{gw170817-pe,gw170817-nsradius}), while the DD2 equation of state has a tidal deformability for $1.4M_\odot$ neutron stars just outside of the strictest bound derived using parametrized equation of state models~(\citet*{gw170817-nsradius}). For all three equations of state, we show mass-radius curves in Figure~\ref{fig:eos_mr}. These curves were computed by integrating the TOV equations for the EOS by using the table values at $T=0.1$\,MeV in beta equilibrium. From Figure~\ref{fig:eos_mr}, we can clearly see that for each EOS there is a maximum mass for non-rotating isolated neutron stars. Furthermore we can associate with each EOS an average density at this maximum mass as $\langle \rho \rangle := 3M_{max}/4\pi R^3_{max}$ and the ratio of this average density and the central density $\rho_c$ of the star is an indication of how ``stiff'' the EOS is. Higher values of $\langle \rho \rangle/\rho_c$ correspond to stiffer EOS, while lower values correspond to softer EOS (\citet*{bauswein2013prompt}). In our case, from stiffest to softest, the EOS are ranked DD2, LS220 and SFHo. Softer EOS tend to make smaller stars at a fixed mass. For a fiducial mass of $1.4M_\odot$, the radii are 13.2 km, 12.7 km, 11.9 km for DD2, LS220 and SFHo respectively. We can also introduce a useful quantity called the compactness, which is defined by $C=M/R$. Softer EOS tend to make more compact stars. The maximum mass however is not a good indicator of whether the post-merger remnant will promptly collapse to a black hole (BH) after merger because the remnant will most likely be differentially rotating and held up by centrifugal and thermal forces against collapse.
-A more accurate estimate for the maximum mass at which the merger promptly collapses to a BH is given by Bauswein~{\it et al.}~(\citet*{bauswein2013prompt}) who ran simulations of BNS mergers with a smoothed particle hydrodynamics code that employs the conformal flatness approximation of the Einstein field equations and includes a GW backreaction scheme to determine a thershold mass for prompt collapse across 12 different realistic EOS. Bauswein et al. found the threshold masses for SFHo, LS220 and DD2 were $2.95M_\odot$, $3.05M_\odot$ and $3.35M_\odot$ respectively. Thus the SFHo and LS220 models are more likely to undergo prompt collapse for the higher end of the total masses considered in this chapter ($\sim 2.9M_\odot$, see Sec.~\ref{sec:initial_models}). 
+A more accurate estimate for the maximum mass at which the merger promptly collapses to a BH is given by Bauswein~{\it et al.}~(\citet*{bauswein2013prompt}) who ran simulations of BNS mergers with a smoothed particle hydrodynamics code that employs the conformal flatness approximation of the Einstein field equations and includes a GW backreaction scheme to determine a threshold mass for prompt collapse across 12 different realistic EOS. Bauswein et al. found the threshold masses for SFHo, LS220 and DD2 were $2.95M_\odot$, $3.05M_\odot$ and $3.35M_\odot$ respectively. Thus the SFHo and LS220 models are more likely to undergo prompt collapse for the higher end of the total masses considered in this chapter ($\sim 2.9M_\odot$, see Sec.~\ref{sec:initial_models}). 
 
 %% \begin{figure*}
 %%   \includegraphics[width=\textwidth]{chap3/Figures/12132-ENua.png}
@@ -688,7 +687,7 @@ ultimately become unbound from the central gravitational potential. Two indicato
 \item{$\mathbf{hu_t < -1}$: For a stationary relativistic fluid flow, the relativistic Bernoulli equation (\citet*{rezzolla2013relativistic}) implies $hu_t$ is constant along fluid worldlines. In an asymptotically flat spacetime, we would expect $W = -u_t$ (if the fluid particles follow geodesics). Since the relativistic enthalpy $h$ is only defined up to a constant factor which can be set such that $h \leftarrow 1$ at spatial infinity. Therefore, we may flag matter as unbound using the condition $hu_t < -1$. The main difference with the previous criteria is that all of the thermal energy of the fluid is now assumed to be transformed into kinetic energy as the fluid decompresses. Energy deposition due to r-process heating is also treated differently. We implicitly assume that the difference in binding energy between particles in nuclear statistical equilibrium (NSE) at the current density, temperature, and composition, and their binding energy at low density and temperature but for the same $Y_e$, is entirely deposited/removed from the fluid's kinetic energy. This neglects significant out-of-NSE evolution during r-process nucleosynthesis (see~(\citet*{foucartbhns2016}))}.
 \end{enumerate}
 
-We have found previously (\citet*{foucart:2015gaa}) that the second indicator $hu_t < -1$, the Bernoulli criterion, produces
+It was found previously (\citet*{foucart:2015gaa}) that the second indicator $hu_t < -1$, the Bernoulli criterion, produces
 qualitatively more accurate results in SpEC, therefore all material labelled unbound in this chapter uses this indicator. It is important to note that no indicator is exact.  In fact, the Bernoulli criterion has been shown to result in as much as twice the ejected matter as the $u_t$ condition~(\citet*{kastaun:2014fna}). 
 
 With the Bernoulli criterion, we flag matter that is still on the grid if it is at least $50M_\odot$ away from the center of the remnant and compute the ejected mass as follows
@@ -701,21 +700,21 @@ M^{on}_{ej}(t) = \int_{r>50M_\odot}\rho_0 W\mathcal{H}(-hu_t - 1)\sqrt{\gamma}{d
 where $\mathcal{H}(\cdot)$ is the Heaviside function. While the $50M_\odot$ threshold is arbitrary, we have found that it comfortably excludes any ejecta very close to the remnant which may not ultimately become unbound.
 
 We also measure unbound material that leaves the computational grid (for each run, the grid is roughly $200M_\odot \times 200M_\odot \times 100M_\odot$) using
-
+%
 \begin{equation}
 M^{\rm off}_{\rm ej}(t) = \int^t_0\int_S\rho_0\mathcal{H}(-hu_t - 1) W(\alpha v^i - \beta^i)n_i\mathrm{d}S\mathrm{d}t'.
 \end{equation}
 %
 Here $v^i$ is the fluid 3-velocity, $W$ is the Lorentz factor, defined by $W := (1-v^iv_i)^{-1/2}$, $S$ is the grid boundary and $\rho_0 \mathcal{H}(-hu_t - 1)W(\alpha v^i - \beta^i)n_i$ represents the flux of unbound material leaving the boundary. At a time $t$, we estimate the full ejecta as
-
+%
 \begin{equation}
-M_{\rm ej}(t) = M^{\rm on}_{\rm ej} + M^{\rm off}_{\rm ej}
+M_{\rm ej}(t) = M^{\rm on}_{\rm ej} + M^{\rm off}_{\rm ej}.
 \end{equation}
 
 Finally, to compute average quantities for the ejected matter, we use the following definition of the mass-weighted average for a quantity X.
 
 \begin{equation}
-  \left< X \right> = \frac{1}{M_{\rm ej}}\int X \mathrm{d}M_{\rm ej},
+  \left< X \right> = \frac{1}{M_{\rm ej}}\int X \mathrm{d}M_{\rm ej}.
 \end{equation}
 
 
@@ -948,13 +947,13 @@ Analysis of the kilonova emission associated with GW170817 showed that the eject
 After merger, magnetically-driven~(\citet*{siegel:2017nub,fernandez2019long}) and neutrino-driven~(\citet*{just2014}) winds as well as outflows due to viscous angular momentum transport and $\alpha$-particle recombination~(\citet*{fernandez2013}) should combine to unbind a large fraction of the remnant disk ($\sim 40\%$ for disks around black holes in~(\citet*{fernandez2019long})). Based on these results for the long-term evolution of post-merger disk, we can provide order-of-magnitude estimates of the evolution of the remnant produced at the end of our simulations. We consider
 %At much longer times, when magnetic and neutrino driven winds increasingly dominate, a large fraction of the disk mass can be ejected. In this section we attempt to speculate on the size of such long-term ejecta mass. Our estimates rely on 
 the following definition of the disk mass:
-
+%
 %%%%
 \begin{equation}
   \label{eqn:disk_mass}
 M_{\text{disk}} = \int_{\rho < 10^{13}g/cm^3} \rho_0 W \sqrt{\gamma} \mathrm{d}^3x,
 \end{equation}
-
+%
 which has been used in previous works, see (\citet*{radice2018binary,shibata2017gw170817}). This definition is used for two reasons. Firstly, based on visualizations of the remnant, such as Fig.~\ref{fig:ye_table_eos_12132} we can clearly see that the $10^{13}g/cm^3$ density contour encapsulates only the core of the remnant. Secondly, it was shown that for densities approximately below $10^{13}g/cm^3$, the matter is rotationally bound with roughly a $r^{-3/2}$ fall-off(\citet*{hanauske2017rotational}). Unfortunately $M_{disk}$ defined by Eq.~(\ref{eqn:disk_mass}) drifts to larger values over time and indeed it has not converged yet at 7.5ms. Nonetheless, we note similar evolution of this quantity over time for all EOS and mass-ratios, so using estimates at 7.5ms will give us a crude estimate on the lower bound of the disk mass.  We compute the disk masses at 7.5-ms post-merger except for the models that collapse  (e.g. S12156, S144144, L12156, L144144) where we compute the disk mass right before collapse. The masses are summarized in Fig.~\ref{fig:disk_masses}. 
 
 We first note that the stiffer EOS produce larger disks. Moreover, disk mass increases as the degree of binary asymmetry increases. Most importantly, all but one simulation (L144144) can potentially eject enough mass to explain the kilonova observed after GW170917, with required efficiency for the conversion of disk mass to disk outflows ranging from $\sim 25\%$ to $\sim 50\%$. This is well within the (very uncertain) range of efficiencies allowed by current post-merger evolutions.
@@ -1048,7 +1047,7 @@ change in mass ratio, which, as Sekiguchi showed, tends to decrease the neutrino
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.2\textwidth,trim=410 0 0 0,clip=true]{chap3/Figures/dd2-nulum.eps}
+  \includegraphics[width=1.1\textwidth,trim=410 0 0 0,clip=true]{chap3/Figures/dd2-nulum.eps}
 \caption{
   Neutrino luminosity for DD2 runs up to around 7.5ms across neutrino species.
 }
@@ -1063,7 +1062,7 @@ As argues in~(\citet*{foucart2016impact}), this peak is probably due to neutrino
 %Likewise, across mass-ratio there is little impact on the morphology, with the plots looking almost identical to Figure~\ref{fig:theta_nu_eos} and thus we do not show them here.
 
 \begin{figure*}[!htbp]
-\centering \includegraphics[width=1.2\textwidth,trim=410 0 0 0,clip=true]{chap3/Figures/eos_theta_hist_flux.pdf}
+\centering \includegraphics[width=1.1\textwidth,trim=410 0 0 0,clip=true]{chap3/Figures/eos_theta_hist_flux.pdf}
 \caption{
   Neutrino flux density moment as a function of angle for different EOSs at 7.5ms post-merger. The angle is defined with respect to the equatorial plane with $0^\circ$ being the equator, and $\pm 90^\circ$ being the North and South poles. The different neutrino species are color coded.
 }

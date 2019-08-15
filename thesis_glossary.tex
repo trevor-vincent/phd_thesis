@@ -1,0 +1,441 @@
+\usepackage{savesym}
+\savesymbol{tablehead}
+\savesymbol{tabletail}
+\usepackage[acronym,toc,shortcuts]{glossaries}
+
+\newglossary[tlg]{symbols}{tld}{tdn}{Symbols}
+\newglossary[tlg]{chap2symbols}{tld}{tdn}{Common Symbols in Chapter 2}
+\newglossary[tlg]{chap3symbols}{tld}{tdn}{Common Symbols in Chapter 3}
+\newglossary[tlg]{terms}{tld}{tdn}{Terms}
+
+\makenoidxglossaries
+\setacronymstyle{long-short}
+
+\restoresymbol{GLOSS}{tablehead}
+\restoresymbol{GLOSS}{tabletail}
+
+\newacronym{BNS}{BNS}{binary neutron star}
+\newacronym{GW}{GW}{gravitational wave}
+\newacronym{LISA}{LISA}{Laser Interferometer Space Antenna}
+\newacronym{GW170817}{GW170817}{codename for first BNS detection by LIGO on August 17th, 2017}
+\newacronym{GW150914}{GW150914}{codename for first BBH detection by LIGO on September 14th, 2015}
+\newacronym{PDE}{PDE}{partial differential equation}
+\newacronym{BBH}{BBH}{binary black hole}
+\newacronym{NSBH}{NSBH}{neutron star - black hole}
+\newacronym{LIGO}{LIGO}{Laser Interferometer Gravitational-Wave Observatory}
+\newacronym{GRB}{GRB}{gamma ray burst}
+\newacronym{sGRB}{sGRB}{short gamma ray burst}
+\newacronym{AMR}{AMR}{adaptive mesh refinement}
+\newacronym{FEM}{FEM}{finite element method}
+\newacronym{DG}{DG}{discontinuous Galerkin}
+\newacronym{EOS}{EOS}{equation of state}
+\newacronym{SXS}{SXS}{Simulating eXtreme Spacetimes}
+\newacronym{SpEC}{SpEC}{Spectral Einstein Code (black-holes.org)}
+\newacronym{ADM}{ADM}{Arnowitt-Desner-Misner}
+\newacronym{BSSN}{BSSN}{Baumgarte-Shapiro-Shibata-Nakamura}
+\newacronym{XCTS}{XCTS}{eXtended Conformal Thin Sandwich}
+\newacronym{PC}{PC}{preconditioner}
+\newacronym{Virgo}{Virgo}{gravitational wave interferometer in Italy}
+
+\newglossaryentry{domain}
+                 {
+                   type=chap2symbols,
+                   name=$\Omega$,
+                   description={domain}
+                 }
+
+\newglossaryentry{macromesh}
+                 {
+                   type=chap2symbols,
+                   name=$\mathbb{E}_0$,
+                   description={macro-mesh/multi-block mesh}
+                 }
+
+
+\newglossaryentry{mapping}
+                 {
+                   type=chap2symbols,
+                   name=$\Phi_{\mathbb{E}_0}$,
+                   description={mapping from the reference cube $[-1,1]^d$ to a macro-element $e_0$}
+                 }
+
+
+\newglossaryentry{finemesh}
+                 {
+                   type=chap2symbols,
+                   name=$\mathbb{E}$,
+                   description={fine mesh}
+                 }
+
+
+\newglossaryentry{interfaces}
+                 {
+                   type=chap2symbols,
+                   name=$\Gamma$,
+                   description={the set of all element boundaries (internal and external)}
+                 }
+
+\newglossaryentry{interfacesi}
+                 {
+                   type=chap2symbols,
+                   name=$\Gamma_I$,
+                   description={set of all interior element boundaries}
+                 }
+
+
+\newglossaryentry{interfacesb}
+                 {
+                   type=chap2symbols,
+                   name=$\Gamma_B$,
+                   description={set of all exterior element boundaries}
+                 }
+
+
+\newglossaryentry{interfacesd}
+                 {
+                   type=chap2symbols,
+                   name=$\Gamma_D$,
+                   description={set of all exterior element boundaries with Dirichlet boundary conditions}
+                 }
+
+\newglossaryentry{interfacesn}
+                 {
+                   type=chap2symbols,
+                   name=$\Gamma_N$,
+                   description={set of all exterior element boundaries with Neumann boundary conditions}
+                 }
+
+
+\newglossaryentry{interfacesr}
+                 {
+                   type=chap2symbols,
+                   name=$\Gamma_R$,
+                   description={set of all exterior element boundaries with Robin boundary conditions}
+                 }
+
+\newglossaryentry{interfaceid}
+                 {
+                   type=chap2symbols,
+                   name=$\Gamma_{ID}$,
+                   description={set of all element boundaries that are either interior or exterior with Dirichlet boundary conditions}
+                 }
+
+
+\newglossaryentry{mortars}
+                 {
+                   type=chap2symbols,
+                   name=$\mathcal{M}$,
+                   description={the set of all mortar elements (internal and external)}
+                 }
+
+\newglossaryentry{mortarsi}
+                 {
+                   type=chap2symbols,
+                   name=$\mathcal{M}_I$,
+                   description={set of all interior mortar elements}
+                 }
+
+
+\newglossaryentry{mortarsb}
+                 {
+                   type=chap2symbols,
+                   name=$\mathcal{M}_B$,
+                   description={set of all exterior mortar elements}
+                 }
+
+
+\newglossaryentry{mortarsd}
+                 {
+                   type=chap2symbols,
+                   name=$\mathcal{M}_D$,
+                   description={set of all mortar elements with Dirichlet boundary conditions}
+                 }
+
+\newglossaryentry{mortarsn}
+                 {
+                   type=chap2symbols,
+                   name=$\mathcal{M}_N$,
+                   description={set of all mortar elementswith Neumann boundary conditions}
+                 }
+
+
+\newglossaryentry{mortarsr}
+                 {
+                   type=chap2symbols,
+                   name=$\mathcal{M}_R$,
+                   description={set of all mortar elements with Robin boundary conditions}
+                 }
+
+
+\newglossaryentry{mortarsid}
+                 {
+                   type=chap2symbols,
+                   name=$\mathcal{M}_{ID}$,
+                   description={set of all mortar elements that are either interior or exterior with Dirichlet boundary conditions}
+                 }
+
+
+
+\newglossaryentry{jacobian}
+                 {
+                   type=chap2symbols,
+                   name=$J$,
+                   description={determinant of the Jacobian matrix}
+                 }
+
+
+
+\newglossaryentry{jacobianmatrix}
+                 {
+                   type=chap2symbols,
+                   name=$J^l_k$,
+                   description={Jacobian matrix}
+                 }
+
+
+\newglossaryentry{surfacejacobian}
+                 {
+                   type=chap2symbols,
+                   name=$S^m$,
+                   description={surface Jacobian determinant on mortar element m}
+                 }
+
+\newglossaryentry{elementspace}
+                 {
+                   type=chap2symbols,
+                   name=$V_{h,e,p_e}$,
+                   description={the set of polynomials on the reference cube $[-1,1]^d$ up to degree $p_e$ mapped onto an element $e \in \mathbb{E}$}
+                 }
+
+
+\newglossaryentry{globalspace}
+                 {
+                   type=chap2symbols,
+                   name=$V_{h}$,
+                   description={the span of $V_{h,e,p_e}$ over all elements $e \in \mathbb{E}$}
+                 }
+
+
+\newglossaryentry{basisfunction}
+                 {
+                   type=chap2symbols,
+                   name=$\psi_\alpha$,
+                   description={a lagrange basis function}
+                 }
+
+\newglossaryentry{derivative}
+                 {
+                   type=chap2symbols,
+                   name=$D^l_{\alpha\beta}$,
+                   description={the reference cube derivative matrix in the l-th direction}
+                 }
+
+
+
+\newglossaryentry{solution}
+                 {
+                   type=chap2symbols,
+                   name=$u_h$,
+                   description={numerical solution}
+                 }
+
+
+\newglossaryentry{referencecoordinate}
+                 {
+                   type=chap2symbols,
+                   name=$\boldmath{\xi}$,
+                   description={reference cube coordinate}
+                 }
+
+
+\newglossaryentry{lglpoints}
+                 {
+                   type=chap2symbols,
+                   name=$\xi_\alpha^{\rm LGL}$,
+                   description={Lobatto-Gauss-Legendre quadrature points}
+                 }
+
+
+\newglossaryentry{weights}
+                 {
+                   type=chap2symbols,
+                   name=$w_{\rm GL}$,
+                   description={Gauss-Legendre quadrature weights}
+                 }
+
+\newglossaryentry{GLpoints}
+                 {
+                   type=chap2symbols,
+                   name=$\xi^{(c)}_{\rm GL}$,
+                   description={Gauss-Legendre quadrature points}
+                 }
+
+
+\newglossaryentry{penalty}
+                 {
+                   type=chap2symbols,
+                   name=$\sigma$,
+                   description={penalty function}
+                 }
+
+
+\newglossaryentry{energynorm}
+                 {
+                   type=chap2symbols,
+                   name=$||\nu||_{*}$,
+                   description={the norm defined by $\left(\sum_{\substack{e \in \mathbb{E}}}\; \int_e |\nabla \nu |^{2} \mathrm{d}\boldmath {x} + \sum\limits_{m \in \Gamma}\; \int_m|\sqrt{\sigma} \llbracket \nu \rrbracket |^{2} \mathrm{d} \boldmath s \right)^{\frac{1}{2}}$}
+                 }
+
+
+\newglossaryentry{l2norm}
+                 {
+                   type=chap2symbols,
+                   name=$||\nu||_{2}$,
+                   description={the norm defined by  $\left(\sum_{\substack{e \in \mathbb{E}}}\int_{e}\nu^2\mathrm{d}\boldmath{x}\right)^{\frac{1}{2}}$}
+                 }
+
+
+\newglossaryentry{metric}
+                 {
+                   type=chap3symbols,
+                   name=$g_{\alpha\beta}$,
+                   description={spacetime metric}
+                 }
+
+
+\newglossaryentry{3metric}
+                 {
+                   type=chap3symbols,
+                   name=$\gamma_{ab}$,
+                   description={spatial 3-metric (intrinsic curvature)}
+                 }
+
+
+\newglossaryentry{W}
+                 {
+                   type=chap3symbols,
+                   name=$W$,
+                   description={Lorentz factor}
+                 }
+
+\newglossaryentry{lapse}
+                 {
+                   type=chap3symbols,
+                   name=$\alpha$,
+                   description={lapse function}
+                 }
+
+
+\newglossaryentry{shift}
+                 {
+                   type=chap3symbols,
+                   name=$B^i$,
+                   description={shift}
+                 }
+
+\newglossaryentry{extrinsic}
+                 {
+                   type=chap3symbols,
+                   name=$K_{ij}$,
+                   description={extrinsic curvature}
+                 }
+
+
+\newglossaryentry{conformalfactor}
+                 {
+                   type=chap3symbols,
+                   name=$\psi$,
+                   description={conformal factor}
+                 }
+
+
+\newglossaryentry{firstmoment}
+                 {
+                   type=chap3symbols,
+                   name=$E$,
+                   description={first neutrino energy moment in the grid frame}
+                 }
+
+\newglossaryentry{secondmoment}
+                 {
+                   type=chap3symbols,
+                   name=$F^i$,
+                   description={second neutrino energy moment in the grid frame}
+                 }
+
+
+\newglossaryentry{numberdensity}
+                 {
+                   type=chap3symbols,
+                   name=$N$,
+                   description={neutrino number density in the grid frame}
+                 }
+
+
+\newglossaryentry{firstmomentfluid}
+                 {
+                   type=chap3symbols,
+                   name=$J$,
+                   description={first neutrino energy moment in the fluid frame}
+                 }
+
+\newglossaryentry{secondmomentfluid}
+                 {
+                   type=chap3symbols,
+                   name=$H^i$,
+                   description={second neutrino energy moment in the fluid frame}
+                 }
+
+
+\newglossaryentry{fluid4velocity}
+                 {
+                   type=chap3symbols,
+                   name=$u^\alpha$,
+                   description={fluid 4-velocity}
+                 }
+
+
+\newglossaryentry{fluid3velocity}
+                 {
+                   type=chap3symbols,
+                   name=$v^i$,
+                   description={fluid 3-velocity}
+                 }
+
+
+\newglossaryentry{fluidtransportvelocity}
+                 {
+                   type=chap3symbols,
+                   name=$v_t^i$,
+                   description={fluid transport velocity (coordinate velocity)}
+                 }
+
+\newglossaryentry{pressure}
+                 {
+                   type=chap3symbols,
+                   name=$P$,
+                   description={fluid pressure}
+                 }
+
+
+\newglossaryentry{fluidrestmassdensity}
+                 {
+                   type=chap3symbols,
+                   name=$\rho_0$,
+                   description={fluid rest mass density}
+                 }
+
+
+\newglossaryentry{enthalpy}
+                 {
+                   type=chap3symbols,
+                   name=$h$,
+                   description={fluid specific enthalpy}
+                 }
+
+\newglossaryentry{electronfraction}
+                 {
+                   type=chap3symbols,
+                   name=$Y_e$,
+                   description={fluid electron fraction; ratio of electron number density to baryon number density}
+                 }
